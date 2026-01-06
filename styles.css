@@ -1425,7 +1425,7 @@ input:focus, select:focus, textarea:focus {
     width: 100%;
     border-radius: 0;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1435,7 +1435,7 @@ input:focus, select:focus, textarea:focus {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
     letter-spacing: 0.5px;
 }
 
@@ -2097,7 +2097,7 @@ input:focus, select:focus, textarea:focus {
     width: 100% !important;
     max-width: 100% !important;
     border-radius: 0 !important;
-    font-size: 1.2rem !important;
+    font-size: 1.4rem !important;
     font-weight: 800 !important;
     box-shadow: 0 -8px 40px rgba(102, 126, 234, 0.4), 
                 0 0 60px rgba(118, 75, 162, 0.3) !important;
@@ -2106,7 +2106,7 @@ input:focus, select:focus, textarea:focus {
     overflow: hidden !important;
     border: none !important;
     cursor: pointer !important;
-    text-transform: uppercase !important;
+    /* text-transform: uppercase !important; */
     letter-spacing: 1px !important;
     animation: floatGlow 2s ease-in-out infinite alternate !important;
 }
@@ -2215,4 +2215,18 @@ input:focus, select:focus, textarea:focus {
     .sticky-book-button .PaymentButton-contents {
         font-size: 1rem !important;
     }
+}
+
+.current-price {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: #4CAF50 !important;
+}
+
+.old-price {
+    /* font-size: 1rem !important; */
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-decoration: line-through !important;
+    font-weight: 500 !important;
+    font-size: 1.1rem !important;
 }

@@ -1,0 +1,21 @@
+[debug] [2026-01-06T18:22:32.458Z] ----------------------------------------------------------------------
+[debug] [2026-01-06T18:22:32.460Z] Command:       /opt/homebrew/Cellar/node/24.9.0/bin/node /opt/homebrew/bin/firebase deploy
+[debug] [2026-01-06T18:22:32.461Z] CLI Version:   14.23.0
+[debug] [2026-01-06T18:22:32.461Z] Platform:      darwin
+[debug] [2026-01-06T18:22:32.461Z] Node Version:  v24.9.0
+[debug] [2026-01-06T18:22:32.461Z] Time:          Tue Jan 06 2026 23:52:32 GMT+0530 (India Standard Time)
+[debug] [2026-01-06T18:22:32.461Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-01-06T18:22:32.598Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T18:22:32.599Z] > authorizing via signed-in user (jaikumar1240@gmail.com)
+[debug] [2026-01-06T18:22:32.599Z] [iam] checking project elevate-personality for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-01-06T18:22:32.599Z] Checked if tokens are valid: false, expires at: 1767722921458
+[debug] [2026-01-06T18:22:32.600Z] Checked if tokens are valid: false, expires at: 1767722921458
+[debug] [2026-01-06T18:22:32.600Z] > refreshing access token with scopes: []
+[debug] [2026-01-06T18:22:32.601Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-01-06T18:22:32.601Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-06T18:22:33.629Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-01-06T18:22:33.629Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-06T18:22:33.642Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions [none]
+[debug] [2026-01-06T18:22:33.642Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions x-goog-quota-user=projects/elevate-personality
+[debug] [2026-01-06T18:22:33.643Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
