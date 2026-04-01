@@ -67,6 +67,10 @@ body {
 .nav-menu {
     display: flex;
     gap: 2rem;
+
+    a:target-current {
+        color: #6366f1;
+    }
 }
 
 .nav-link {
