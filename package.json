@@ -1,7 +1,7 @@
 {
-  "name": "personality-development-sessions",
+  "name": "debugyourcareer",
   "version": "1.0.0",
-  "description": "A website for booking 1:1 personality development sessions",
+  "description": "DebugYourCareer — 1:1 career coaching for Indian students and recent graduates. Resume reviews, mock interviews, and placement-prep sessions starting at ₹89.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,15 +10,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "personality",
-    "development",
-    "coaching",
-    "sessions",
-    "booking",
-    "calendly",
-    "stripe"
+    "career-coaching",
+    "resume-review",
+    "mock-interview",
+    "placements",
+    "students",
+    "razorpay"
   ],
-  "author": "Your Name",
+  "author": "Jai Rajput <jaikumar1240@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.20.2",

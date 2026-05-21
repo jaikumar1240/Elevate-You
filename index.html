@@ -3,291 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transform Your Personality | 1:1 Personal Development Sessions</title>
-    <meta name="description" content="Book personalized 1:1 sessions to improve your dressing sense, communication skills, and social behavior. Transform your personality with expert guidance.">
-    
-    <!-- Favicon -->
+    <title>DebugYourCareer | Career Debugging for Students & Graduates</title>
+    <meta name="description" content="Book a 15-minute career diagnosis session for ₹89 and discover exactly what's holding you back in placements and interviews. Practical 1:1 coaching for serious students.">
+
     <link rel="icon" type="image/png" href="assets/image.png">
     <link rel="apple-touch-icon" href="assets/image.png">
     <meta name="theme-color" content="#6366f1">
-    
+
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <i class="fas fa-mountain"></i>
-                <span>Elevate<span class="highlight"> You</span></span>
+                <i class="fa-solid fa-mountain"></i>
+                <span>Debug<span class="highlight">Your</span>Career</span>
             </div>
             <div class="nav-menu">
-                <a href="#about-me" class="nav-link">About Me</a>
-                <a href="#services" class="nav-link">Services</a>
-                <a href="#about" class="nav-link">Why Choose</a>
-                <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="#about-me" class="nav-link">About</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#plans" class="nav-link">Plans</a>
                 <a href="#testimonials" class="nav-link">Reviews</a>
+                <a href="#contact" class="nav-link">Contact</a>
             </div>
+            <div class="hamburger" id="hamburger">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#about-me" class="mobile-link" onclick="closeMobileMenu()">About</a>
+            <a href="#how-it-works" class="mobile-link" onclick="closeMobileMenu()">How It Works</a>
+            <a href="#plans" class="mobile-link" onclick="closeMobileMenu()">Plans</a>
+            <a href="#testimonials" class="mobile-link" onclick="closeMobileMenu()">Reviews</a>
+            <a href="#contact" class="mobile-link" onclick="closeMobileMenu()">Contact</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-container">
+
+            <!-- Left: Headline + CTA -->
             <div class="hero-content">
+
                 <h1 class="hero-title">
-                    Transform Your <span class="highlight">Personality</span> 
-                    <br>in Just 30 Minutes
+                    Getting rejected<br>but don't know <span class="highlight">why?</span>
                 </h1>
+
                 <p class="hero-subtitle">
-                    Get personalized guidance on dressing, communication, and social skills. Whether you're preparing for interviews, improving your professional presence, or building better relationships, I provide practical guidance tailored to your goals.
+                    In one 15-minute session I find your exact blocker — resume, interview, or communication — and tell you precisely what to fix. No generic advice.
                 </p>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">100+</span>
-                        <span class="stat-label">Students Transformed</span>
+
+                <div class="hero-proof">
+                    <div class="hero-proof-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Resume feedback</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number">95%</span>
-                        <span class="stat-label">Success Rate</span>
+                    <div class="hero-proof-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Interview technique</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number">₹89</span>
-                        <span class="stat-label">Per Session</span>
-                    </div>
-                </div>
-                <div class="hero-features">
-                    <div class="feature-item">
-                        <i class="fas fa-tshirt"></i>
-                        <span>Dressing Sense</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-comments"></i>
-                        <span>Communication</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-users"></i>
-                        <span>Social Skills</span>
+                    <div class="hero-proof-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Professional presence</span>
                     </div>
                 </div>
+
                 <div class="hero-cta">
-                    <button class="cta-button secondary" onclick="scrollToTestimonials()">
-                        <i class="fas fa-star"></i>
-                        Read Reviews
+                    <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button"
+                       class="cta-button primary">
+                        Book Diagnosis · ₹89
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <button class="cta-button secondary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+                        How it works
                     </button>
                 </div>
             </div>
+
+            <!-- Right: Visual diagnosis card -->
+            <div class="hero-visual">
+                <div class="diagnosis-card">
+                    <div class="diagnosis-card__header">
+                        <div class="diagnosis-card__avatar">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div>
+                            <div class="diagnosis-card__name">Your session with Jai</div>
+                            <div class="diagnosis-card__meta">15 min · 1:1 · Today</div>
+                        </div>
+                        <div class="diagnosis-card__live">
+                            <span class="live-dot"></span> Live
+                        </div>
+                    </div>
+
+                    <div class="diagnosis-card__body">
+                        <div class="diagnosis-step diagnosis-step--done">
+                            <div class="ds-icon"><i class="fas fa-check"></i></div>
+                            <div class="ds-text">
+                                <span class="ds-label">Tell me your situation</span>
+                                <span class="ds-desc">What you're applying for, what's happened</span>
+                            </div>
+                        </div>
+                        <div class="diagnosis-step diagnosis-step--active">
+                            <div class="ds-icon"><i class="fas fa-search"></i></div>
+                            <div class="ds-text">
+                                <span class="ds-label">Find your #1 blocker</span>
+                                <span class="ds-desc">Resume · Interview · Communication</span>
+                            </div>
+                        </div>
+                        <div class="diagnosis-step">
+                            <div class="ds-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="ds-text">
+                                <span class="ds-label">Get your action plan</span>
+                                <span class="ds-desc">Specific fixes, not vague advice</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="diagnosis-card__footer">
+                        <div class="diagnosis-pill">
+                            Best ₹89 you'll ever spend.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating badges -->
+                <!-- <div class="hero-float hero-float--top">
+                    <i class="fas fa-star" style="color:#fbbf24;"></i>
+                    <span>Loved by students</span>
+                </div>
+                <div class="hero-float hero-float--bottom">
+                    <i class="fas fa-bolt" style="color:#6366f1;"></i>
+                    <span>Same-week slots</span>
+                </div> -->
+            </div>
+
         </div>
     </section>
 
-    <!-- Who Am I Section - Moved to top for better credibility -->
-    <section id="about-me" class="about-me">
+     <!-- About Me -->
+     <section id="about-me" class="about-me">
         <div class="container">
-            <h2 class="section-title">Who Am I?</h2>
+            <div class="section-label">About me</div>
+            <h2 class="section-title">Hi, I'm Jai Rajput.</h2>
             <div class="about-me-content">
                 <div class="about-me-image">
-                    <img src="assets/pro_image.jpg" alt="Jai Rajput - Personality Development Coach" class="coach-image-img">
+                    <img src="assets/pro_image.jpg" alt="Jai Rajput — Career Coach" class="coach-image-img">
                 </div>
                 <div class="about-me-text">
-                    <p>Hi, I'm Jai Rajput. I help students and young professionals develop practical skills in dressing, communication, and social interactions. My approach focuses on real-world application rather than abstract concepts.</p>
-                    
+                    <p>I help fresh graduates or candidates debug career problems fast — especially when they're getting rejected but don't know why. I focus on practical fixes, not generic motivation.</p>
+
                     <div class="achievements">
                         <div class="achievement-item">
                             <i class="fas fa-graduation-cap"></i>
                             <div>
-                                <h4>100+ Students Transformed</h4>
-                                <p>I work primarily with college students and recent graduates who are navigating career transitions, interviews, and building their professional identity.</p>
+                                <h4>Built for students</h4>
+                                <p>I work with students and recent grads preparing for internships, placements, and first-job interviews.</p>
                             </div>
                         </div>
                         <div class="achievement-item">
-                            <i class="fas fa-briefcase"></i>
+                            <i class="fas fa-bullseye"></i>
                             <div>
-                                <h4>Improved Dressing sense</h4>
-                                <p>I help you understand how to dress appropriately for different occasions—from college presentations to job interviews—while staying within your budget.</p>
+                                <h4>Root cause, not surface fixes</h4>
+                                <p>Most people don't have a skills problem — they have a presentation problem. I find your exact blocker and fix it.</p>
                             </div>
                         </div>
                         <div class="achievement-item">
-                            <i class="fas fa-users"></i>
+                            <i class="fas">₹</i>
                             <div>
-                                <h4>Social Skills Mastery</h4>
-                                <p>I provide feedback on how you present yourself in conversations, interviews, and social settings, helping you express yourself more effectively.</p>
+                                <h4>Affordable by design</h4>
+                                <p>Sessions start at ₹89. Serious about getting placed? That's less than a meal delivery order.</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="my-story">
-                        <h4>Why I Do This</h4>
-                        <p>I remember what it felt like to struggle with confidence, especially when it came to interviews and social situations. Over time, I learned practical approaches to dressing, speaking, and interacting that made a real difference. Now, I share what I've learned to help others avoid some of the mistakes I made and build their confidence faster.</p>
+                        <h4>Why I do this</h4>
+                        <p>I've personally gone through the same confusion — knowing the subject but struggling to present it. DebugYourCareer exists to make that journey shorter, clearer, and more affordable for every student who deserves a fair shot.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Services Section -->
-    <section id="services" class="services">
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
         <div class="container">
-            <h2 class="section-title">What We'll Cover</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-image">
-                        <i class="fas fa-tshirt"></i>
-                    </div>
-                    <h3>Dressing & Style</h3>
-                    <ul>
-                        <li>Understanding what works for your body type</li>
-                        <li>Selecting appropriate outfits for interviews, college, and social events</li>
-                        <li>Building a practical wardrobe on a student budget</li>
-                        <li>Color combinations that enhance your appearance</li>
-                    </ul>
+            <div class="section-label">The process</div>
+            <h2 class="section-title">How it works</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+                    <h3>Book & Pay</h3>
+                    <p>Pick a plan that matches your need. Pay securely via Razorpay. Only serious students — no free slots.</p>
                 </div>
-                <div class="service-card">
-                    <div class="service-image">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <h3>Communication Skills</h3>
-                    <ul>
-                        <li>Speaking clearly and confidently in interviews</li>
-                        <li>Using body language to appear more approachable</li>
-                        <li>Engaging in conversations more naturally</li>
-                        <li>Presenting yourself effectively in professional settings</li>
-                    </ul>
+                <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-icon"><i class="fas fa-search"></i></div>
+                    <h3>Diagnose</h3>
+                    <p>We get on a call. I ask the right questions and pinpoint your exact blocker — resume, interview, or presence.</p>
                 </div>
-                <div class="service-card">
-                    <div class="service-image">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <h3>Relationship Dynamics</h3>
-                    <ul>
-                        <li>Partner communication</li>
-                        <li>Building stronger friendships</li>
-                        <li>Social etiquette</li>
-                        <li>Conflict resolution</li>
-                    </ul>
+                <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-icon"><i class="fas fa-tools"></i></div>
+                    <h3>Fix It</h3>
+                    <p>You leave with a clear, specific action plan — not vague motivation. Summary notes sent afterward.</p>
+                </div>
+                <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="step-card">
+                    <div class="step-number">04</div>
+                    <div class="step-icon"><i class="fas fa-level-up-alt"></i></div>
+                    <h3>Level Up</h3>
+                    <p>Most students return for deeper sessions — resume review, mock interviews, or placement prep packs.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About Section - Why Choose -->
-    <section id="about" class="about">
+    <!-- Plans / Pricing Section -->
+    <section id="plans" class="plans">
         <div class="container">
-            <h2 class="section-title">Why Choose ElevateYou?</h2>
-            <div class="about-grid">
-                <div class="about-card">
-                    <div class="card-icon">
-                        <i class="fas fa-user-cog"></i>
-                    </div>
-                    <h3>Personalized Coaching</h3>
-                    <p>Each session is customized based on your current situation, goals, and challenges. I assess your needs first, then provide targeted advice that fits your lifestyle and budget.</p>
-                </div>
-                <div class="about-card">
-                    <div class="card-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h3>Flexible Timing</h3>
-                    <p>Schedule sessions when it works for you. I accommodate different time zones and schedules to ensure you can get guidance when you need it most.</p>
-                </div>
-                <div class="about-card">
-                    <div class="card-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Practical Focus</h3>
-                    <p>Rather than vague theories, I provide actionable steps you can implement immediately. You'll receive specific feedback on your dressing choices, communication style, and social interactions.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+            <div class="section-label">Plans & Pricing</div>
+            <h2 class="section-title">Pick your starting point.</h2>
+            <p class="section-subtitle">Start with the Diagnosis Session. Most students move to deeper plans after seeing results.</p>
 
-    <!-- Pricing Section -->
-    <section id="pricing" class="pricing">
-        <div class="container">
-            <h2 class="section-title">Investment in Yourself</h2>
-            <div class="payment-summary-card">
-                <div class="session-info">
-                    <h4><i class="fas fa-user-tie"></i> 1:1 Personality Development Session</h4>
-                    <ul>
-                        <li><i class="fas fa-check"></i> 30-minute personalized video or phone call</li>
-                        <li><i class="fas fa-check"></i> Discussion of your specific challenges and goals</li>
-                        <li><i class="fas fa-check"></i> Practical feedback and actionable advice</li>
-                        <li><i class="fas fa-check"></i> Summary notes sent after the session</li>
+            <div class="plans-grid">
+
+                <!-- Plan 1: Diagnosis Session -->
+                <div class="plan-card plan-card--entry">
+                    <div class="plan-icon"><i class="fas fa-search"></i></div>
+                    <h3>Diagnosis Session</h3>
+                    <div class="plan-price">
+                        <span class="plan-currency">₹</span><span class="plan-amount">89</span>
+                        <span class="plan-period">/ session</span>
+                    </div>
+                    <p class="plan-desc">A focused 15-minute call to find your #1 career blocker. Walk away knowing exactly what to fix.</p>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> 15-min 1:1 call (video or phone)</li>
+                        <li><i class="fas fa-check"></i> Identify your exact blocker</li>
+                        <li><i class="fas fa-check"></i> One actionable fix to start today</li>
+                        <li><i class="fas fa-check"></i> Session notes sent after the call</li>
                     </ul>
+                    <div class="plan-tag">Start here</div>
+                    <div class="plan-cta">
+                        <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--primary">
+                            Book for ₹89 →
+                        </a>
+                    </div>
                 </div>
-                <div class="price-section">
-                    <div class="price-display">
-                        <span class="currency">₹</span>
-                        <span class="amount">89</span>
-                        <span style="color: #636363; text-decoration: line-through;">₹299</span>
-                        <span class="period">per session</span>
+
+                <!-- Plan 2: Resume Review -->
+                <div class="plan-card">
+                    <div class="plan-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>Resume Review</h3>
+                    <div class="plan-price">
+                        <span class="plan-currency">₹</span><span class="plan-amount">199</span>
+                        <span class="plan-period">/ review</span>
                     </div>
-                    <div class="payment-security">
-                        <p><i class="fas fa-shield-alt"></i> Secure payment via Razorpay</p>
-                        <p><i class="fas fa-credit-card"></i> UPI, Cards, Net Banking accepted</p>
+                    <p class="plan-desc">Send your resume. I record a detailed Loom video walking through every issue — structure, clarity, positioning — and send it back.</p>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Async — no call needed</li>
+                        <li><i class="fas fa-check"></i> Detailed Loom video feedback</li>
+                        <li><i class="fas fa-check"></i> Fix structure, clarity & impact</li>
+                        <li><i class="fas fa-check"></i> Delivered within 24 hours</li>
+                    </ul>
+                    <div class="plan-cta">
+                        <a href="https://razorpay.com/payment-button/pl_SrtlzonoCOWQXr/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary">
+                            Book for ₹199 →
+                        </a>
                     </div>
+                </div>
+
+                <!-- Plan 3: Mock Interview -->
+                <div class="plan-card">
+                    <div class="plan-icon"><i class="fas fa-comments"></i></div>
+                    <h3>Mock Interview</h3>
+                    <div class="plan-price">
+                        <span class="plan-currency">₹</span><span class="plan-amount">349</span>
+                        <span class="plan-period">/ session</span>
+                    </div>
+                    <p class="plan-desc">A 45-minute simulated interview for your target role. Get real feedback on your answers, confidence, and body language.</p>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> 45-min role-specific mock interview</li>
+                        <li><i class="fas fa-check"></i> Feedback on content + delivery</li>
+                        <li><i class="fas fa-check"></i> Body language & confidence tips</li>
+                        <li><i class="fas fa-check"></i> Detailed written debrief</li>
+                    </ul>
+                    <div class="plan-tag plan-tag--featured">Most popular</div>
+                    <div class="plan-cta">
+                        <a href="https://razorpay.com/payment-button/pl_SruiNi8kF9VXiW/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary">
+                            Book for ₹349 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Plan 4: Interview Prep Pack -->
+                <div class="plan-card">
+                    <div class="plan-icon"><i class="fas fa-box-open"></i></div>
+                    <h3>Interview Prep Pack</h3>
+                    <div class="plan-price">
+                        <span class="plan-currency">₹</span><span class="plan-amount">799</span>
+                        <span class="plan-period">/ pack</span>
+                    </div>
+                    <p class="plan-desc">The complete pre-placement package. Resume + mock interviews + action plan — everything you need before placement season.</p>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Full resume review (Loom)</li>
+                        <li><i class="fas fa-check"></i> 2 mock interview sessions</li>
+                        <li><i class="fas fa-check"></i> Written action plan</li>
+                        <li><i class="fas fa-check"></i> WhatsApp follow-up support</li>
+                    </ul>
+                    <div class="plan-tag plan-tag--gold">Best value</div>
+                    <div class="plan-cta">
+                        <a href="https://razorpay.com/payment-button/pl_Srul2JJCl7NWHA/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary">
+                            Book for ₹799 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Plan 5: Full Placement Prep -->
+                <div class="plan-card">
+                    <div class="plan-icon"><i class="fas fa-trophy"></i></div>
+                    <h3>Full Placement Prep</h3>
+                    <div class="plan-price">
+                        <span class="plan-currency">₹</span><span class="plan-amount">1,499</span>
+                        <span class="plan-period">/ 4 weeks</span>
+                    </div>
+                    <p class="plan-desc">A 4-week intensive program for students 4–8 weeks away from placement season. The most comprehensive support I offer.</p>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> 3 x 1:1 coaching sessions</li>
+                        <li><i class="fas fa-check"></i> Resume + LinkedIn review</li>
+                        <li><i class="fas fa-check"></i> 2 full mock interviews</li>
+                        <li><i class="fas fa-check"></i> Week 4 check-in & final prep</li>
+                    </ul>
+                    <div class="plan-cta">
+                        <a href="https://razorpay.com/payment-button/pl_SrummdmWV7OsBh/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary">
+                            Apply for ₹1,499 →
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Comparison note -->
+            <div class="plans-note">
+                <i class="fas fa-info-circle"></i>
+                <span>Not sure which to pick? Start with the <strong>₹89 Diagnosis Session</strong>. At the end of the call I'll recommend the right next step for your specific situation.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why DebugYourCareer -->
+    <section id="why" class="why-choose">
+        <div class="container">
+            <div class="section-label">Why DebugYourCareer</div>
+            <h2 class="section-title">Not a course. A conversation.</h2>
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-user-cog"></i></div>
+                    <h3>Tailored to you</h3>
+                    <p>No generic frameworks. Every session starts with your specific situation, your target role, and your actual problems.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-lock"></i></div>
+                    <h3>Paid = serious only</h3>
+                    <p>No free slots. That means every person I work with is committed — and I can give them my full attention and best feedback.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-check-circle"></i></div>
+                    <h3>Actionable, always</h3>
+                    <p>You'll leave with specific steps — not vague motivation. Summary notes are sent after every session so you don't lose anything.</p>
                 </div>
             </div>
         </div>
     </section>
 
-
-    <!-- Testimonials Section -->
+    <!-- Testimonials -->
     <section id="testimonials" class="testimonials">
         <div class="container">
-            <h2 class="section-title">What People Say</h2>
+            <div class="section-label">Reviews</div>
+            <h2 class="section-title">What students say.</h2>
             <div class="testimonials-grid">
                 <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p>"I was struggling with what to wear for campus placements. Jai gave me practical advice about formal wear that fit my budget. The tips about color combinations and fit really helped. I felt much more confident in my interviews after the session."</p>
+                    <div class="rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
+                    <p>"I was struggling with what to wear for campus placements. Jai gave me practical advice about formal wear that fit my budget. The tips about color combinations and fit really helped — I felt much more confident going into my interviews."</p>
                     <div class="testimonial-author">
-                        <div class="author-info">
+                        <div class="author-avatar">P</div>
+                        <div>
                             <h4>Priya S.</h4>
                             <span>Engineering Student</span>
                         </div>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p>"The communication tips were really helpful. I used to get nervous speaking in front of groups. Jai gave me some simple techniques about body language and how to structure what I wanted to say. It's not a magic fix, but I do feel more prepared now."</p>
+                    <div class="rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
+                    <p>"The communication tips were genuinely useful. I used to get nervous speaking in front of groups. Jai gave me simple techniques about body language and how to structure what I wanted to say. I feel noticeably more prepared now."</p>
                     <div class="testimonial-author">
-                        <div class="author-info">
+                        <div class="author-avatar">A</div>
+                        <div>
                             <h4>Arjun K.</h4>
                             <span>BBA Student</span>
                         </div>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p>"I appreciated the honest feedback about my dressing choices. Jai explained why certain outfits work better for interviews versus casual college events. The session was practical and didn't try to sell me expensive clothes. Good value for the price."</p>
+                    <div class="rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
+                    <p>"I appreciated the honest feedback. Jai explained exactly why certain things weren't working and gave me specific fixes — not vague advice. Great value for the price, I've already recommended it to 3 friends."</p>
                     <div class="testimonial-author">
-                        <div class="author-info">
+                        <div class="author-avatar">M</div>
+                        <div>
                             <h4>Mohit R.</h4>
                             <span>MBA Student</span>
-                        </div>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
                         </div>
                     </div>
                 </div>
@@ -295,25 +434,79 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
+    <!-- FAQ -->
+    <section class="faq">
+        <div class="container">
+            <div class="section-label">FAQs</div>
+            <h2 class="section-title">Common questions.</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Why is there no free session?</span>
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Free slots attract people who aren't committed — that wastes both our time. A small ₹89 payment ensures every student I work with is serious, which means I can focus entirely on giving you my best feedback.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Which plan should I start with?</span>
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Start with the ₹89 Diagnosis Session. It's designed to identify your exact problem. At the end of that call, I'll tell you whether a resume review, mock interview, or a pack makes more sense for you — no guessing.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>How do I book sessions other than the ₹89 one?</span>
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Click the booking button on the plan you want — it opens a pre-filled email to me. I'll reply within a few hours with payment details and scheduling options. Most sessions happen within 24–48 hours of booking.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>I'm in 2nd year — is it too early?</span>
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Not at all. Building your resume and communication skills early gives you a massive advantage. Many students only start when placement season hits — by then it's rushed. Starting now means you can prepare properly.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What happens in the 15-minute Diagnosis Session?</span>
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>I ask you 3–4 targeted questions about your situation — what you're applying for, what's happened so far, and what you think the issue is. Then I tell you your #1 blocker and one specific thing you can do immediately. You also get session notes after the call.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
     <section id="contact" class="contact">
         <div class="container">
-            <h2 class="section-title">Get in Touch</h2>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h4>Email</h4>
-                            <p><a href="mailto:jaikumar1240@gmail.com">jaikumar1240@gmail.com</a></p>
-                        </div>
+            <div class="section-label">Contact</div>
+            <h2 class="section-title">Have questions?</h2>
+            <div class="contact-cards">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <h4>Email</h4>
+                        <a href="mailto:jaikumar1240@gmail.com">jaikumar1240@gmail.com</a>
                     </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <h4>Phone</h4>
-                            <p><a href="tel:+917827981994">+91 7827981994</a></p>
-                        </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                    <div>
+                        <h4>Phone / WhatsApp</h4>
+                        <a href="tel:+917827981994">+91 78279 81994</a>
                     </div>
                 </div>
             </div>
@@ -323,29 +516,48 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
+            <div class="footer-inner">
                 <div class="footer-logo">
-                    <i class="fas fa-mountain"></i>
-                    <span>ElevateYou</span>
+                    <i class="fa-solid fa-mountain"></i>
+                    Debug<span class="logo-accent">Your</span>Career
                 </div>
-                <p>&copy; 2025 ElevateYou. All rights reserved.</p>
+                <p class="footer-copy">&copy; 2026 DebugYourCareer. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Sticky Book Session Button -->
+    <!-- Sticky CTA -->
     <div class="sticky-book-button">
         <div class="fallback-button">
-            <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" 
+            <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button"
                class="razorpay-payment-button">
-                Join Now for just 
+                Book Your Diagnosis Session &nbsp;·&nbsp;
                 <span class="current-price">₹89</span>
-                <span class="old-price">₹299</span>
             </a>
         </div>
     </div>
 
-
     <script src="script.js"></script>
+    <script>
+        // Mobile menu
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            mobileMenu.classList.toggle('open');
+        });
+        function closeMobileMenu() {
+            hamburger.classList.remove('open');
+            mobileMenu.classList.remove('open');
+        }
+
+        // FAQ toggle
+        function toggleFaq(el) {
+            const item = el.parentElement;
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        }
+    </script>
 </body>
 </html>

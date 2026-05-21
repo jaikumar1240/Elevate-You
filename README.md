@@ -1,200 +1,104 @@
-# Personality Development Sessions Website
+# DebugYourCareer
 
-A modern, mobile-first website for booking 1:1 personality development sessions. Features include payment processing, user data collection, Calendly integration, and comprehensive analytics tracking.
+A mobile-first website for booking 1:1 career coaching sessions for Indian students and recent graduates. ₹89 diagnosis sessions, resume reviews, mock interviews, and placement-prep packs — booked online via Razorpay.
 
-## Features
+## What it does
 
-- **Mobile-First Design**: Optimized for mobile users with responsive design
-- **Payment Integration**: Secure payment processing (Stripe/PayPal ready)
-- **User Data Collection**: Comprehensive forms for user details and goals
-- **Calendly Integration**: Seamless session scheduling
-- **Analytics Tracking**: Google Analytics, Facebook Pixel, and custom event tracking
-- **Database Storage**: SQLite database for user and session management
-- **Admin Dashboard**: View user data and analytics
+- Sells five tiers of paid coaching (₹89 → ₹1,499) with Razorpay-hosted payment links
+- Captures user details and session bookings into a lightweight SQLite store
+- Exposes an admin dashboard at `/admin` for viewing users, payments, and event analytics
+- Tracks page-views, payment completions, and bookings via custom events (Google Analytics / Facebook Pixel ready)
 
-## Quick Start
+## Quick start
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-2. **Start the Server**
-   ```bash
-   npm start
-   ```
-
-3. **Visit the Website**
-   Open http://localhost:3000 in your browser
-
-## Setup Instructions
-
-### 1. Install Node.js
-Make sure you have Node.js 14+ installed on your system.
-
-### 2. Install Dependencies
 ```bash
 npm install
+npm start
 ```
 
-### 3. Configure Calendly
-1. Sign up for a Calendly account
-2. Create a new event type for "Personality Development Session"
-3. Update the Calendly URL in `script.js`:
-   ```javascript
-   // Replace 'your-username' with your actual Calendly username
-   url: 'https://calendly.com/your-username/personality-session'
-   ```
+Then open http://localhost:3000.
 
-### 4. Configure Razorpay Payment Processing
-1. Sign up for Razorpay at https://razorpay.com/
-2. Get your Key ID and Key Secret from the dashboard
-3. Update the Razorpay configuration in `script.js`:
-   ```javascript
-   const RAZORPAY_CONFIG = {
-       key: 'rzp_test_your_actual_key_id', // Replace with your actual key
-       // ... other config
-   };
-   ```
-4. Update the `.env` file with your Razorpay credentials:
-   ```
-   RAZORPAY_KEY_ID=rzp_test_your_key_id
-   RAZORPAY_KEY_SECRET=your_razorpay_secret_key
-   ```
+## Tech
 
-### 5. Configure Analytics
-Add your tracking IDs to the HTML head section:
+- **Frontend:** Static HTML + CSS + vanilla JS (no framework)
+- **Backend:** Express (Node 14+), SQLite via `sqlite3`
+- **Payments:** Razorpay payment-button links (no SDK integration yet — the buttons go straight to hosted checkout)
+- **Hosting:** Firebase Hosting (config in `firebase.json` / `.firebaserc`)
 
-```html
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'GA_MEASUREMENT_ID');
-</script>
-
-<!-- Facebook Pixel -->
-<script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', 'FACEBOOK_PIXEL_ID');
-  fbq('track', 'PageView');
-</script>
-```
-
-## File Structure
+## Project layout
 
 ```
-personality-development/
-├── index.html          # Main website page
-├── styles.css          # CSS styles
-├── script.js          # JavaScript functionality
-├── server.js          # Express server
-├── package.json        # Dependencies and scripts
-├── README.md          # This file
-└── personality_sessions.db # SQLite database (created automatically)
+.
+├── index.html                  # Main landing page
+├── styles.css                  # All styles
+├── script.js                   # Mobile menu, FAQ toggle, Razorpay fallback
+├── server.js                   # Express + SQLite API
+├── admin.html                  # Admin dashboard
+├── view_db.py                  # CLI utility to inspect the SQLite DB
+├── personality_sessions.db     # Local SQLite database (auto-created)
+├── package.json
+├── firebase.json / .firebaserc # Firebase Hosting config
+└── assets/                     # Images + favicon
 ```
 
-## API Endpoints
+## Configuration
 
-- `GET /` - Serve the main website
-- `POST /api/users` - Create or update user data
-- `GET /api/users/:email` - Get user by email
-- `GET /api/users` - Get all users (admin)
-- `POST /api/events` - Track events
-- `GET /api/analytics` - Get analytics data
-- `POST /api/sessions` - Create session
-- `GET /api/users/:userId/sessions` - Get user sessions
-- `PUT /api/sessions/:sessionId` - Update session status
+### Razorpay
+The Razorpay payment-button URLs are hardcoded in `index.html` (search for `razorpay.com/payment-button`). To use your own, replace the `pl_…` IDs with your payment-link IDs from the Razorpay dashboard.
 
-## Admin Dashboard
+If you switch to the Razorpay JS SDK later, update `RAZORPAY_CONFIG` in `script.js` with your `key_id` and add `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` to a `.env` file (read on the server side).
 
-Access the admin dashboard at `/admin` to view:
-- User registrations
-- Payment status
-- Session bookings
-- Analytics data
-- Event tracking
+### Calendly (optional)
+The site does not currently use Calendly — sessions are booked via Razorpay payment or via pre-filled email links. If you re-introduce Calendly, drop the embed URL into `script.js`.
 
-## Customization
+### Analytics
+Paste your GA4 / Facebook Pixel snippets into the `<head>` of `index.html`. Custom events fired by `script.js`:
+- `page_view` — page visits
+- `payment_completed` — successful payments
+- `details_submitted` — form submission
+- `session_booked` — booking confirmed
 
-### Changing the Price
-Update the price in both `index.html` and `script.js`:
-- HTML: Update the price display in the pricing section
-- JavaScript: Update the amount in payment processing
+## API endpoints
 
-### Modifying Services
-Edit the services section in `index.html` to match your offerings.
+| Method | Path                              | Purpose                       |
+|--------|-----------------------------------|-------------------------------|
+| GET    | `/`                               | Serve the landing page        |
+| POST   | `/api/users`                      | Create or update a user       |
+| GET    | `/api/users/:email`               | Fetch user by email           |
+| GET    | `/api/users`                      | List all users (admin)        |
+| POST   | `/api/events`                     | Track an analytics event      |
+| GET    | `/api/analytics`                  | Aggregate analytics data      |
+| POST   | `/api/sessions`                   | Create a session              |
+| GET    | `/api/users/:userId/sessions`     | List a user's sessions        |
+| PUT    | `/api/sessions/:sessionId`        | Update session status         |
 
-### Styling Changes
-All styles are in `styles.css`. The design uses:
-- CSS Grid and Flexbox for layouts
-- CSS custom properties for colors
-- Mobile-first responsive design
+## Database
+
+SQLite, stored at `personality_sessions.db` (legacy filename — kept to avoid breaking the existing schema). Three tables:
+
+- **users** — id, email, name, phone, age, profession, goals, experience, payment_method, payment_amount, payment_status, session_booked, session_id, created_at, updated_at
+- **events** — id, user_id, event_name, event_data, timestamp
+- **sessions** — id, user_id, session_date, session_type, status, notes, created_at
+
+For production, swap to PostgreSQL or MySQL.
+
+## Customising plans
+
+The five pricing tiers live in the `#plans` section of `index.html`. To change price or copy:
+- Update the `<span class="plan-amount">` and `<span class="plan-period">` for the card
+- Update the mailto `subject` and `body` to match the new price
+- For the ₹89 plan, the `<a href>` points to a Razorpay payment-button URL — update that too if the price changes
 
 ## Deployment
 
-### Heroku Deployment
-1. Create a Heroku app
-2. Add PostgreSQL addon for production database
-3. Set environment variables
-4. Deploy with Git
+The repo is configured for **Firebase Hosting** (`firebase.json`). To deploy:
 
-### Vercel Deployment
-1. Connect your GitHub repository
-2. Set build command: `npm install`
-3. Set output directory: `.`
-4. Deploy
+```bash
+firebase deploy
+```
 
-### Traditional Hosting
-1. Upload files to your web server
-2. Install Node.js on the server
-3. Run `npm install`
-4. Start with `npm start`
-
-## Database Management
-
-The SQLite database is created automatically. For production, consider using PostgreSQL or MySQL.
-
-### Database Schema
-
-**Users Table:**
-- id, email, name, phone, age, profession
-- goals, experience, additional_info
-- payment_method, payment_amount, payment_status
-- session_booked, session_id
-- created_at, updated_at
-
-**Events Table:**
-- id, user_id, event_name, event_data, timestamp
-
-**Sessions Table:**
-- id, user_id, session_date, session_type, status, notes, created_at
-
-## Analytics Events Tracked
-
-- `page_view` - Page visits
-- `payment_completed` - Successful payments
-- `details_submitted` - User details form submission
-- `calendly_loaded` - Calendly widget loaded
-- `session_booked` - Session scheduled
-
-## Support
-
-For questions or issues:
-1. Check the console for error messages
-2. Verify all dependencies are installed
-3. Ensure Node.js version is 14+
-4. Check database permissions
+Alternative targets — Vercel, Heroku, or any static-friendly host — work too. Only `server.js` requires Node; the rest is static.
 
 ## License
 
-MIT License - feel free to modify and use for your business.
+MIT
