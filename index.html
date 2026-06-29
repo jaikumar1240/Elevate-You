@@ -75,7 +75,9 @@
 
                 <div class="hero-cta">
                     <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button"
-                       class="cta-button primary">
+                       class="cta-button primary payment-link"
+                       data-plan-name="Diagnosis Session"
+                       data-plan-price="89">
                         Book Diagnosis · ₹89
                         <i class="fas fa-arrow-right"></i>
                     </a>
@@ -254,7 +256,7 @@
                     </ul>
                     <div class="plan-tag">Start here</div>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--primary">
+                        <a href="https://razorpay.com/payment-button/pl_RUsgTvvJrNF81D/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--primary payment-link" data-plan-name="Diagnosis Session" data-plan-price="89">
                             Book for ₹89 →
                         </a>
                     </div>
@@ -276,7 +278,7 @@
                         <li><i class="fas fa-check"></i> Delivered within 24 hours</li>
                     </ul>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_SrtlzonoCOWQXr/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary">
+                        <a href="https://razorpay.com/payment-button/pl_SrtlzonoCOWQXr/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary payment-link" data-plan-name="Resume Review" data-plan-price="199">
                             Book for ₹199 →
                         </a>
                     </div>
@@ -299,7 +301,7 @@
                     </ul>
                     <div class="plan-tag plan-tag--featured">Most popular</div>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_SruiNi8kF9VXiW/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary">
+                        <a href="https://razorpay.com/payment-button/pl_SruiNi8kF9VXiW/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary payment-link" data-plan-name="Mock Interview" data-plan-price="349">
                             Book for ₹349 →
                         </a>
                     </div>
@@ -322,7 +324,7 @@
                     </ul>
                     <div class="plan-tag plan-tag--gold">Best value</div>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_Srul2JJCl7NWHA/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary">
+                        <a href="https://razorpay.com/payment-button/pl_Srul2JJCl7NWHA/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary payment-link" data-plan-name="Interview Prep Pack" data-plan-price="799">
                             Book for ₹799 →
                         </a>
                     </div>
@@ -344,7 +346,7 @@
                         <li><i class="fas fa-check"></i> Week 4 check-in & final prep</li>
                     </ul>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_SrummdmWV7OsBh/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary">
+                        <a href="https://razorpay.com/payment-button/pl_SrummdmWV7OsBh/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary payment-link" data-plan-name="Full Placement Prep" data-plan-price="1499">
                             Apply for ₹1,499 →
                         </a>
                     </div>
@@ -356,6 +358,43 @@
             <div class="plans-note">
                 <i class="fas fa-info-circle"></i>
                 <span>Not sure which to pick? Start with the <strong>₹89 Diagnosis Session</strong>. At the end of the call I'll recommend the right next step for your specific situation.</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="booking-success" class="booking-success" hidden>
+        <div class="container">
+            <div class="booking-success__card">
+                <div class="booking-success__header">
+                    <div class="booking-success__icon">
+                        <i class="fas fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <div class="section-label booking-success__label">Payment confirmed</div>
+                        <h2 class="section-title booking-success__title">Your payment is confirmed. Book your slot now.</h2>
+                        <p class="booking-success__subtitle">
+                            <span id="booking-plan-copy">Choose a time for your session.</span> Once you book, Calendly will send the confirmation details automatically.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="booking-success__steps">
+                    <div class="booking-success__step"><span>1</span> Pick a date and time</div>
+                    <div class="booking-success__step"><span>2</span> Add your name and email</div>
+                    <div class="booking-success__step"><span>3</span> Check your inbox for confirmation</div>
+                </div>
+
+                <div id="calendly-inline-widget" class="calendly-inline-widget booking-success__widget" data-url=""></div>
+
+                <div id="calendly-setup-note" class="booking-success__note" hidden>
+                    Add your real Calendly link in `script.js` under `CALENDLY_CONFIG.url` to enable the embedded scheduler here.
+                </div>
+
+                <div class="booking-success__footer">
+                    <a id="calendly-direct-link" href="#" target="_blank" rel="noreferrer" class="plan-btn plan-btn--primary booking-success__button" hidden>
+                        Open Calendly in new tab
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -530,13 +569,16 @@
     <div class="sticky-book-button">
         <div class="fallback-button">
             <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button"
-               class="razorpay-payment-button">
+               class="razorpay-payment-button payment-link"
+               data-plan-name="Diagnosis Session"
+               data-plan-price="89">
                 Book Your Diagnosis Session &nbsp;·&nbsp;
                 <span class="current-price">₹89</span>
             </a>
         </div>
     </div>
 
+    <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
     <script src="script.js"></script>
     <script>
         // Mobile menu

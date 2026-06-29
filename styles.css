@@ -387,6 +387,116 @@
 }
 
 /* =============================================
+   POST PAYMENT BOOKING SECTION
+   ============================================= */
+.booking-success {
+    background: linear-gradient(180deg, #eef2ff 0%, #ffffff 100%);
+    padding: 40px 0;
+}
+
+.booking-success__card {
+    background: #ffffff;
+    border: 1px solid #c7d2fe;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 24px 60px rgba(79, 70, 229, 0.12);
+}
+
+.booking-success__header {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1.5rem;
+}
+
+.booking-success__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1.8rem;
+    box-shadow: 0 16px 30px rgba(99, 102, 241, 0.25);
+}
+
+.booking-success__label {
+    text-align: left;
+    margin-bottom: 0.35rem;
+}
+
+.booking-success__title {
+    text-align: left;
+    margin-bottom: 0.5rem;
+}
+
+.booking-success__subtitle {
+    color: #4b5563;
+    max-width: 760px;
+}
+
+.booking-success__steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.booking-success__step {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.booking-success__step span {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #6366f1;
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+
+.booking-success__widget {
+    min-height: 720px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+}
+
+.booking-success__note {
+    margin-top: 1rem;
+    padding: 1rem 1.2rem;
+    border-radius: 14px;
+    background: #fff7ed;
+    border: 1px solid #fdba74;
+    color: #9a3412;
+    font-size: 0.92rem;
+}
+
+.booking-success__footer {
+    margin-top: 1rem;
+}
+
+.booking-success__button {
+    max-width: 320px;
+}
+
+/* =============================================
    WHY ELEVATEYOU SECTION
    ============================================= */
 .why-choose {
@@ -678,6 +788,24 @@
 
     .plans-note {
         font-size: 0.85rem;
+    }
+
+    .booking-success__card {
+        padding: 1.25rem;
+    }
+
+    .booking-success__header {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-success__icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+    }
+
+    .booking-success__widget {
+        min-height: 640px;
     }
 }
 
