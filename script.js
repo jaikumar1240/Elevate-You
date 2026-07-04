@@ -108,18 +108,23 @@ function handlePaymentReturn() {
     if (!isPaymentSuccessUrl(params)) return;
 
     const plan = readPersistedPlan();
-    // const els  = resolveBookingElements();
+    const els  = resolveBookingElements();
 
-    // if (!els) {
+    if (!els) {
         // Fallback: open Calendly in a new tab if the section markup is absent.
-        console.log('Opening Calendly in a new tab:', buildCalendlyUrl(plan));
         window.open(buildCalendlyUrl(plan), '_blank', 'noopener');
         return;
-    // }
+    }
 
-    // populateBookingSection(els, plan);
-    // revealBookingSection(els.section);
-    // embedCalendlyWidget(els.widget, buildCalendlyUrl(plan));
+    populateBookingSection(els, plan);
+    revealBookingSection(els.section);
+    embedCalendlyWidget(els.widget, buildCalendlyUrl(plan));
+
+    // Clean the success params out of the URL so a refresh doesn't re-trigger
+    // the flow and the address bar stays tidy.
+    if (window.history?.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
 }
 
 /** Returns true for any URL shape Razorpay uses on payment success. */
@@ -135,17 +140,17 @@ function isPaymentSuccessUrl(params) {
 // Booking section helpers
 // ---------------------------------------------------------------------------
 
-// function resolveBookingElements() {
-//     const section   = document.getElementById('booking-success');
-//     const planCopy  = document.getElementById('booking-plan-copy');
-//     const widget    = document.getElementById('calendly-inline-widget');
-//     const directUrl = document.getElementById('calendly-direct-link');
-//     const setupNote = document.getElementById('calendly-setup-note');
+function resolveBookingElements() {
+    const section   = document.getElementById('booking-success');
+    const planCopy  = document.getElementById('booking-plan-copy');
+    const widget    = document.getElementById('calendly-inline-widget');
+    const directUrl = document.getElementById('calendly-direct-link');
+    const setupNote = document.getElementById('calendly-setup-note');
 
-//     if (!section || !planCopy || !widget || !directUrl || !setupNote) return null;
+    if (!section || !planCopy || !widget || !directUrl || !setupNote) return null;
 
-//     return { section, planCopy, widget, directUrl, setupNote };
-// }
+    return { section, planCopy, widget, directUrl, setupNote };
+}
 
 function populateBookingSection(els, plan) {
     if (plan?.name) {
@@ -225,7 +230,6 @@ function embedCalendlyWidget(container, url, attempt = 0) {
 // ---------------------------------------------------------------------------
 
 function persistSelectedPlan(plan) {
-    console.log('Persisting plan:', plan);
     try {
         localStorage.setItem(BOOKING_CONFIG.storageKey, JSON.stringify(plan));
     } catch {

@@ -30,9 +30,9 @@
                 <a href="#testimonials" class="nav-link">Reviews</a>
                 <a href="#contact" class="nav-link">Contact</a>
             </div>
-            <div class="hamburger" id="hamburger">
+            <button class="hamburger" id="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
                 <span></span><span></span><span></span>
-            </div>
+            </button>
         </div>
         <div class="mobile-menu" id="mobileMenu">
             <a href="#about-me" class="mobile-link" onclick="closeMobileMenu()">About</a>
@@ -256,7 +256,7 @@
                     </ul>
                     <div class="plan-tag">Start here</div>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_RUsgTvvJrNF81D/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--primary payment-link" data-plan-name="Diagnosis Session" data-plan-price="89">
+                        <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view/?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--primary payment-link" data-plan-name="Diagnosis Session" data-plan-price="89">
                             Book for ₹89 →
                         </a>
                     </div>
@@ -434,7 +434,7 @@
                     <div class="rating">
                         <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
-                    <p>"I was struggling with what to wear for campus placements. Jai gave me practical advice about formal wear that fit my budget. The tips about color combinations and fit really helped — I felt much more confident going into my interviews."</p>
+                    <p>"I kept getting rejected after the first interview round and had no idea why. In one session Jai pointed out that my resume was burying my best projects. I rewrote it the way he suggested and started getting callbacks within two weeks."</p>
                     <div class="testimonial-author">
                         <div class="author-avatar">P</div>
                         <div>
@@ -503,7 +503,7 @@
                         <i class="fas fa-plus"></i>
                     </div>
                     <div class="faq-answer">
-                        <p>Click the booking button on the plan you want — it opens a pre-filled email to me. I'll reply within a few hours with payment details and scheduling options. Most sessions happen within 24–48 hours of booking.</p>
+                        <p>Exactly the same way — click the booking button on the plan you want and pay securely via Razorpay. Right after payment you'll be able to pick a time slot, and you'll get a confirmation by email. Most sessions happen within 24–48 hours of booking.</p>
                     </div>
                 </div>
                 <div class="faq-item">
@@ -585,12 +585,16 @@
         const hamburger = document.getElementById('hamburger');
         const mobileMenu = document.getElementById('mobileMenu');
         hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('open');
+            const isOpen = hamburger.classList.toggle('open');
             mobileMenu.classList.toggle('open');
+            hamburger.setAttribute('aria-expanded', String(isOpen));
+            hamburger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
         });
         function closeMobileMenu() {
             hamburger.classList.remove('open');
             mobileMenu.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+            hamburger.setAttribute('aria-label', 'Open menu');
         }
 
         // FAQ toggle

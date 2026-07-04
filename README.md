@@ -46,10 +46,12 @@ Then open http://localhost:3000.
 ### Razorpay
 The Razorpay payment-button URLs are hardcoded in `index.html` (search for `razorpay.com/payment-button`). To use your own, replace the `pl_…` IDs with your payment-link IDs from the Razorpay dashboard.
 
-If you switch to the Razorpay JS SDK later, update `RAZORPAY_CONFIG` in `script.js` with your `key_id` and add `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` to a `.env` file (read on the server side).
+If you switch to the Razorpay JS SDK later, add your `key_id` in `script.js` and put `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` in a `.env` file (read on the server side).
 
-### Calendly (optional)
-The site does not currently use Calendly — sessions are booked via Razorpay payment or via pre-filled email links. If you re-introduce Calendly, drop the embed URL into `script.js`.
+**Important:** In the Razorpay dashboard, set each payment button's success redirect URL to `https://<your-domain>/?payment=success` so the booking flow below triggers when the user returns.
+
+### Calendly
+After a successful payment, `script.js` detects the `?payment=success` redirect, reveals the **Book your slot** section, and embeds the Calendly scheduler inline. Set your event URL in `script.js` under `BOOKING_CONFIG.url` (currently `https://calendly.com/jaikumar1240/debugyourcareer`).
 
 ### Analytics
 Paste your GA4 / Facebook Pixel snippets into the `<head>` of `index.html`. Custom events fired by `script.js`:
