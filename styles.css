@@ -1354,6 +1354,7 @@ body {
 
     .hero-visual {
         order: -1;
+        display: none;
     }
 
     .diagnosis-card {
