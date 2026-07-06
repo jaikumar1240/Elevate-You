@@ -55,8 +55,29 @@ const BOOKING_CONFIG = {
 document.addEventListener('DOMContentLoaded', () => {
     initSmoothScrollNav();
     initPaymentLinkTracking();
+    initCtaTracking();
+    initFaqTracking();
+    initContactTracking();
     handlePaymentReturn();
 });
+
+// ---------------------------------------------------------------------------
+// Analytics — thin wrapper around GA4's gtag()
+// ---------------------------------------------------------------------------
+
+/**
+ * Sends a GA4 event. Safe to call even if gtag hasn't loaded (ad-blockers,
+ * offline, slow network) — it just no-ops instead of throwing.
+ */
+function track(eventName, params = {}) {
+    try {
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', eventName, params);
+        }
+    } catch {
+        // Never let analytics break the page.
+    }
+}
 
 // ---------------------------------------------------------------------------
 // Navigation — smooth scroll for in-page anchor links
@@ -90,6 +111,49 @@ function initPaymentLinkTracking() {
                 price: link.dataset.planPrice || '',
             };
             persistSelectedPlan(plan);
+
+            // "Tried to pay" — fires the instant they click through to Razorpay.
+            track('begin_checkout', {
+                currency: PRICING_CONFIG.currency,
+                value: Number(plan.price) || 0,
+                items: [{ item_name: plan.name, price: Number(plan.price) || 0 }],
+            });
+        });
+    });
+}
+
+// ---------------------------------------------------------------------------
+// CTA / FAQ / contact click tracking
+// ---------------------------------------------------------------------------
+
+/** Tracks clicks on the non-payment CTAs (hero secondary button, nav links). */
+function initCtaTracking() {
+    document.querySelectorAll('a.nav-link, a.mobile-link, .cta-button.secondary').forEach(el => {
+        el.addEventListener('click', () => {
+            track('cta_click', {
+                label: el.textContent.trim(),
+                location: el.closest('section, nav')?.id || 'unknown',
+            });
+        });
+    });
+}
+
+/** Tracks which FAQ questions get expanded. */
+function initFaqTracking() {
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', () => {
+            const label = question.querySelector('span')?.textContent.trim() || 'unknown';
+            track('faq_open', { question: label });
+        });
+    });
+}
+
+/** Tracks email / phone clicks in the Contact section. */
+function initContactTracking() {
+    document.querySelectorAll('.contact-card a').forEach(link => {
+        link.addEventListener('click', () => {
+            const channel = link.href.startsWith('mailto:') ? 'email' : 'phone';
+            track('contact_click', { channel });
         });
     });
 }
@@ -109,6 +173,17 @@ function handlePaymentReturn() {
 
     const plan = readPersistedPlan();
     const els  = resolveBookingElements();
+
+    // "Actually paid" — fires once, on the redirect back from Razorpay.
+    // Prefer Razorpay's own payment id as transaction_id so GA4 can dedupe
+    // this event if the page is ever reloaded before the URL is cleaned.
+    const paymentId = params.get('razorpay_payment_id') || params.get('payment_id') || `${Date.now()}`;
+    track('purchase', {
+        currency: PRICING_CONFIG.currency,
+        value: Number(plan?.price) || 0,
+        transaction_id: paymentId,
+        items: [{ item_name: plan?.name || 'Session', price: Number(plan?.price) || 0 }],
+    });
 
     if (!els) {
         // Fallback: open Calendly in a new tab if the section markup is absent.
