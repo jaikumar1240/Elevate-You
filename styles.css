@@ -879,6 +879,12 @@ body {
     font-size: 1.8rem;
 }
 
+.nav-logo__img {
+    width: 2rem;
+    height: 2rem;
+    object-fit: contain;
+}
+
 .nav-menu {
     display: flex;
     gap: 2rem;
@@ -2569,6 +2575,12 @@ input:focus, select:focus, textarea:focus {
 
 .footer-logo i {
     color: #6366f1;
+}
+
+.footer-logo__img {
+    width: 1.6rem;
+    height: 1.6rem;
+    object-fit: contain;
 }
 
 /* Sticky Book Session Button */
