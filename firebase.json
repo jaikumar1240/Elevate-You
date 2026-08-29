@@ -8,12 +8,28 @@
       "**/server.js",
       "**/personality_sessions.db",
       "**/package.json",
-      "**/package-lock.json"
+      "**/package-lock.json",
+      "**/*-full.png",
+      "**/*-full.jpg"
     ],
     "rewrites": [
       {
         "source": "**",
         "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(png|jpg|jpeg|svg|webp|ico)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "**/*.@(css|js)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=604800" }
+        ]
       }
     ]
   }
