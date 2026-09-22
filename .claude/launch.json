@@ -1,11 +1,6 @@
 {
   "version": "0.0.1",
   "configurations": [
-    {
-      "name": "static",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "3050"],
-      "port": 3050
-    }
+    { "name": "dyc-static", "runtimeExecutable": "node", "runtimeArgs": [".claude/serve.js"], "port": 8200 }
   ]
 }

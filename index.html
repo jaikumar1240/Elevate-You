@@ -34,6 +34,9 @@
 </head>
 <body>
 
+    <!-- Scroll progress bar -->
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -103,6 +106,12 @@
                         How it works
                     </button>
                 </div>
+
+                <div class="hero-reassure">
+                    <span><i class="fas fa-lock"></i> Secure Razorpay checkout</span>
+                    <span><i class="fas fa-calendar-check"></i> Pick your slot instantly</span>
+                    <span><i class="fas fa-bolt"></i> Takes under 2 minutes</span>
+                </div>
             </div>
 
             <!-- Right: Visual diagnosis card -->
@@ -166,14 +175,38 @@
         </div>
     </section>
 
+    <!-- Trust stats strip -->
+    <section class="trust-strip" aria-label="Why students book">
+        <div class="container">
+            <div class="trust-grid">
+                <div class="trust-item">
+                    <div class="trust-num"><span class="count" data-target="15">0</span><span class="trust-unit">min</span></div>
+                    <div class="trust-label">to find your #1 blocker</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-num"><span class="trust-unit trust-unit--pre">₹</span><span class="count" data-target="89">0</span></div>
+                    <div class="trust-label">to get started today</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-num"><span class="count" data-target="24">0</span><span class="trust-unit">hr</span></div>
+                    <div class="trust-label">summary notes emailed</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-num"><span class="count" data-target="100">0</span><span class="trust-unit">%</span></div>
+                    <div class="trust-label">1:1 &amp; personal</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
      <!-- About Me -->
      <section id="about-me" class="about-me">
         <div class="container">
             <div class="section-label">About me</div>
-            <h2 class="section-title">Hi, I'm Jai Kumar.</h2>
+            <h2 class="section-title">Hi, I'm Jai Rajput.</h2>
             <div class="about-me-content">
                 <div class="about-me-image">
-                    <img src="assets/pro_image.jpg" alt="Jai Kumar — Career Coach" class="coach-image-img">
+                    <img src="assets/pro_image.jpg" alt="Jai Rajput — Career Coach" class="coach-image-img">
                 </div>
                 <div class="about-me-text">
                     <p>I help fresh graduates or candidates debug career problems fast — especially when they're getting rejected but don't know why. I focus on practical fixes, not generic motivation.</p>
@@ -254,6 +287,11 @@
             <div class="section-label">Plans & Pricing</div>
             <h2 class="section-title">Pick your starting point.</h2>
             <p class="section-subtitle">Start with the Diagnosis Session. Most students move to deeper plans after seeing results.</p>
+
+            <div class="urgency-chip">
+                <span class="urgency-dot"></span>
+                Limited 1:1 slots each week — book early to lock your preferred time.
+            </div>
 
             <div class="plans-grid">
 
@@ -469,6 +507,15 @@
         <div class="container">
             <div class="section-label">Reviews</div>
             <h2 class="section-title">What students say.</h2>
+
+            <div class="rating-summary">
+                <span class="rating-summary__score">5.0</span>
+                <span class="rating-summary__stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </span>
+                <span class="rating-summary__text">Rated 5★ by early students</span>
+            </div>
+
             <div class="testimonials-grid">
                 <div class="testimonial-card">
                     <div class="rating">
@@ -606,14 +653,17 @@
     </footer>
 
     <!-- Sticky CTA -->
-    <div class="sticky-book-button">
+    <div class="sticky-book-button" id="stickyCTA">
         <div class="fallback-button">
             <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button"
                class="razorpay-payment-button payment-link"
                data-plan-name="Diagnosis Session"
                data-plan-price="89">
-                Book Your Diagnosis Session &nbsp;·&nbsp;
+                <span class="sticky-pulse"></span>
+                <span class="sticky-label">Book your session</span>
+                <span class="sticky-sep">·</span>
                 <span class="current-price">₹89</span>
+                <i class="fas fa-arrow-right sticky-arrow"></i>
             </a>
         </div>
     </div>
@@ -644,6 +694,86 @@
             document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
             if (!isOpen) item.classList.add('open');
         }
-    </script>
+
+        // Scroll reveal — fade sections/cards in as they enter view
+        (function () {
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const targets = document.querySelectorAll(
+                '.section-label, .section-title, .section-subtitle, .hero-content, .hero-visual, ' +
+                '.trust-item, .step-card, .plan-card, .why-card, .testimonial-card, .faq-item, ' +
+                '.contact-card, .achievement-item, .my-story, .about-me-image, .plans-note, .urgency-chip'
+            );
+            if (reduce || !('IntersectionObserver' in window)) return;
+            targets.forEach((el, i) => {
+                el.classList.add('reveal');
+                el.style.transitionDelay = Math.min((i % 6) * 60, 300) + 'ms';
+            });
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+            targets.forEach(el => io.observe(el));
+        })();
+
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Scroll progress bar + nav shadow on scroll
+        (function () {
+            const bar = document.getElementById('scrollProgress');
+            const nav = document.querySelector('.navbar');
+            let ticking = false;
+            function update() {
+                const h = document.documentElement;
+                const max = h.scrollHeight - h.clientHeight;
+                const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+                if (bar) bar.style.width = pct + '%';
+                if (nav) nav.classList.toggle('scrolled', h.scrollTop > 8);
+                ticking = false;
+            }
+            window.addEventListener('scroll', () => {
+                if (!ticking) { requestAnimationFrame(update); ticking = true; }
+            }, { passive: true });
+            update();
+        })();
+
+        // Animated count-up for trust stats
+        (function () {
+            const counters = document.querySelectorAll('.count');
+            if (!counters.length) return;
+            function run(el) {
+                const target = parseInt(el.dataset.target, 10) || 0;
+                if (reduceMotion) { el.textContent = target; return; }
+                const dur = 1400, start = performance.now();
+                function step(now) {
+                    const p = Math.min((now - start) / dur, 1);
+                    const eased = 1 - Math.pow(1 - p, 3);
+                    el.textContent = Math.round(eased * target);
+                    if (p < 1) requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            }
+            if (!('IntersectionObserver' in window)) { counters.forEach(run); return; }
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(e => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } });
+            }, { threshold: 0.5 });
+            counters.forEach(c => io.observe(c));
+        })();
+
+        // Reveal sticky CTA only after the user scrolls past the hero
+        (function () {
+            const sticky = document.getElementById('stickyCTA');
+            const hero = document.querySelector('.hero');
+            if (!sticky) return;
+            if (!hero || !('IntersectionObserver' in window)) { sticky.classList.add('show'); return; }
+            const io = new IntersectionObserver((entries) => {
+                sticky.classList.toggle('show', !entries[0].isIntersecting);
+            }, { threshold: 0, rootMargin: '-60% 0px 0px 0px' });
+            io.observe(hero);
+        })();
+</script>
 </body>
 </html>
