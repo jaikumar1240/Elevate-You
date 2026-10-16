@@ -77,6 +77,35 @@ function track(eventName, params = {}) {
     } catch {
         // Never let analytics break the page.
     }
+    trackMeta(eventName, params);
+}
+
+/** GA4 event name -> Meta Pixel standard event name. */
+const META_EVENT_MAP = {
+    begin_checkout: 'InitiateCheckout',
+    purchase: 'Purchase',
+    contact_click: 'Contact',
+};
+
+/** Mirrors selected GA4 events to the Meta Pixel. No-ops if the pixel is blocked. */
+function trackMeta(eventName, params) {
+    try {
+        const metaEvent = META_EVENT_MAP[eventName];
+        if (!metaEvent || typeof window.fbq !== 'function') return;
+
+        const data = {};
+        if (params.value !== undefined) {
+            data.value = params.value;
+            data.currency = params.currency;
+        }
+        if (params.items?.[0]) data.content_name = params.items[0].item_name;
+
+        // eventID lets Meta dedupe against a future server-side (CAPI) Purchase.
+        const options = params.transaction_id ? { eventID: params.transaction_id } : undefined;
+        window.fbq('track', metaEvent, data, options);
+    } catch {
+        // Never let analytics break the page.
+    }
 }
 
 // ---------------------------------------------------------------------------
