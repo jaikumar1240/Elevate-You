@@ -3,450 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Personality Development Sessions</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Leads CRM · DebugYourCareer</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --brand: #6366f1; --brand-50: #eef2ff; --ink: #14162b; --muted: #636782; --line: #e6e8f0;
+            --bg: #f6f7fb; --ok: #16b364; --warn: #f79009; --bad: #e5484d; --r: 12px;
         }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; }
+        button, input, select, textarea { font: inherit; }
+        a { color: var(--brand); }
+        .hidden { display: none !important; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            color: #333;
-        }
+        .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 24px; background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+        .topbar h1 { font-size: 18px; margin: 0; }
+        .topbar .who { color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 10px; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 8px 12px; border-radius: 8px; cursor: pointer; text-decoration: none; font-weight: 600; font-size: 13px; }
+        .btn:hover { border-color: var(--brand); color: var(--brand); }
+        .btn--primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+        .btn--primary:hover { color: #fff; filter: brightness(1.05); }
+        .btn--wa { color: #128c7e; }
+        .btn--sm { padding: 6px 9px; font-size: 12px; }
 
-        .admin-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
+        .signin { max-width: 380px; margin: 12vh auto; background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 32px; text-align: center; }
+        .signin h2 { margin: 0 0 8px; }
+        .signin p { color: var(--muted); }
+        .error { color: var(--bad); margin-top: 12px; }
 
-        .admin-header {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
+        main { padding: 20px 24px 60px; max-width: 1500px; margin: 0 auto; }
+        .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
+        .kpi { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+        .kpi__label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+        .kpi__value { font-size: 24px; font-weight: 800; margin-top: 4px; }
+        .kpi__sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+        .kpi--alert .kpi__value { color: var(--warn); }
 
-        .admin-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
+        .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 12px; margin-bottom: 14px; }
+        .filters input, .filters select { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff; }
+        .filters input[type=search] { min-width: 240px; flex: 1; }
+        .filters .count { color: var(--muted); margin-left: auto; }
+        .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+        .chip { border: 1px solid var(--line); background: #fff; padding: 6px 10px; border-radius: 999px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .chip.active { background: var(--brand); color: #fff; border-color: var(--brand); }
 
-        .admin-subtitle {
-            color: #6b7280;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-        }
-
-        .stat-icon i {
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: #6b7280;
-            font-weight: 500;
-        }
-
-        .section {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .section-title i {
-            color: #6366f1;
-        }
-
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        .users-table th,
-        .users-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .users-table th {
-            background: #f9fafb;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .users-table tr:hover {
-            background: #f9fafb;
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-completed {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-booked {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: #6b7280;
-        }
-
-        .loading i {
-            font-size: 2rem;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .error {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 1rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-        }
-
-        .refresh-btn {
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .refresh-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .analytics-item {
-            background: #f9fafb;
-            padding: 1rem;
-            border-radius: 10px;
-        }
-
-        .analytics-item h4 {
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-
-        .analytics-item p {
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-
-        @media (max-width: 768px) {
-            .admin-container {
-                padding: 1rem;
-            }
-            
-            .users-table {
-                font-size: 0.875rem;
-            }
-            
-            .users-table th,
-            .users-table td {
-                padding: 0.5rem;
-            }
-        }
+        .table-wrap { background: #fff; border: 1px solid var(--line); border-radius: var(--r); overflow: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+        th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+        th { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; background: #fafbfe; position: sticky; top: 0; }
+        tr.row:hover { background: #fafbff; }
+        .name { font-weight: 700; }
+        .sub { color: var(--muted); font-size: 12px; margin-top: 2px; word-break: break-all; }
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+        .b-new { background: #eef2ff; color: #4338ca; }
+        .b-checkout_started { background: #fff7e6; color: #b54708; }
+        .b-checkout_abandoned, .b-payment_failed { background: #fff1f1; color: #b42318; }
+        .b-paid { background: #e8f8ef; color: #087443; }
+        .b-booked { background: #087443; color: #fff; }
+        .crm select, .crm input, .crm textarea { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 13px; background: #fff; }
+        .crm textarea { resize: vertical; min-height: 36px; margin-top: 6px; }
+        .crm .saved { color: var(--ok); font-size: 11px; height: 14px; }
+        .overdue { color: var(--bad); font-weight: 700; }
+        .history { font-size: 12px; color: var(--muted); margin: 6px 0 0; padding-left: 16px; }
+        details summary { cursor: pointer; color: var(--muted); font-size: 12px; margin-top: 6px; }
+        .empty { padding: 40px; text-align: center; color: var(--muted); }
+        @media (max-width: 700px) { main { padding: 12px; } .topbar { padding: 12px; } }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <div class="admin-header">
-            <h1 class="admin-title">
-                <i class="fas fa-chart-line"></i>
-                Admin Dashboard
-            </h1>
-            <p class="admin-subtitle">Personality Development Sessions Analytics</p>
+    <header class="topbar">
+        <h1><i class="fas fa-bug" style="color:var(--brand)"></i> Leads CRM</h1>
+        <div class="who hidden" id="who">
+            <span id="whoEmail"></span>
+            <button class="btn btn--sm" id="exportBtn"><i class="fas fa-file-csv"></i> Export CSV</button>
+            <button class="btn btn--sm" id="signOutBtn">Sign out</button>
         </div>
+    </header>
 
-        <button class="refresh-btn" onclick="loadData()">
-            <i class="fas fa-sync-alt"></i>
-            Refresh Data
-        </button>
+    <section class="signin" id="signin">
+        <h2>Admin sign-in</h2>
+        <p>Sign in with the admin Google account to see leads.</p>
+        <button class="btn btn--primary" id="signInBtn"><i class="fab fa-google"></i> Sign in with Google</button>
+        <div class="error" id="signinError"></div>
+    </section>
 
-        <div class="stats-grid" id="stats-grid">
-            <div class="loading">
-                <i class="fas fa-spinner"></i>
-                <p>Loading statistics...</p>
-            </div>
+    <main id="app" class="hidden">
+        <section class="kpis" id="kpis"></section>
+
+        <section class="filters">
+            <input type="search" id="search" placeholder="Search name, phone, email, campaign…">
+            <select id="fFunnel">
+                <option value="">All funnel stages</option>
+                <option value="unpaid">Unpaid (call these)</option>
+                <option value="new">Form filled</option>
+                <option value="checkout_started">Checkout opened</option>
+                <option value="checkout_abandoned">Checkout closed</option>
+                <option value="payment_failed">Payment failed</option>
+                <option value="paid">Paid, not booked</option>
+                <option value="booked">Booked</option>
+            </select>
+            <select id="fCrm"></select>
+            <select id="fPlan"><option value="">All plans</option></select>
+            <select id="fSource"><option value="">All sources</option></select>
+            <select id="fRange">
+                <option value="">All time</option>
+                <option value="1">Today</option>
+                <option value="7">Last 7 days</option>
+                <option value="30">Last 30 days</option>
+            </select>
+            <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="fDue"> Follow-up due</label>
+            <span class="count" id="count"></span>
+        </section>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lead</th>
+                        <th>Contact</th>
+                        <th>Plan / stage</th>
+                        <th>Source</th>
+                        <th>Created</th>
+                        <th style="width:280px">Follow-up</th>
+                    </tr>
+                </thead>
+                <tbody id="rows"></tbody>
+            </table>
+            <div class="empty hidden" id="empty">No leads match these filters.</div>
         </div>
+    </main>
 
-        <div class="section">
-            <h2 class="section-title">
-                <i class="fas fa-users"></i>
-                User Registrations
-            </h2>
-            <div id="users-content">
-                <div class="loading">
-                    <i class="fas fa-spinner"></i>
-                    <p>Loading users...</p>
-                </div>
-            </div>
-        </div>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+        import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
-        <div class="section">
-            <h2 class="section-title">
-                <i class="fas fa-chart-bar"></i>
-                Analytics Overview
-            </h2>
-            <div id="analytics-content">
-                <div class="loading">
-                    <i class="fas fa-spinner"></i>
-                    <p>Loading analytics...</p>
-                </div>
-            </div>
-        </div>
-    </div>
+        const ADMIN_EMAIL = 'jaikumar1240@gmail.com';
+        const WHATSAPP_BRAND = 'DebugYourCareer';
+        const CRM_STATUSES = {
+            new: 'New',
+            contacted: 'Contacted',
+            follow_up: 'Follow up',
+            interested: 'Interested',
+            converted: 'Converted',
+            not_interested: 'Not interested',
+            wrong_number: 'Wrong number',
+        };
+        const FUNNEL_LABELS = {
+            new: 'Form filled',
+            checkout_started: 'Checkout opened',
+            checkout_abandoned: 'Checkout closed',
+            payment_failed: 'Payment failed',
+            paid: 'Paid · not booked',
+            booked: 'Booked',
+        };
+        const STUDENT_STATUS = {
+            '1st-2nd-year': '1st/2nd year',
+            '3rd-year': '3rd year',
+            'final-year': 'Final year',
+            graduate: 'Graduate',
+            working: 'Working',
+        };
+        const UNPAID = new Set(['new', 'checkout_started', 'checkout_abandoned', 'payment_failed']);
 
-    <script>
-        // Load all data on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-        });
+        const $ = (id) => document.getElementById(id);
+        const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const toDate = (ts) => (ts?.toDate ? ts.toDate() : ts ? new Date(ts) : null);
+        const fmtDate = (d) => (d ? d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—');
+        const today = () => new Date().toISOString().slice(0, 10);
+        const rupees = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
 
-        async function loadData() {
-            await Promise.all([
-                loadStats(),
-                loadUsers(),
-                loadAnalytics()
-            ]);
+        function sourceOf(lead) {
+            const a = lead.attribution || lead.lastAttribution || {};
+            if (a.utm_source) return a.utm_source.toLowerCase();
+            if (a.fbclid) return 'facebook';
+            if (a.gclid) return 'google';
+            return 'direct';
         }
 
-        async function loadStats() {
+        let db;
+        let leads = [];
+        let unsubscribe = null;
+
+        async function boot() {
+            let config;
             try {
-                const response = await fetch('/api/analytics');
-                const data = await response.json();
-                
-                const statsGrid = document.getElementById('stats-grid');
-                statsGrid.innerHTML = `
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-number">${data.totalUsers[0]?.count || 0}</div>
-                        <div class="stat-label">Total Users</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <div class="stat-number">${data.paidUsers[0]?.count || 0}</div>
-                        <div class="stat-label">Paid Users</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="stat-number">${data.bookedSessions[0]?.count || 0}</div>
-                        <div class="stat-label">Sessions Booked</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-number">${data.recentUsers[0]?.count || 0}</div>
-                        <div class="stat-label">New This Week</div>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Error loading stats:', error);
-                document.getElementById('stats-grid').innerHTML = `
-                    <div class="error">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Error loading statistics
-                    </div>
-                `;
+                // Firebase Hosting serves the project's web config here (no keys in code).
+                config = await (await fetch('/__/firebase/init.json')).json();
+            } catch {
+                $('signinError').textContent = 'Could not load Firebase config. Open this page from the deployed site or the Hosting emulator.';
+                return;
             }
-        }
+            const app = initializeApp(config);
+            const auth = getAuth(app);
+            db = getFirestore(app);
 
-        async function loadUsers() {
-            try {
-                const response = await fetch('/api/users');
-                const users = await response.json();
-                
-                const usersContent = document.getElementById('users-content');
-                
-                if (users.length === 0) {
-                    usersContent.innerHTML = '<p>No users found.</p>';
+            $('signInBtn').onclick = async () => {
+                $('signinError').textContent = '';
+                try {
+                    const provider = new GoogleAuthProvider();
+                    provider.setCustomParameters({ login_hint: ADMIN_EMAIL, prompt: 'select_account' });
+                    await signInWithPopup(auth, provider);
+                } catch (err) {
+                    $('signinError').textContent = err.message;
+                }
+            };
+            $('signOutBtn').onclick = () => signOut(auth);
+
+            onAuthStateChanged(auth, (user) => {
+                unsubscribe?.();
+                unsubscribe = null;
+                if (!user) return showSignin();
+                if (user.email !== ADMIN_EMAIL) {
+                    signOut(auth);
+                    showSignin(`${user.email} is not allowed. Sign in as ${ADMIN_EMAIL}.`);
                     return;
                 }
+                $('signin').classList.add('hidden');
+                $('app').classList.remove('hidden');
+                $('who').classList.remove('hidden');
+                $('whoEmail').textContent = user.email;
+                listen();
+            });
+        }
 
-                const tableHTML = `
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Profession</th>
-                                <th>Payment Status</th>
-                                <th>Session Booked</th>
-                                <th>Created</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${users.map(user => `
-                                <tr>
-                                    <td>${user.name || 'N/A'}</td>
-                                    <td>${user.email}</td>
-                                    <td>${user.phone || 'N/A'}</td>
-                                    <td>${user.profession || 'N/A'}</td>
-                                    <td>
-                                        <span class="status-badge status-${user.payment_status === 'completed' ? 'completed' : 'pending'}">
-                                            ${user.payment_status || 'pending'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge status-${user.session_booked ? 'booked' : 'pending'}">
-                                            ${user.session_booked ? 'Yes' : 'No'}
-                                        </span>
-                                    </td>
-                                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-                
-                usersContent.innerHTML = tableHTML;
-            } catch (error) {
-                console.error('Error loading users:', error);
-                document.getElementById('users-content').innerHTML = `
-                    <div class="error">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Error loading users
+        function showSignin(message = '') {
+            $('signin').classList.remove('hidden');
+            $('app').classList.add('hidden');
+            $('who').classList.add('hidden');
+            $('signinError').textContent = message;
+        }
+
+        function listen() {
+            const q = query(collection(db, 'leads'), orderBy('createdAt', 'desc'), limit(2000));
+            unsubscribe = onSnapshot(q, (snap) => {
+                leads = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                fillFilterOptions();
+                render();
+            }, (err) => {
+                showSignin(`Firestore error: ${err.message}`);
+            });
+        }
+
+        // ---------------- filters ----------------
+
+        function initFilters() {
+            $('fCrm').innerHTML = '<option value="">All CRM statuses</option>' +
+                Object.entries(CRM_STATUSES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+            ['search', 'fFunnel', 'fCrm', 'fPlan', 'fSource', 'fRange', 'fDue'].forEach((id) => {
+                $(id).addEventListener(id === 'search' ? 'input' : 'change', render);
+            });
+            $('exportBtn').onclick = exportCsv;
+        }
+
+        function fillFilterOptions() {
+            const keep = (sel, values, label) => {
+                const current = sel.value;
+                sel.innerHTML = `<option value="">${label}</option>` + [...values].sort().map((v) => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+                sel.value = current;
+            };
+            keep($('fPlan'), new Set(leads.map((l) => l.planName).filter(Boolean)), 'All plans');
+            keep($('fSource'), new Set(leads.map(sourceOf)), 'All sources');
+        }
+
+        function filtered() {
+            const term = $('search').value.trim().toLowerCase();
+            const funnel = $('fFunnel').value;
+            const crm = $('fCrm').value;
+            const plan = $('fPlan').value;
+            const source = $('fSource').value;
+            const days = Number($('fRange').value);
+            const due = $('fDue').checked;
+            const since = days ? (() => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (days - 1)); return d; })() : null;
+
+            return leads.filter((l) => {
+                if (funnel === 'unpaid' ? !UNPAID.has(l.status) : funnel && l.status !== funnel) return false;
+                if (crm && (l.crmStatus || 'new') !== crm) return false;
+                if (plan && l.planName !== plan) return false;
+                if (source && sourceOf(l) !== source) return false;
+                if (since && (toDate(l.createdAt) || 0) < since) return false;
+                if (due && !(l.nextFollowUp && l.nextFollowUp <= today())) return false;
+                if (term) {
+                    const a = l.attribution || {};
+                    const hay = [l.name, l.phone, l.email, l.planName, a.utm_campaign, a.utm_content, l.notes].join(' ').toLowerCase();
+                    if (!hay.includes(term)) return false;
+                }
+                return true;
+            });
+        }
+
+        // ---------------- render ----------------
+
+        function renderKpis(list) {
+            const total = list.length;
+            const checkout = list.filter((l) => l.status !== 'new').length;
+            const paid = list.filter((l) => l.status === 'paid' || l.status === 'booked').length;
+            const booked = list.filter((l) => l.status === 'booked').length;
+            const revenue = list.reduce((s, l) => s + (l.totalPaid || 0), 0);
+            const unpaid = list.filter((l) => UNPAID.has(l.status) && !['converted', 'not_interested', 'wrong_number'].includes(l.crmStatus)).length;
+            const due = list.filter((l) => l.nextFollowUp && l.nextFollowUp <= today()).length;
+            const pct = (a, b) => (b ? `${Math.round((a / b) * 100)}%` : '—');
+
+            const kpi = (label, value, sub = '', cls = '') =>
+                `<div class="kpi ${cls}"><div class="kpi__label">${label}</div><div class="kpi__value">${value}</div><div class="kpi__sub">${sub}</div></div>`;
+            $('kpis').innerHTML = [
+                kpi('Leads', total),
+                kpi('Opened checkout', checkout, `${pct(checkout, total)} of leads`),
+                kpi('Paid', paid, `${pct(paid, total)} lead → paid`),
+                kpi('Booked', booked, `${pct(booked, paid)} of paid`),
+                kpi('Revenue', rupees(revenue), paid ? `${rupees(Math.round(revenue / paid))} / buyer` : ''),
+                kpi('Unpaid to call', unpaid, 'not yet closed', unpaid ? 'kpi--alert' : ''),
+                kpi('Follow-ups due', due, 'today or overdue', due ? 'kpi--alert' : ''),
+            ].join('');
+        }
+
+        function waText(l) {
+            const first = (l.name || '').split(' ')[0];
+            const plan = l.planName || 'session';
+            if (l.status === 'paid') return `Hi ${first}, thanks for booking the ${plan} with ${WHATSAPP_BRAND}! Your payment is confirmed — please pick your slot here so we can get started.`;
+            if (l.status === 'booked') return `Hi ${first}, this is from ${WHATSAPP_BRAND}. Looking forward to your ${plan}!`;
+            return `Hi ${first}, this is from ${WHATSAPP_BRAND}. You were booking the ${plan} — did you face any issue with the payment? Happy to help you get a slot.`;
+        }
+
+        function row(l) {
+            const a = l.attribution || {};
+            const last = l.lastAttribution || {};
+            const created = toDate(l.createdAt);
+            const status = l.status || 'new';
+            const crmStatus = l.crmStatus || 'new';
+            const overdue = l.nextFollowUp && l.nextFollowUp <= today();
+            const history = (l.history || []).slice(-12).reverse()
+                .map((h) => `<li>${esc(fmtDate(new Date(h.at)))} — ${esc(h.type)}${h.amount ? ` ${rupees(h.amount)}` : ''}${h.reason ? ` (${esc(h.reason)})` : ''}</li>`).join('');
+            const phone = l.phone ? `+91${l.phone}` : '';
+
+            return `<tr class="row" data-id="${esc(l.id)}">
+                <td>
+                    <div class="name">${esc(l.name)}</div>
+                    <div class="sub">${esc(STUDENT_STATUS[l.currentStatus] || 'Status not given')}</div>
+                    ${l.submissions > 1 ? `<div class="sub">${l.submissions} submissions</div>` : ''}
+                </td>
+                <td>
+                    <div>${esc(phone)}</div>
+                    <div class="sub">${esc(l.email)}</div>
+                    <div class="actions" style="margin-top:6px">
+                        <a class="btn btn--sm" href="tel:${esc(phone)}"><i class="fas fa-phone"></i> Call</a>
+                        <a class="btn btn--sm btn--wa" target="_blank" rel="noopener" href="https://wa.me/91${esc(l.phone)}?text=${encodeURIComponent(waText(l))}"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                        <a class="btn btn--sm" href="mailto:${esc(l.email)}"><i class="fas fa-envelope"></i></a>
                     </div>
-                `;
+                </td>
+                <td>
+                    <div>${esc(l.planName)} <span class="sub">${l.price ? rupees(l.price) : ''}</span></div>
+                    <div style="margin-top:4px"><span class="badge b-${esc(status)}">${esc(FUNNEL_LABELS[status] || status)}</span></div>
+                    ${l.totalPaid ? `<div class="sub">Paid ${rupees(l.totalPaid)}</div>` : ''}
+                    ${l.reminderSentAt ? `<div class="sub"><i class="fas fa-envelope"></i> Reminder sent ${esc(fmtDate(toDate(l.reminderSentAt)))}</div>` : ''}
+                    ${history ? `<details><summary>Timeline</summary><ul class="history">${history}</ul></details>` : ''}
+                </td>
+                <td>
+                    <div>${esc(sourceOf(l))}${a.utm_medium ? ` / ${esc(a.utm_medium)}` : ''}</div>
+                    ${a.utm_campaign ? `<div class="sub">Campaign: ${esc(a.utm_campaign)}</div>` : ''}
+                    ${a.utm_content ? `<div class="sub">Ad: ${esc(a.utm_content)}</div>` : ''}
+                    ${last.utm_campaign && last.utm_campaign !== a.utm_campaign ? `<div class="sub">Last: ${esc(last.utm_campaign)}</div>` : ''}
+                </td>
+                <td>${esc(fmtDate(created))}</td>
+                <td class="crm">
+                    <select data-field="crmStatus">${Object.entries(CRM_STATUSES).map(([k, v]) => `<option value="${k}" ${k === crmStatus ? 'selected' : ''}>${v}</option>`).join('')}</select>
+                    <input type="date" data-field="nextFollowUp" value="${esc(l.nextFollowUp || '')}" class="${overdue ? 'overdue' : ''}" title="Next follow-up" style="margin-top:6px">
+                    <textarea data-field="notes" placeholder="Call notes…">${esc(l.notes || '')}</textarea>
+                    <div class="saved" data-saved></div>
+                </td>
+            </tr>`;
+        }
+
+        function render() {
+            const list = filtered();
+            renderKpis(list);
+            $('count').textContent = `${list.length} of ${leads.length} leads`;
+            $('empty').classList.toggle('hidden', list.length > 0);
+
+            // Don't clobber a field the admin is typing in during a live update.
+            const active = document.activeElement;
+            const activeId = active?.closest?.('tr')?.dataset.id;
+            const activeField = active?.dataset?.field;
+            const activeValue = active?.value;
+
+            $('rows').innerHTML = list.map(row).join('');
+
+            if (activeId && activeField) {
+                const el = $('rows').querySelector(`tr[data-id="${CSS.escape(activeId)}"] [data-field="${activeField}"]`);
+                if (el) {
+                    el.value = activeValue;
+                    el.focus();
+                }
             }
         }
 
-        async function loadAnalytics() {
+        // ---------------- CRM updates ----------------
+
+        async function save(tr, field, value) {
+            const marker = tr.querySelector('[data-saved]');
             try {
-                const response = await fetch('/api/analytics');
-                const data = await response.json();
-                
-                const analyticsContent = document.getElementById('analytics-content');
-                
-                const analyticsHTML = `
-                    <div class="analytics-grid">
-                        <div class="analytics-item">
-                            <h4>Events by Type</h4>
-                            ${data.eventsByType.map(event => `
-                                <p>${event.event_name}: ${event.count}</p>
-                            `).join('')}
-                        </div>
-                        <div class="analytics-item">
-                            <h4>Users by Experience Level</h4>
-                            ${data.usersByExperience.map(exp => `
-                                <p>${exp.experience}: ${exp.count}</p>
-                            `).join('')}
-                        </div>
-                        <div class="analytics-item">
-                            <h4>Popular Goals</h4>
-                            ${data.usersByGoals.slice(0, 5).map(goal => `
-                                <p>${goal.goals}: ${goal.count}</p>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-                
-                analyticsContent.innerHTML = analyticsHTML;
-            } catch (error) {
-                console.error('Error loading analytics:', error);
-                document.getElementById('analytics-content').innerHTML = `
-                    <div class="error">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Error loading analytics
-                    </div>
-                `;
+                await updateDoc(doc(db, 'leads', tr.dataset.id), { [field]: value, crmUpdatedAt: serverTimestamp() });
+                marker.textContent = 'Saved';
+                setTimeout(() => { marker.textContent = ''; }, 1500);
+            } catch (err) {
+                marker.textContent = '';
+                alert(`Could not save: ${err.message}`);
             }
         }
+
+        $('rows').addEventListener('change', (e) => {
+            const field = e.target.dataset.field;
+            if (!field) return;
+            const tr = e.target.closest('tr');
+            const value = field === 'notes' ? e.target.value.slice(0, 2000) : e.target.value;
+            save(tr, field, value);
+        });
+
+        // ---------------- CSV ----------------
+
+        function exportCsv() {
+            const cols = [
+                ['Name', (l) => l.name], ['Phone', (l) => (l.phone ? `+91${l.phone}` : '')], ['Email', (l) => l.email],
+                ['Current status', (l) => STUDENT_STATUS[l.currentStatus] || ''], ['Plan', (l) => l.planName], ['Price', (l) => l.price],
+                ['Funnel stage', (l) => FUNNEL_LABELS[l.status] || l.status], ['Total paid', (l) => l.totalPaid || 0],
+                ['CRM status', (l) => CRM_STATUSES[l.crmStatus || 'new']], ['Next follow-up', (l) => l.nextFollowUp || ''], ['Notes', (l) => l.notes || ''],
+                ['Source', sourceOf], ['Medium', (l) => l.attribution?.utm_medium], ['Campaign', (l) => l.attribution?.utm_campaign],
+                ['Ad', (l) => l.attribution?.utm_content], ['Term', (l) => l.attribution?.utm_term],
+                ['Landing page', (l) => l.attribution?.landing_page], ['Created', (l) => toDate(l.createdAt)?.toISOString() || ''],
+                ['Paid at', (l) => toDate(l.paidAt)?.toISOString() || ''], ['Booked at', (l) => toDate(l.bookedAt)?.toISOString() || ''],
+            ];
+            const cell = (v) => {
+                let s = String(v ?? '');
+                if (/^[=+\-@]/.test(s)) s = `'${s}`; // block spreadsheet formula injection
+                return `"${s.replace(/"/g, '""')}"`;
+            };
+            const csv = [cols.map(([h]) => cell(h)).join(','), ...filtered().map((l) => cols.map(([, f]) => cell(f(l))).join(','))].join('\n');
+            const url = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }));
+            const a = Object.assign(document.createElement('a'), { href: url, download: `leads-${today()}.csv` });
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        initFilters();
+        boot();
     </script>
 </body>
 </html>

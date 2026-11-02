@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="assets/dyc-logo-transparent.png">
     <meta name="theme-color" content="#6366f1">
 
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=4">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -108,10 +108,9 @@
                 </div>
 
                 <div class="hero-cta">
-                    <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button"
-                       class="cta-button primary payment-link"
-                       data-plan-name="Diagnosis Session"
-                       data-plan-price="89">
+                    <a href="#plans" role="button"
+                       class="cta-button primary book-cta"
+                       data-plan-id="diagnosis">
                         Book Diagnosis · ₹89
                         <i class="fas fa-arrow-right"></i>
                     </a>
@@ -325,7 +324,7 @@
                     </ul>
                     <div class="plan-tag">Start here</div>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--primary payment-link" data-plan-name="Diagnosis Session" data-plan-price="89">
+                        <a href="#plans" role="button" class="plan-btn plan-btn--primary book-cta" data-plan-id="diagnosis">
                             Book for ₹89 →
                         </a>
                     </div>
@@ -347,7 +346,7 @@
                         <li><i class="fas fa-check"></i> Delivered within 24 hours</li>
                     </ul>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_SrtlzonoCOWQXr/view?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary payment-link" data-plan-name="Resume Review" data-plan-price="199">
+                        <a href="#plans" role="button" class="plan-btn plan-btn--secondary book-cta" data-plan-id="resume">
                             Book for ₹199 →
                         </a>
                     </div>
@@ -369,7 +368,7 @@
                         <li><i class="fas fa-check"></i> Delivered within 24 hours</li>
                     </ul>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_SrtlzonoCOWQXr/view?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary payment-link" data-plan-name="Social Profile Review" data-plan-price="199">
+                        <a href="#plans" role="button" class="plan-btn plan-btn--secondary book-cta" data-plan-id="social">
                             Book for ₹199 →
                         </a>
                     </div>
@@ -392,7 +391,7 @@
                     </ul>
                     <div class="plan-tag plan-tag--featured">Most popular</div>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_SruiNi8kF9VXiW/view?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary payment-link" data-plan-name="Mock Interview" data-plan-price="349">
+                        <a href="#plans" role="button" class="plan-btn plan-btn--secondary book-cta" data-plan-id="mock">
                             Book for ₹349 →
                         </a>
                     </div>
@@ -415,7 +414,7 @@
                     </ul>
                     <div class="plan-tag plan-tag--gold">Best value</div>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_Srul2JJCl7NWHA/view?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary payment-link" data-plan-name="Interview Prep Pack" data-plan-price="799">
+                        <a href="#plans" role="button" class="plan-btn plan-btn--secondary book-cta" data-plan-id="prep-pack">
                             Book for ₹799 →
                         </a>
                     </div>
@@ -437,7 +436,7 @@
                         <li><i class="fas fa-check"></i> Week 4 check-in & final prep</li>
                     </ul>
                     <div class="plan-cta">
-                        <a href="https://razorpay.com/payment-button/pl_SrummdmWV7OsBh/view?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button" class="plan-btn plan-btn--secondary payment-link" data-plan-name="Full Placement Prep" data-plan-price="1499">
+                        <a href="#plans" role="button" class="plan-btn plan-btn--secondary book-cta" data-plan-id="placement">
                             Apply for ₹1,499 →
                         </a>
                     </div>
@@ -471,14 +470,14 @@
 
                 <div class="booking-success__steps">
                     <div class="booking-success__step"><span>1</span> Pick a date and time</div>
-                    <div class="booking-success__step"><span>2</span> Add your name and email</div>
+                    <div class="booking-success__step"><span>2</span> Your details are already filled in</div>
                     <div class="booking-success__step"><span>3</span> Check your inbox for confirmation</div>
                 </div>
 
                 <div id="calendly-inline-widget" class="calendly-inline-widget booking-success__widget" data-url=""></div>
 
                 <div id="calendly-setup-note" class="booking-success__note" hidden>
-                    Add your real Calendly link in `script.js` under `CALENDLY_CONFIG.url` to enable the embedded scheduler here.
+                    Having trouble picking a slot? Use the button below or WhatsApp us at +91 78279 81994.
                 </div>
 
                 <div class="booking-success__footer">
@@ -665,13 +664,113 @@
         </div>
     </footer>
 
+    <!-- Lead capture + checkout modal -->
+    <div id="leadModal" class="lead-modal" hidden aria-hidden="true">
+        <div class="lead-modal__backdrop" data-close-modal></div>
+        <div class="lead-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+            <button type="button" class="lead-modal__close" data-close-modal aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="lead-modal__plan">
+                <div>
+                    <div class="lead-modal__plan-label">You're booking</div>
+                    <div class="lead-modal__plan-name" id="leadPlanName">Diagnosis Session</div>
+                </div>
+                <div class="lead-modal__plan-price" id="leadPlanPrice">₹89</div>
+            </div>
+
+            <!-- Step 1: details -->
+            <form id="leadForm" class="lead-form" novalidate data-view="form">
+                <h3 id="leadModalTitle" class="lead-form__title">Where should we send your booking?</h3>
+                <p class="lead-form__sub">Enter your details once — we'll use them for payment and your slot confirmation.</p>
+
+                <label class="lead-field">
+                    <span>Full name</span>
+                    <input type="text" name="name" autocomplete="name" placeholder="e.g. Priya Sharma" required maxlength="80">
+                    <small class="lead-field__error" data-error-for="name"></small>
+                </label>
+
+                <label class="lead-field">
+                    <span>WhatsApp number</span>
+                    <div class="lead-field__phone">
+                        <span class="lead-field__prefix">+91</span>
+                        <input type="tel" name="phone" autocomplete="tel-national" inputmode="numeric" placeholder="98765 43210" required maxlength="14">
+                    </div>
+                    <small class="lead-field__error" data-error-for="phone"></small>
+                </label>
+
+                <label class="lead-field">
+                    <span>Email</span>
+                    <input type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required maxlength="254">
+                    <small class="lead-field__error" data-error-for="email"></small>
+                </label>
+
+                <label class="lead-field">
+                    <span>You are currently <em>(optional)</em></span>
+                    <select name="currentStatus">
+                        <option value="">Select</option>
+                        <option value="1st-2nd-year">In 1st / 2nd year</option>
+                        <option value="3rd-year">In 3rd year</option>
+                        <option value="final-year">In final year</option>
+                        <option value="graduate">Graduated, looking for a job</option>
+                        <option value="working">Working professional</option>
+                    </select>
+                </label>
+
+                <!-- Honeypot: humans never see or fill this -->
+                <input type="text" name="website" class="lead-form__hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+                <div class="lead-form__error" id="leadFormError" role="alert" hidden></div>
+
+                <button type="submit" class="plan-btn plan-btn--primary lead-form__submit" id="leadSubmit">
+                    <span class="lead-form__submit-label">Continue to secure payment</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+
+                <ul class="lead-form__trust">
+                    <li><i class="fas fa-lock"></i> Razorpay · UPI, cards, netbanking</li>
+                    <li><i class="fas fa-calendar-check"></i> Pick your slot right after paying</li>
+                </ul>
+                <p class="lead-form__consent">By continuing you agree to be contacted on WhatsApp, call or email about your booking. We never share your details.</p>
+            </form>
+
+            <!-- Step 2: opening payment -->
+            <div class="lead-modal__view" data-view="processing" hidden>
+                <div class="lead-spinner" aria-hidden="true"></div>
+                <h3 class="lead-form__title">Opening secure payment…</h3>
+                <p class="lead-form__sub">Your details are saved. Complete the payment in the Razorpay window.</p>
+            </div>
+
+            <!-- Step 3: payment not completed -->
+            <div class="lead-modal__view" data-view="retry" hidden>
+                <div class="lead-modal__icon lead-modal__icon--warn"><i class="fas fa-circle-exclamation"></i></div>
+                <h3 class="lead-form__title">Payment not completed</h3>
+                <p class="lead-form__sub" id="leadRetryMessage">No money was deducted. You can try again — UPI usually works best.</p>
+                <button type="button" class="plan-btn plan-btn--primary lead-form__submit" id="leadRetry">
+                    Try payment again <i class="fas fa-rotate-right"></i>
+                </button>
+                <a class="lead-modal__help" id="leadWhatsappHelp" href="https://wa.me/917827981994" target="_blank" rel="noopener">
+                    <i class="fab fa-whatsapp"></i> Facing an issue? Chat with us on WhatsApp
+                </a>
+                <button type="button" class="lead-modal__link" id="leadEdit">Edit my details</button>
+            </div>
+
+            <!-- Verifying -->
+            <div class="lead-modal__view" data-view="verifying" hidden>
+                <div class="lead-spinner" aria-hidden="true"></div>
+                <h3 class="lead-form__title">Confirming your payment…</h3>
+                <p class="lead-form__sub">Please don't close this window.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Sticky CTA -->
     <div class="sticky-book-button" id="stickyCTA">
         <div class="fallback-button">
-            <a href="https://razorpay.com/payment-button/pl_RUaZpo0DUB7zdG/view?utm_source=payment_button&utm_medium=button&utm_campaign=payment_button"
-               class="razorpay-payment-button payment-link"
-               data-plan-name="Diagnosis Session"
-               data-plan-price="89">
+            <a href="#plans" role="button"
+               class="razorpay-payment-button book-cta"
+               data-plan-id="diagnosis">
                 <span class="sticky-pulse"></span>
                 <span class="sticky-label">Book your session</span>
                 <span class="sticky-sep">·</span>
@@ -682,7 +781,8 @@
     </div>
 
     <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
-    <script src="script.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
+    <script src="script.js?v=5"></script>
     <script>
         // Mobile menu
         const hamburger = document.getElementById('hamburger');
