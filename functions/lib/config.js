@@ -29,6 +29,11 @@ const secrets = {
     CALENDLY_TOKEN: defineSecret('CALENDLY_TOKEN'),
 };
 
+const bookingSecrets = {
+    CALENDLY_SYNC_TOKEN: defineSecret('CALENDLY_SYNC_TOKEN'),
+    GA4_API_SECRET: defineSecret('GA4_API_SECRET'),
+};
+
 // Non-secret params (functions/.env). Defaults keep deploys zero-config.
 const params = {
     ADMIN_EMAIL: defineString('ADMIN_EMAIL', { default: 'jaikumar1240@gmail.com' }),
@@ -37,6 +42,8 @@ const params = {
     CALENDLY_URL: defineString('CALENDLY_URL', { default: 'https://calendly.com/jaikumar1240/debugyourcareer' }),
     SITE_URL: defineString('SITE_URL', { default: 'https://elevate-personality.web.app' }),
     WHATSAPP_NUMBER: defineString('WHATSAPP_NUMBER', { default: '917827981994' }),
+    GA4_MEASUREMENT_ID: defineString('GA4_MEASUREMENT_ID', { default: 'G-TQDPKWBBW0' }),
+    GA4_BOOKING_DEBUG: defineString('GA4_BOOKING_DEBUG', { default: 'false' }),
 };
 
 /** Reads a secret, treating unset / "none" as disabled. */
@@ -49,4 +56,4 @@ function secretValue(secret) {
     }
 }
 
-module.exports = { PLANS, CURRENCY, REGION, secrets, params, secretValue };
+module.exports = { PLANS, CURRENCY, REGION, secrets, bookingSecrets, params, secretValue };

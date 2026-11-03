@@ -67,7 +67,7 @@ function createApp(deps) {
         return { pixelId: cfg.metaPixelId, token: cfg.metaToken, testEventCode: cfg.metaTestEventCode };
     }
 
-    async function createOrder(cfg, leadId, planId) {
+    async function createOrder(cfg, leadId, planId, snapshot) {
         if (!cfg.razorpayKeyId || !cfg.razorpayKeySecret) return null;
         const plan = PLANS[planId];
         const rzp = createRazorpay(cfg.razorpayKeyId, cfg.razorpayKeySecret);
@@ -80,6 +80,8 @@ function createApp(deps) {
         await orders().doc(order.id).set({
             leadId, planId, planName: plan.name, amount: plan.price, currency: CURRENCY,
             status: 'created', createdAt: FieldValue.serverTimestamp(),
+            bookingIdentity: { name: snapshot.name, email: snapshot.email, contact: `+91${snapshot.phone}` },
+            analytics: snapshot.analytics, attribution: snapshot.attribution, client: snapshot.client,
         });
         return { id: order.id, amount: order.amount, currency: order.currency, keyId: cfg.razorpayKeyId };
     }
@@ -102,6 +104,10 @@ function createApp(deps) {
             const payment = {
                 leadId: order.leadId, orderId, planId: order.planId, planName: order.planName,
                 amount: order.amount, currency: order.currency, source,
+                bookingRef: newResumeToken(),
+                bookingIdentity: order.bookingIdentity || {},
+                analytics: order.analytics || {}, attribution: order.attribution || {}, client: order.client || {},
+                bookingSyncState: 'pending', bookingSyncAt: new Date(),
                 createdAt: FieldValue.serverTimestamp(),
             };
             tx.set(paymentRef, payment);
@@ -145,10 +151,49 @@ function createApp(deps) {
     }
 
     async function bookingUrlFor(cfg, paymentId, payment) {
-        if (payment.bookingUrl) return payment.bookingUrl;
-        const url = await createBookingUrl({ publicUrl: cfg.calendlyUrl, token: cfg.calendlyToken });
-        await payments().doc(paymentId).update({ bookingUrl: url });
-        return url;
+        const bookingState = (current) => {
+            if (current.bookedAt && current.bookingSyncState === 'confirmed') return { booked: true };
+            if (current.bookedAt || current.bookingSyncState === 'review') {
+                return {
+                    booked: false, review: true,
+                    reviewReason: current.bookingSyncError === 'ambiguous_match' ? 'ambiguous_match' : 'booking_review',
+                };
+            }
+            return null;
+        };
+        const ref = payments().doc(paymentId);
+        payment = await db.runTransaction(async (tx) => {
+            const snap = await tx.get(ref);
+            const current = snap.data();
+            if (current.bookedAt || current.bookingSyncState === 'review' || (current.bookingRef && current.bookingIdentity?.email)) return current;
+            const lead = (await tx.get(leads().doc(current.leadId))).data();
+            if (!lead?.email) throw new Error('Booking identity is unavailable');
+            const patch = {
+                bookingRef: current.bookingRef || newResumeToken(),
+                bookingIdentity: current.bookingIdentity?.email ? current.bookingIdentity : {
+                    name: lead.name, email: lead.email, contact: `+91${lead.phone}`,
+                },
+                bookingSyncState: 'pending', bookingSyncAt: new Date(),
+            };
+            tx.update(ref, patch);
+            return { ...current, ...patch };
+        });
+        const state = bookingState(payment);
+        if (state) return state;
+        const url = payment.bookingUrl || await createBookingUrl({ publicUrl: cfg.calendlyUrl, token: cfg.calendlyToken });
+        const tracked = new URL(url);
+        if (tracked.origin !== 'https://calendly.com' || tracked.username || tracked.password) throw new Error('Invalid booking destination');
+        tracked.searchParams.set('utm_term', payment.bookingRef);
+        for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']) {
+            if (payment.attribution?.[key]) tracked.searchParams.set(key, payment.attribution[key]);
+        }
+        return db.runTransaction(async (tx) => {
+            const current = (await tx.get(ref)).data();
+            const state = bookingState(current);
+            if (state) return state;
+            tx.update(ref, { bookingUrl: tracked.toString() });
+            return { bookingUrl: tracked.toString(), prefill: current.bookingIdentity };
+        });
     }
 
     // ---------------------------------------------------------------------
@@ -232,7 +277,7 @@ function createApp(deps) {
 
         let order = null;
         let orderError = null;
-        const orderPromise = createOrder(cfg, leadId, planId).then((o) => { order = o; }, (err) => { orderError = err; });
+        const orderPromise = createOrder(cfg, leadId, planId, { ...input, client }).then((o) => { order = o; }, (err) => { orderError = err; });
         await Promise.allSettled([...side, orderPromise]);
         if (orderError) console.error('Razorpay order failed', orderError);
 
@@ -312,14 +357,14 @@ function createApp(deps) {
         if (result.error) return res.status(404).json({ error: result.error });
         if (result.order.leadId !== leadId) return res.status(403).json({ error: 'Order does not match lead' });
 
-        const bookingUrl = await bookingUrlFor(cfg, paymentId, result.payment);
-        res.json({
+        const verified = {
             ok: true,
             paymentId,
             purchaseEventId: `purchase_${paymentId}`,
             plan: { id: result.order.planId, name: result.order.planName, price: result.order.amount },
-            bookingUrl,
-        });
+        };
+        const booking = await bookingUrlFor(cfg, paymentId, result.payment);
+        res.json({ ...verified, ...booking });
     });
 
     // ---------------------------------------------------------------------
@@ -331,13 +376,13 @@ function createApp(deps) {
         const snap = await payments().doc(paymentId).get();
         if (!snap.exists || snap.data().leadId !== leadId) return res.status(404).json({ error: 'Payment not found' });
         const payment = snap.data();
-        if (payment.bookedAt) return res.json({ booked: true });
-        const bookingUrl = await bookingUrlFor(getConfig(), paymentId, payment);
-        res.json({ booked: false, bookingUrl, plan: { id: payment.planId, name: payment.planName, price: payment.amount } });
+        const booking = await bookingUrlFor(getConfig(), paymentId, payment);
+        if (booking.booked || booking.review) return res.json(booking);
+        res.json({ booked: false, ...booking, plan: { id: payment.planId, name: payment.planName, price: payment.amount } });
     });
 
     // ---------------------------------------------------------------------
-    // POST /booked — Calendly event_scheduled (from the embed postMessage)
+    // POST /booked — legacy clients cannot assert an authoritative booking.
     // ---------------------------------------------------------------------
     router.post('/booked', rateLimiter({ windowMs: 60_000, max: 20 }), async (req, res) => {
         const { leadId, paymentId } = req.body || {};
@@ -346,15 +391,8 @@ function createApp(deps) {
         const snap = await ref.get();
         if (!snap.exists || snap.data().leadId !== leadId) return res.status(404).json({ error: 'Payment not found' });
 
-        const eventUri = clean(req.body.eventUri, 300);
-        await ref.update({ bookedAt: FieldValue.serverTimestamp(), calendlyEventUri: eventUri });
-        await leads().doc(leadId).update({
-            status: 'booked',
-            bookedAt: FieldValue.serverTimestamp(),
-            updatedAt: FieldValue.serverTimestamp(),
-            history: FieldValue.arrayUnion(historyEntry('booked', { paymentId, eventUri })),
-        });
-        res.json({ ok: true });
+        const payment = snap.data();
+        res.status(202).json({ pending: !(payment.bookedAt && payment.bookingSyncState === 'confirmed') });
     });
 
     // ---------------------------------------------------------------------

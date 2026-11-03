@@ -33,3 +33,25 @@ test('Meta user_data is hashed and normalised', () => {
     assert.equal(ud.fbp, 'fb.1');
     assert.equal('fbc' in ud, false);
 });
+
+test('Meta Schedule preserves the actual booking timestamp while existing events default to now', async (ctx) => {
+    const bodies = [];
+    ctx.mock.method(global, 'fetch', async (url, options) => {
+        bodies.push(JSON.parse(options.body));
+        return { ok: true };
+    });
+    const { sendMetaEvent } = require('../lib/meta');
+    const args = { pixelId: 'pixel', token: 'token', eventName: 'Schedule', eventId: 'schedule_pay', lead: {} };
+    await sendMetaEvent({ ...args, eventTime: 1793698200 });
+    assert.equal(bodies[0].data[0].event_time, 1793698200);
+    await sendMetaEvent({ ...args, eventName: 'Purchase' });
+    assert.ok(Math.abs(bodies[1].data[0].event_time - Date.now() / 1000) < 2);
+});
+
+test('analytics snapshots accept only bounded identifier strings and known consent values', () => {
+    const { lead } = validateLead({
+        name: 'Asha', phone: '9876543210', email: 'asha@example.com', consent: true,
+        analytics: { clientId: 123.456, sessionId: 123, analyticsStorage: 'yes', adUserData: 'DENIED', email: 'private@example.com' },
+    });
+    assert.deepEqual(lead.analytics, { adUserData: 'DENIED' });
+});

@@ -41,10 +41,17 @@ function validateLead(body = {}) {
         const v = clean(src[key], 500);
         if (v) attribution[key] = v;
     }
+    const analytics = {};
+    const ids = body.analytics || {};
+    if (typeof ids.clientId === 'string' && /^\d{1,20}\.\d{1,20}$/.test(ids.clientId)) analytics.clientId = ids.clientId;
+    if (typeof ids.sessionId === 'string' && /^\d{1,20}$/.test(ids.sessionId)) analytics.sessionId = ids.sessionId;
+    for (const key of ['analyticsStorage', 'adUserData', 'adPersonalization']) {
+        if (['GRANTED', 'DENIED'].includes(ids[key])) analytics[key] = ids[key];
+    }
 
     return {
         errors,
-        lead: { name, phone, email, currentStatus, attribution },
+        lead: { name, phone, email, currentStatus, attribution, analytics },
     };
 }
 

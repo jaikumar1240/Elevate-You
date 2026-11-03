@@ -33,12 +33,12 @@ function buildUserData(lead) {
  * Sends one server event to Meta. Never throws: analytics must not break the funnel.
  * `eventId` must equal the browser Pixel eventID so Meta deduplicates.
  */
-async function sendMetaEvent({ pixelId, token, testEventCode, eventName, eventId, lead, customData, sourceUrl }) {
+async function sendMetaEvent({ pixelId, token, testEventCode, eventName, eventId, lead, customData, sourceUrl, eventTime }) {
     if (!pixelId || !token) return { skipped: true };
     const body = {
         data: [{
             event_name: eventName,
-            event_time: Math.floor(Date.now() / 1000),
+            event_time: eventTime ?? Math.floor(Date.now() / 1000),
             event_id: eventId,
             action_source: 'website',
             event_source_url: sourceUrl,

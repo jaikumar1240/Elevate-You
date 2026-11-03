@@ -30,6 +30,7 @@ function apply(existing = {}, patch) {
 
 function createDb() {
     const store = new Map();
+    let transactionTail = Promise.resolve();
     const docRef = (col, id) => ({
         id,
         path: `${col}/${id}`,
@@ -44,14 +45,16 @@ function createDb() {
             store.set(key, apply(store.get(key), data));
         },
     });
-    const queryOf = (col, filters, max) => ({
-        where: (field, op, value) => queryOf(col, [...filters, { field, op, value }], max),
-        limit: (n) => queryOf(col, filters, n),
+    const queryOf = (col, filters, max, sort) => ({
+        where: (field, op, value) => queryOf(col, [...filters, { field, op, value }], max, sort),
+        limit: (n) => queryOf(col, filters, n, sort),
+        orderBy: (field) => queryOf(col, filters, max, field),
         async get() {
             const docs = [...store.entries()]
                 .filter(([key]) => key.startsWith(`${col}/`))
                 .map(([key, data]) => ({ id: key.slice(col.length + 1), data }))
                 .filter(({ data }) => filters.every(({ field, op, value }) => COMPARE[op](data[field], value)))
+                .sort((a, b) => sort ? a.data[sort] - b.data[sort] : 0)
                 .slice(0, max)
                 .map(({ id, data }) => ({ id, ref: docRef(col, id), data: () => ({ ...data }) }));
             return { empty: docs.length === 0, size: docs.length, docs };
@@ -61,15 +64,19 @@ function createDb() {
         store,
         collection: (col) => ({ doc: (id) => docRef(col, id), ...queryOf(col, [], Infinity) }),
         async runTransaction(fn) {
-            const writes = [];
-            const tx = {
-                get: (ref) => ref.get(),
-                set: (ref, data) => writes.push(() => ref.set(data)),
-                update: (ref, data) => writes.push(() => ref.update(data)),
-            };
-            const result = await fn(tx);
-            for (const w of writes) await w();
-            return result;
+            const run = transactionTail.then(async () => {
+                const writes = [];
+                const tx = {
+                    get: (ref) => ref.get(),
+                    set: (ref, data) => writes.push(() => ref.set(data)),
+                    update: (ref, data) => writes.push(() => ref.update(data)),
+                };
+                const result = await fn(tx);
+                for (const w of writes) await w();
+                return result;
+            });
+            transactionTail = run.catch(() => {});
+            return run;
         },
     };
 }

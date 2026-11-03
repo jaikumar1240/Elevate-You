@@ -9,8 +9,8 @@
  *   3. Razorpay Standard Checkout opens prefilled with the same details
  *      (`InitiateCheckout` / `begin_checkout`).
  *   4. Success -> POST /api/verify (signature checked server-side). Only then do
- *      `Purchase` / `purchase` fire and the Calendly embed open, prefilled.
- *   5. Calendly `event_scheduled` -> POST /api/booked (`Schedule` / `schedule`).
+ *      `Purchase` / `purchase` fire and Calendly opens in the same tab, prefilled.
+ *   5. The server verifies initial bookings with Calendly before conversions.
  *
  * Every step is recorded on the lead so unpaid leads can be followed up in /admin.
  */
@@ -37,10 +37,12 @@ const CONFIG = {
     brandName: 'DebugYourCareer',
     brandColor: '#6366f1',
     metaPixelId: '1145272234680051',
+    measurementId: 'G-TQDPKWBBW0',
     whatsappNumber: '917827981994',
     storage: {
         lead: 'dyc.lead',
         booking: 'dyc.pendingBooking',
+        confirmedBooking: 'dyc.confirmedBooking',
         attribution: 'dyc.attribution',
     },
     attributionTtlMs: 30 * 24 * 60 * 60 * 1000,
@@ -55,6 +57,7 @@ const ATTRIBUTION_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_con
 // ---------------------------------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
+    captureGoogleIds();
     captureAttribution();
     initSmoothScrollNav();
     initCtaTracking();
@@ -149,6 +152,31 @@ function leadSource(attribution) {
 // ---------------------------------------------------------------------------
 // Analytics
 // ---------------------------------------------------------------------------
+
+const googleIds = {};
+
+function googleMetadata() {
+    const consent = window.dycAnalyticsConsent || {};
+    if (window[`ga-disable-${CONFIG.measurementId}`] || window.navigator?.globalPrivacyControl ||
+        window.navigator?.doNotTrack === '1' || consent.analyticsStorage === 'DENIED') {
+        return { analyticsStorage: 'DENIED', adUserData: 'DENIED', adPersonalization: 'DENIED' };
+    }
+    return { ...googleIds, ...consent };
+}
+
+function captureGoogleIds() {
+    if (googleMetadata().analyticsStorage === 'DENIED' || typeof window.gtag !== 'function') return;
+    const deadline = Date.now() + 5000;
+    for (const [field, key] of [['client_id', 'clientId'], ['session_id', 'sessionId']]) {
+        try {
+            window.gtag('get', CONFIG.measurementId, field, (value) => {
+                if (Date.now() <= deadline && value != null) googleIds[key] = String(value);
+            });
+        } catch {
+            console.warn('Google identifier capture unavailable');
+        }
+    }
+}
 
 /** GA4 event. No-ops if gtag is blocked. */
 function gaEvent(name, params = {}) {
@@ -357,7 +385,13 @@ const LeadFunnel = {
         this.els.retry?.addEventListener('click', () => this.openCheckout());
         this.els.edit?.addEventListener('click', () => this.showView('form'));
 
-        window.addEventListener('message', (e) => this.onCalendlyMessage(e));
+        window.addEventListener('pagehide', () => clearTimeout(this.bookingRedirectTimer));
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                clearTimeout(this.bookingRedirectTimer);
+                this.resumePendingBooking();
+            }
+        });
         this.resumePendingBooking();
         this.resumeFromReminder();
     },
@@ -484,6 +518,7 @@ const LeadFunnel = {
                 phone,
                 planId: this.planId,
                 consent: true,
+                analytics: googleMetadata(),
                 attribution: { ...attribution, ...readUrlAttribution() },
                 ...getMetaIds(attribution),
             });
@@ -638,16 +673,21 @@ const LeadFunnel = {
                 paymentId: res.paymentId,
                 plan: res.plan,
                 bookingUrl: res.bookingUrl,
-                prefill: lead.prefill,
+                prefill: res.prefill || lead.prefill,
                 savedAt: Date.now(),
             };
-            storeSet(CONFIG.storage.booking, booking);
+            const pending = storeGet(CONFIG.storage.booking);
+            if (res.booked) {
+                if (pending?.paymentId === booking.paymentId) storeRemove(CONFIG.storage.booking);
+            } else if (!res.review || !pending || pending.paymentId === booking.paymentId) {
+                storeSet(CONFIG.storage.booking, booking);
+            }
             this.lead = null;
 
             this.verifying = false;
             this.paying = false;
             this.close();
-            this.showBooking(booking);
+            this.showBooking(booking, { autoNavigate: !res.booked && !res.review, booked: !!res.booked, review: !!res.review });
         } catch (err) {
             // The Razorpay webhook still marks the payment paid; give the user a human path.
             gaEvent('payment_verify_failed', { status: err.status || 0 });
@@ -661,81 +701,98 @@ const LeadFunnel = {
 
     // ----- step 4: Calendly -----------------------------------------------------
 
-    showBooking(booking) {
+    showBooking(booking, { autoNavigate = false, booked = false, checking = false, review = false } = {}) {
         const section = document.getElementById('booking-success');
-        const widget = document.getElementById('calendly-inline-widget');
         const planCopy = document.getElementById('booking-plan-copy');
         const directLink = document.getElementById('calendly-direct-link');
         const setupNote = document.getElementById('calendly-setup-note');
-        const url = buildCalendlyUrl(booking);
-
-        if (!section || !widget) {
-            window.open(url, '_blank', 'noopener');
-            return;
+        let url = '';
+        let invalidLink = false;
+        if (!booked && !checking && !review) {
+            try {
+                url = buildCalendlyUrl(booking);
+            } catch {
+                invalidLink = true;
+                console.warn('Paid booking link is invalid; contact support');
+            }
         }
+        const title = document.getElementById('booking-status-title');
+        const label = document.getElementById('booking-status-label');
+        const nextCopy = document.getElementById('booking-next-copy');
+        if (nextCopy) nextCopy.textContent = booked || review ? 'Check your email for Calendly confirmation and joining details.'
+            : checking ? 'Checking your booking status. Please wait a moment.' : 'Once you book, Calendly will email your confirmation.';
+        if (title) title.textContent = booked ? 'Your booking is confirmed.'
+            : review ? 'Your booking needs a quick review.' : checking ? 'Your payment is confirmed.' : "You're paid. Let's choose your time.";
+        if (label) label.textContent = booked ? 'Booking confirmed' : 'Payment confirmed';
 
-        if (planCopy) planCopy.textContent = `Your ${booking.plan.name} (₹${booking.plan.price}) payment is confirmed. Pick a time below.`;
+        if (planCopy) planCopy.textContent = `Your ${booking.plan.name} (₹${booking.plan.price}) payment is confirmed. You do not need to pay again.`;
         if (directLink) {
             directLink.href = url;
-            directLink.hidden = false;
+            directLink.hidden = booked || checking || review || invalidLink;
+            directLink.textContent = autoNavigate ? 'Choose your slot' : 'Continue booking';
         }
-        if (setupNote) setupNote.hidden = true;
+        if (setupNote) {
+            setupNote.textContent = invalidLink
+                ? 'Your payment is confirmed, but the booking link is unavailable. Message us on WhatsApp. Do not pay again.'
+                : review
+                ? "We couldn't verify an earlier booking automatically. If you have not received a confirmation, message us on WhatsApp. Do not pay again."
+                : checking
+                ? 'Checking your booking status before showing the booking link.'
+                : booked
+                ? 'Check your email for Calendly confirmation and joining details. For changes, use the links in that email.'
+                : autoNavigate
+                ? 'Opening Calendly in this tab. If it does not open, choose your slot below.'
+                : 'Continue on Calendly to choose a time. If you have already booked, confirmation may take a few minutes to sync.';
+            setupNote.hidden = false;
+        }
 
-        section.hidden = false;
+        if (section) section.hidden = false;
         document.body.classList.add('payment-success-active');
-        requestAnimationFrame(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }));
-
-        waitFor(() => typeof window.Calendly?.initInlineWidget === 'function')
-            .then(() => {
-                widget.innerHTML = '';
-                window.Calendly.initInlineWidget({
-                    url: booking.bookingUrl,
-                    parentElement: widget,
-                    prefill: calendlyPrefill(booking.prefill, booking.plan),
-                    utm: calendlyUtm(),
-                });
-            })
-            .catch(() => {
-                if (setupNote) {
-                    setupNote.textContent = 'The scheduler did not load. Use the button below to pick your slot.';
-                    setupNote.hidden = false;
-                }
-            });
+        if (section) requestAnimationFrame(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        clearTimeout(this.bookingRedirectTimer);
+        if (autoNavigate && !booked && !checking && !review && !invalidLink) {
+            this.bookingRedirectTimer = setTimeout(() => window.location.assign(url), 500);
+        }
 
         gaEvent('booking_view', { plan_id: booking.plan.id });
     },
 
     async resumePendingBooking() {
+        clearTimeout(this.bookingPollTimer);
         const pending = storeGet(CONFIG.storage.booking);
-        if (!pending?.leadId || !pending?.paymentId) return;
+        if (!pending?.leadId || !pending?.paymentId) {
+            const confirmed = storeGet(CONFIG.storage.confirmedBooking);
+            if (confirmed?.paymentId && confirmed?.plan) this.showBooking(confirmed, { booked: true });
+            return;
+        }
+        this.showBooking(pending, { checking: true });
         try {
             const res = await api('/booking-link', { leadId: pending.leadId, paymentId: pending.paymentId });
+            if (storeGet(CONFIG.storage.booking)?.paymentId !== pending.paymentId) return;
             if (res.booked) {
+                this.showBooking(pending, { booked: true });
+                storeSet(CONFIG.storage.confirmedBooking, {
+                    leadId: pending.leadId, paymentId: pending.paymentId, plan: pending.plan,
+                });
                 storeRemove(CONFIG.storage.booking);
                 return;
             }
-            const booking = { ...pending, bookingUrl: res.bookingUrl, plan: res.plan || pending.plan };
+            if (res.review) {
+                this.showBooking(pending, { review: true });
+                return;
+            }
+            const booking = { ...pending, bookingUrl: res.bookingUrl, plan: res.plan || pending.plan, prefill: res.prefill || pending.prefill };
             storeSet(CONFIG.storage.booking, booking);
             this.showBooking(booking);
         } catch (err) {
-            if (err.status === 404 || err.status === 400) storeRemove(CONFIG.storage.booking);
+            if (storeGet(CONFIG.storage.booking)?.paymentId !== pending.paymentId) return;
+            this.showBooking(pending);
+            const note = document.getElementById('calendly-setup-note');
+            if (note) note.textContent = 'Your saved payment is retained, but we could not recheck booking status. Try again later or message us on WhatsApp. Do not pay again.';
         }
+        this.bookingPollTimer = setTimeout(() => this.resumePendingBooking(), 30_000);
     },
 
-    onCalendlyMessage(e) {
-        if (e.origin !== 'https://calendly.com' || e.data?.event !== 'calendly.event_scheduled') return;
-        const pending = storeGet(CONFIG.storage.booking);
-        if (!pending) return;
-
-        apiQuiet('/booked', {
-            leadId: pending.leadId,
-            paymentId: pending.paymentId,
-            eventUri: e.data.payload?.event?.uri || '',
-        });
-        metaEvent('Schedule', { content_name: pending.plan?.name }, `schedule_${pending.paymentId}`);
-        gaEvent('schedule', { plan_id: pending.plan?.id, transaction_id: pending.paymentId });
-        storeRemove(CONFIG.storage.booking);
-    },
 };
 
 // ---------------------------------------------------------------------------
@@ -754,20 +811,10 @@ function calendlyPrefill(prefill, plan) {
     };
 }
 
-function calendlyUtm() {
-    const a = getAttribution();
-    return {
-        utmSource: a.utm_source || '',
-        utmMedium: a.utm_medium || '',
-        utmCampaign: a.utm_campaign || '',
-        utmContent: a.utm_content || '',
-        utmTerm: a.utm_term || '',
-    };
-}
-
-/** Same prefill as the embed, for the "open in new tab" fallback. */
+/** Preserve the server's correlation reference while prefilling Calendly. */
 function buildCalendlyUrl(booking) {
     const url = new URL(booking.bookingUrl);
+    if (url.origin !== 'https://calendly.com' || url.username || url.password) throw new Error('Invalid booking destination');
     const p = calendlyPrefill(booking.prefill, booking.plan);
     if (p.name) url.searchParams.set('name', p.name);
     if (p.email) url.searchParams.set('email', p.email);

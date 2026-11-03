@@ -93,6 +93,7 @@
 
     <main id="app" class="hidden">
         <section class="kpis" id="kpis"></section>
+        <p id="bookingStatusError" role="status"></p>
 
         <section class="filters">
             <input type="search" id="search" placeholder="Search name, phone, email, campaign…">
@@ -187,6 +188,7 @@
 
         let db;
         let leads = [];
+        let payments = [];
         let unsubscribe = null;
 
         async function boot() {
@@ -240,13 +242,21 @@
 
         function listen() {
             const q = query(collection(db, 'leads'), orderBy('createdAt', 'desc'), limit(2000));
-            unsubscribe = onSnapshot(q, (snap) => {
+            const stopLeads = onSnapshot(q, (snap) => {
                 leads = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
                 fillFilterOptions();
                 render();
             }, (err) => {
                 showSignin(`Firestore error: ${err.message}`);
             });
+            const stopPayments = onSnapshot(query(collection(db, 'payments'), orderBy('createdAt', 'desc'), limit(2000)), (snap) => {
+                payments = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                $('bookingStatusError').textContent = '';
+                render();
+            }, () => {
+                $('bookingStatusError').textContent = 'Booking and analytics status could not be loaded. Check Firestore access and reload.';
+            });
+            unsubscribe = () => { stopLeads(); stopPayments(); };
         }
 
         // ---------------- filters ----------------
@@ -302,7 +312,7 @@
             const total = list.length;
             const checkout = list.filter((l) => l.status !== 'new').length;
             const paid = list.filter((l) => l.status === 'paid' || l.status === 'booked').length;
-            const booked = list.filter((l) => l.status === 'booked').length;
+            const booked = list.filter((l) => l.status === 'booked' || (l.history || []).some((event) => event.type === 'booked')).length;
             const revenue = list.reduce((s, l) => s + (l.totalPaid || 0), 0);
             const unpaid = list.filter((l) => UNPAID.has(l.status) && !['converted', 'not_interested', 'wrong_number'].includes(l.crmStatus)).length;
             const due = list.filter((l) => l.nextFollowUp && l.nextFollowUp <= today()).length;
@@ -314,7 +324,7 @@
                 kpi('Leads', total),
                 kpi('Opened checkout', checkout, `${pct(checkout, total)} of leads`),
                 kpi('Paid', paid, `${pct(paid, total)} lead → paid`),
-                kpi('Booked', booked, `${pct(booked, paid)} of paid`),
+                kpi('Initial booking', booked, 'Milestone; changes stay in Calendly'),
                 kpi('Revenue', rupees(revenue), paid ? `${rupees(Math.round(revenue / paid))} / buyer` : ''),
                 kpi('Unpaid to call', unpaid, 'not yet closed', unpaid ? 'kpi--alert' : ''),
                 kpi('Follow-ups due', due, 'today or overdue', due ? 'kpi--alert' : ''),
@@ -327,6 +337,20 @@
             if (l.status === 'paid') return `Hi ${first}, thanks for booking the ${plan} with ${WHATSAPP_BRAND}! Your payment is confirmed — please pick your slot here so we can get started.`;
             if (l.status === 'booked') return `Hi ${first}, this is from ${WHATSAPP_BRAND}. Looking forward to your ${plan}!`;
             return `Hi ${first}, this is from ${WHATSAPP_BRAND}. You were booking the ${plan} — did you face any issue with the payment? Happy to help you get a slot.`;
+        }
+
+        function bookingDetails(l) {
+            const records = payments.filter((payment) => payment.leadId === l.id);
+            if (!records.length) return '';
+            const delivery = (name, value) => `${name}: ${esc(value?.state || 'not queued')}${value?.reason ? ` (${esc(value.reason)})` : ''}`;
+            return `<details><summary>Booking &amp; tracking (${records.length})</summary><ul class="history">${records.map((payment) => {
+                const status = payment.bookingSyncState === 'confirmed' ? 'Initial booking confirmed'
+                    : payment.bookedAt ? 'Legacy booking; not API-verified' : `Booking sync: ${payment.bookingSyncState || 'awaiting fresh link'}`;
+                return `<li>${esc(payment.id)}: ${esc(status)}${payment.bookingSyncError ? ` (${esc(payment.bookingSyncError)})` : ''}
+                    ${payment.conversionError ? `<div>Conversion review: ${esc(payment.conversionError)}</div>` : ''}
+                    <div>${delivery('Meta', payment.metaDelivery)}</div>
+                    <div>${delivery('GA4', payment.ga4Delivery)}</div></li>`;
+            }).join('')}</ul></details>`;
         }
 
         function row(l) {
@@ -359,6 +383,7 @@
                     <div>${esc(l.planName)} <span class="sub">${l.price ? rupees(l.price) : ''}</span></div>
                     <div style="margin-top:4px"><span class="badge b-${esc(status)}">${esc(FUNNEL_LABELS[status] || status)}</span></div>
                     ${l.totalPaid ? `<div class="sub">Paid ${rupees(l.totalPaid)}</div>` : ''}
+                    ${bookingDetails(l)}
                     ${l.reminderSentAt ? `<div class="sub"><i class="fas fa-envelope"></i> Reminder sent ${esc(fmtDate(toDate(l.reminderSentAt)))}</div>` : ''}
                     ${history ? `<details><summary>Timeline</summary><ul class="history">${history}</ul></details>` : ''}
                 </td>
