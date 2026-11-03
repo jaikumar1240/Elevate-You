@@ -1,83 +1,82 @@
-[debug] [2026-11-02T18:17:53.833Z] ----------------------------------------------------------------------
-[debug] [2026-11-02T18:17:53.835Z] Command:       /Users/glo17864/.nvm/versions/node/v20.20.2/bin/node /Users/glo17864/.npm/_npx/ba4f1959e38407b5/node_modules/.bin/firebase emulators:start --only functions,firestore,hosting --project demo-elevate-personality
-[debug] [2026-11-02T18:17:53.835Z] CLI Version:   15.34.2
-[debug] [2026-11-02T18:17:53.835Z] Platform:      darwin
-[debug] [2026-11-02T18:17:53.835Z] Node Version:  v20.20.2
-[debug] [2026-11-02T18:17:53.835Z] Detected Agent: unknown
-[debug] [2026-11-02T18:17:53.835Z] Time:          Mon Nov 02 2026 23:47:53 GMT+0530 (India Standard Time)
-[debug] [2026-11-02T18:17:53.835Z] ----------------------------------------------------------------------
+[debug] [2026-11-03T07:03:55.268Z] ----------------------------------------------------------------------
+[debug] [2026-11-03T07:03:55.270Z] Command:       /Users/glo17864/.nvm/versions/node/v22.23.3/bin/node /Users/glo17864/.npm/_npx/7750544ccf494d8b/node_modules/.bin/firebase deploy --only functions,firestore,hosting --project elevate-personality
+[debug] [2026-11-03T07:03:55.270Z] CLI Version:   15.34.2
+[debug] [2026-11-03T07:03:55.270Z] Platform:      darwin
+[debug] [2026-11-03T07:03:55.270Z] Node Version:  v22.23.3
+[debug] [2026-11-03T07:03:55.270Z] Detected Agent: unknown
+[debug] [2026-11-03T07:03:55.270Z] Time:          Tue Nov 03 2026 12:33:55 GMT+0530 (India Standard Time)
+[debug] [2026-11-03T07:03:55.270Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2026-11-02T18:17:54.229Z] openjdk version "26.0.2" 2026-07-21
-
-[debug] [2026-11-02T18:17:54.230Z] OpenJDK Runtime Environment Homebrew (build 26.0.2)
-OpenJDK 64-Bit Server VM Homebrew (build 26.0.2, mixed mode, sharing)
-
-[debug] [2026-11-02T18:17:54.231Z] Parsed Java major version: 26
-[info] i  emulators: Starting emulators: functions, firestore, hosting {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions, firestore, hosting"}}
-[info] i  emulators: Detected demo project ID "demo-elevate-personality", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail. {"metadata":{"emulator":{"name":"hub"},"message":"Detected demo project ID \"demo-elevate-personality\", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail."}}
-[debug] [2026-11-02T18:17:56.330Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2026-11-02T18:17:56.330Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2026-11-02T18:17:56.330Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
-[warn] ⚠  hosting: Hosting Emulator unable to start on port 5000, starting on 5002 instead. {"metadata":{"emulator":{"name":"hosting"},"message":"Hosting Emulator unable to start on port 5000, starting on 5002 instead."}}
-[debug] [2026-11-02T18:17:56.330Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2026-11-02T18:17:56.330Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}]},"metadata":{"message":"assigned listening specs for emulators"}}
-[debug] [2026-11-02T18:17:56.332Z] Write emulator hub locator at /var/folders/0x/dwx46kz94b35_gm5w8tvf6q00000gp/T/hub-demo-elevate-personality.json
-[debug] [2026-11-02T18:17:57.385Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2026-11-02T18:17:57.385Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2026-11-02T18:17:57.385Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2026-11-02T18:17:57.385Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
-[debug] [2026-11-02T18:17:57.395Z] defaultcredentials: writing to file /Users/glo17864/.config/firebase/jaikumar1240_gmail_com_application_default_credentials.json
-[debug] [2026-11-02T18:17:57.395Z] Setting GAC to /Users/glo17864/.config/firebase/jaikumar1240_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to /Users/glo17864/.config/firebase/jaikumar1240_gmail_com_application_default_credentials.json"}}
-[debug] [2026-11-02T18:17:57.398Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
-[debug] [2026-11-02T18:17:57.398Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
-[debug] [2026-11-02T18:17:57.398Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/Users/glo17864/.cache/firebase/emulators/cloud-firestore-emulator-v1.22.0.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--database-edition","standard","--project_id","demo-elevate-personality","--rules","/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","database-edition","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/Users/glo17864/.cache/firebase/emulators/cloud-firestore-emulator-v1.22.0.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--database-edition\",\"standard\",\"--project_id\",\"demo-elevate-personality\",\"--rules\",\"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"database-edition\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
-[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
-[debug] [2026-11-02T18:17:57.594Z] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::allocateMemory has been called by io.netty.util.internal.PlatformDependent0$2 (file:/Users/glo17864/.cache/firebase/emulators/cloud-firestore-emulator-v1.22.0.jar)
-WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$2
-WARNING: sun.misc.Unsafe::allocateMemory will be removed in a future release
- {"metadata":{"emulator":{"name":"firestore"},"message":"WARNING: A terminally deprecated method in sun.misc.Unsafe has been called\nWARNING: sun.misc.Unsafe::allocateMemory has been called by io.netty.util.internal.PlatformDependent0$2 (file:/Users/glo17864/.cache/firebase/emulators/cloud-firestore-emulator-v1.22.0.jar)\nWARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$2\nWARNING: sun.misc.Unsafe::allocateMemory will be removed in a future release\n"}}
-[debug] [2026-11-02T18:17:57.937Z] Nov 02, 2026 11:47:57 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
-INFO: Started WebSocket server on ws://127.0.0.1:9150
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:47:57 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://127.0.0.1:9150\n"}}
-[debug] [2026-11-02T18:17:57.948Z] 
-API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"\nAPI endpoint: http://"}}
-[debug] [2026-11-02T18:17:57.949Z] 127.0.0.1:8080
-Database Edition: STANDARD
-Database Mode: CLOUD_FIRESTORE
-
-If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
-
-   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
-
-If you are running a Firestore in Datastore Mode project, run:
-
-   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
-
-Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
-Dev App Server is now running.
-
- {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8080\nDatabase Edition: STANDARD\nDatabase Mode: CLOUD_FIRESTORE\n\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
-[info] ✔  firestore: Firestore Emulator was started in standard edition. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator was started in standard edition."}}
-[info] ✔  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
-[debug] [2026-11-02T18:17:58.008Z] Checked if tokens are valid: true, expires at: 1793644797252
-[debug] [2026-11-02T18:17:58.008Z] Checked if tokens are valid: true, expires at: 1793644797252
-[debug] [2026-11-02T18:17:58.008Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/demo-elevate-personality [none]
-[debug] [2026-11-02T18:17:58.858Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/demo-elevate-personality 403
-[debug] [2026-11-02T18:17:58.858Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/demo-elevate-personality {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
-[debug] [2026-11-02T18:17:58.858Z] Request to https://firebase.googleapis.com/v1beta1/projects/demo-elevate-personality had HTTP Error: 403, The caller does not have permission
-[info] ✔  hosting[demo-elevate-personality]: Local server: http://127.0.0.1:5002 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://127.0.0.1:5002\u001b[22m\u001b[24m"}}
-[info] i  functions: Watching "/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions\" for Cloud Functions..."}}
-[debug] [2026-11-02T18:17:59.016Z] Validating nodejs source
+[debug] [2026-11-03T07:03:55.938Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-11-03T07:03:55.938Z] > authorizing via signed-in user (jaikumar1240@gmail.com)
+[debug] [2026-11-03T07:03:55.938Z] [iam] checking project elevate-personality for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-11-03T07:03:55.942Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:55.942Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:55.942Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions [none]
+[debug] [2026-11-03T07:03:55.942Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions  x-goog-user-project=elevate-personality
+[debug] [2026-11-03T07:03:55.942Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-11-03T07:03:57.345Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions 200
+[debug] [2026-11-03T07:03:57.345Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-11-03T07:03:57.346Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:57.346Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:57.346Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/elevate-personality/serviceAccounts/elevate-personality@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-11-03T07:03:57.346Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/elevate-personality/serviceAccounts/elevate-personality@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-11-03T07:03:59.115Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/elevate-personality/serviceAccounts/elevate-personality@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-11-03T07:03:59.115Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/elevate-personality/serviceAccounts/elevate-personality@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-11-03T07:03:59.117Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:59.117Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:59.118Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/elevate-personality [none]
+[debug] [2026-11-03T07:03:59.551Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/elevate-personality 200
+[debug] [2026-11-03T07:03:59.551Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/elevate-personality {"projectId":"elevate-personality","projectNumber":"806064271521","displayName":"elevate-personality","name":"projects/elevate-personality","resources":{"hostingSite":"elevate-personality"},"state":"ACTIVE","labels":{"firebase":"enabled","firebaseworkflows/environment":"production"},"etag":"1_0f52ffdb-c231-4a20-a267-b014686619f4"}
+[info] 
+[info] === Deploying to 'elevate-personality'...
+[info] 
+[info] i  deploying firestore, functions, hosting 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-11-03T07:03:59.554Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:59.554Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:59.554Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/elevate-personality/databases/(default) [none]
+[debug] [2026-11-03T07:03:59.752Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/elevate-personality/databases/(default) 200
+[debug] [2026-11-03T07:03:59.752Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/elevate-personality/databases/(default) {"name":"projects/elevate-personality/databases/(default)","uid":"66667187-a630-4d27-8a20-4bd7f872a4ae","createTime":"2026-10-29T14:39:57.321611Z","updateTime":"2026-10-29T14:39:57.321611Z","locationId":"asia-south2","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-11-03T06:03:59.752166Z","appEngineIntegrationMode":"DISABLED","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IIedk++d65cDMKf41+Cr4ZcD"}
+[info] i  firestore: reading indexes from firestore.indexes.json... 
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2026-11-03T07:03:59.753Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:59.753Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:03:59.754Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/elevate-personality:test [none]
+[debug] [2026-11-03T07:03:59.754Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/elevate-personality:test [omitted]
+[debug] [2026-11-03T07:04:01.152Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/elevate-personality:test 200
+[debug] [2026-11-03T07:04:01.152Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/elevate-personality:test {}
+[info] ✔  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2026-11-03T07:04:01.153Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:01.153Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:01.153Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality [none]
+[debug] [2026-11-03T07:04:01.465Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality 200
+[debug] [2026-11-03T07:04:01.465Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality {"projectNumber":"806064271521","projectId":"elevate-personality","lifecycleState":"ACTIVE","name":"elevate-personality","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-11-05T07:51:50.302819Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-11-03T07:04:01.468Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:01.468Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:01.468Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/elevate-personality/adminSdkConfig [none]
+[debug] [2026-11-03T07:04:01.833Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/elevate-personality/adminSdkConfig 200
+[debug] [2026-11-03T07:04:01.834Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/elevate-personality/adminSdkConfig {"projectId":"elevate-personality","storageBucket":"elevate-personality.firebasestorage.app"}
+[debug] [2026-11-03T07:04:01.834Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:01.834Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:01.834Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/elevate-personality/configs [none]
+[debug] [2026-11-03T07:04:03.261Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/elevate-personality/configs 200
+[debug] [2026-11-03T07:04:03.261Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/elevate-personality/configs {}
+[debug] [2026-11-03T07:04:03.263Z] Validating nodejs source
 [warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
 [warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
-[debug] [2026-11-02T18:17:59.321Z] > [functions] package.json contents: {
+[debug] [2026-11-03T07:04:03.570Z] > [functions] package.json contents: {
   "name": "debugyourcareer-functions",
   "private": true,
   "description": "Lead capture, Razorpay checkout, Meta CAPI and alerts for DebugYourCareer",
   "main": "index.js",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "scripts": {
     "test": "node --test test/*.test.js",
@@ -92,190 +91,170 @@ Dev App Server is now running.
     "razorpay": "^2.9.5"
   }
 }
-[debug] [2026-11-02T18:17:59.321Z] Building nodejs source
-[debug] [2026-11-02T18:17:59.322Z] Failed to find version of module node: reached end of search path /Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules
-[info] ✔  functions: Using node@20 from host. 
-[info] i  functions: Loaded environment variables from functions/.env.local 
-[debug] [2026-11-02T18:17:59.323Z] Could not find functions.yaml. Must use http discovery
-[debug] [2026-11-02T18:17:59.327Z] Found firebase-functions binary at '/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/.bin/firebase-functions'
-[info] Serving at port 8607
+[debug] [2026-11-03T07:04:03.570Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-11-03T07:04:03.571Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-11-03T07:04:03.574Z] Found firebase-functions binary at '/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8374
 
-[debug] [2026-11-02T18:17:59.714Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":256,"timeoutSeconds":30,"minInstances":0,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["asia-south1"],"secretEnvironmentVariables":[{"key":"RAZORPAY_KEY_ID"},{"key":"RAZORPAY_KEY_SECRET"},{"key":"RAZORPAY_WEBHOOK_SECRET"},{"key":"META_CAPI_TOKEN"},{"key":"GMAIL_APP_PASSWORD"},{"key":"CALENDLY_TOKEN"}],"labels":{},"httpsTrigger":{},"entryPoint":"api"},"paymentReminders":{"availableMemoryMb":256,"timeoutSeconds":120,"minInstances":null,"maxInstances":1,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["asia-south1"],"secretEnvironmentVariables":[{"key":"GMAIL_APP_PASSWORD"}],"labels":{},"scheduleTrigger":{"schedule":"every 10 minutes","retryConfig":{},"timeZone":"Asia/Kolkata"},"entryPoint":"paymentReminders"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{},"params":[{"type":"secret","name":"RAZORPAY_KEY_ID"},{"type":"secret","name":"RAZORPAY_KEY_SECRET"},{"type":"secret","name":"RAZORPAY_WEBHOOK_SECRET"},{"type":"secret","name":"META_CAPI_TOKEN"},{"type":"secret","name":"GMAIL_APP_PASSWORD"},{"type":"secret","name":"CALENDLY_TOKEN"},{"name":"ADMIN_EMAIL","type":"string","default":"jaikumar1240@gmail.com"},{"name":"META_PIXEL_ID","type":"string","default":"1145272234680051"},{"name":"META_TEST_EVENT_CODE","type":"string","default":""},{"name":"CALENDLY_URL","type":"string","default":"https://calendly.com/jaikumar1240/debugyourcareer"},{"name":"SITE_URL","type":"string","default":"https://elevate-personality.web.app"},{"name":"WHATSAPP_NUMBER","type":"string","default":"917827981994"}]}
-[info] ✔  functions: Loaded functions definitions from source: api, paymentReminders. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api, paymentReminders."}}
-[info] ✔  functions[asia-south1-api]: http function initialized (http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api)."}}
-[info] i  functions[asia-south1-paymentReminders]: function ignored because the pubsub emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the pubsub emulator does not exist or is not running."}}
-[debug] [2026-11-02T18:18:02.741Z] Could not find VSCode notification endpoint: TypeError: fetch failed. If you are not running the Firebase SQL Connect VSCode extension, this is expected and not an issue.
+[debug] [2026-11-03T07:04:03.862Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":256,"timeoutSeconds":30,"minInstances":0,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["asia-south1"],"secretEnvironmentVariables":[{"key":"RAZORPAY_KEY_ID"},{"key":"RAZORPAY_KEY_SECRET"},{"key":"RAZORPAY_WEBHOOK_SECRET"},{"key":"META_CAPI_TOKEN"},{"key":"GMAIL_APP_PASSWORD"},{"key":"CALENDLY_TOKEN"}],"labels":{},"httpsTrigger":{},"entryPoint":"api"},"paymentReminders":{"availableMemoryMb":256,"timeoutSeconds":120,"minInstances":null,"maxInstances":1,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["asia-south1"],"secretEnvironmentVariables":[{"key":"GMAIL_APP_PASSWORD"}],"labels":{},"scheduleTrigger":{"schedule":"every 10 minutes","retryConfig":{},"timeZone":"Asia/Kolkata"},"entryPoint":"paymentReminders"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{},"params":[{"type":"secret","name":"RAZORPAY_KEY_ID"},{"type":"secret","name":"RAZORPAY_KEY_SECRET"},{"type":"secret","name":"RAZORPAY_WEBHOOK_SECRET"},{"type":"secret","name":"META_CAPI_TOKEN"},{"type":"secret","name":"GMAIL_APP_PASSWORD"},{"type":"secret","name":"CALENDLY_TOKEN"},{"name":"ADMIN_EMAIL","type":"string","default":"jaikumar1240@gmail.com"},{"name":"META_PIXEL_ID","type":"string","default":"1145272234680051"},{"name":"META_TEST_EVENT_CODE","type":"string","default":""},{"name":"CALENDLY_URL","type":"string","default":"https://calendly.com/jaikumar1240/debugyourcareer"},{"name":"SITE_URL","type":"string","default":"https://elevate-personality.web.app"},{"name":"WHATSAPP_NUMBER","type":"string","default":"917827981994"}]}
+[debug] [2026-11-03T07:04:06.877Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:06.877Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:06.877Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/elevate-personality/locations/-/functions [none]
+[debug] [2026-11-03T07:04:07.734Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/elevate-personality/locations/-/functions 200
+[debug] [2026-11-03T07:04:07.734Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/elevate-personality/locations/-/functions {}
+[debug] [2026-11-03T07:04:07.735Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:07.735Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:07.735Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/elevate-personality/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2026-11-03T07:04:09.474Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/elevate-personality/locations/-/functions 200
+[debug] [2026-11-03T07:04:09.474Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/elevate-personality/locations/-/functions {}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2026-11-03T07:04:09.476Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-11-03T07:04:09.477Z] > authorizing via signed-in user (jaikumar1240@gmail.com)
+[debug] [2026-11-03T07:04:09.477Z] [iam] checking project elevate-personality for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2026-11-03T07:04:09.477Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:09.477Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:09.477Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions [none]
+[debug] [2026-11-03T07:04:09.477Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions  x-goog-user-project=elevate-personality
+[debug] [2026-11-03T07:04:09.477Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-11-03T07:04:10.897Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions 200
+[debug] [2026-11-03T07:04:10.897Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/elevate-personality:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-11-03T07:04:10.897Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:10.897Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:10.897Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/elevate-personality/instances pageSize=100&pageToken=
+[debug] [2026-11-03T07:04:12.535Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/elevate-personality/instances 200
+[debug] [2026-11-03T07:04:12.535Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/elevate-personality/instances {}
+[debug] [2026-11-03T07:04:12.536Z] Attempting to merge .env secret bindings {} into declared secrets...)}
+[debug] [2026-11-03T07:04:12.536Z] api declared secrets: [{"key":"RAZORPAY_KEY_ID","secret":"RAZORPAY_KEY_ID","projectId":"elevate-personality"},{"key":"RAZORPAY_KEY_SECRET","secret":"RAZORPAY_KEY_SECRET","projectId":"elevate-personality"},{"key":"RAZORPAY_WEBHOOK_SECRET","secret":"RAZORPAY_WEBHOOK_SECRET","projectId":"elevate-personality"},{"key":"META_CAPI_TOKEN","secret":"META_CAPI_TOKEN","projectId":"elevate-personality"},{"key":"GMAIL_APP_PASSWORD","secret":"GMAIL_APP_PASSWORD","projectId":"elevate-personality"},{"key":"CALENDLY_TOKEN","secret":"CALENDLY_TOKEN","projectId":"elevate-personality"}]
+[debug] [2026-11-03T07:04:12.536Z] paymentReminders declared secrets: [{"key":"GMAIL_APP_PASSWORD","secret":"GMAIL_APP_PASSWORD","projectId":"elevate-personality"}]
+[debug] [2026-11-03T07:04:12.537Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:12.537Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:12.537Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_ID [none]
+[debug] [2026-11-03T07:04:12.975Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_ID 200
+[debug] [2026-11-03T07:04:12.975Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_ID {"name":"projects/806064271521/secrets/RAZORPAY_KEY_ID","replication":{"automatic":{}},"createTime":"2026-11-02T18:40:41.992717Z","labels":{"firebase-managed":"functions"},"etag":"\"165f4f7bc53d10\""}
+[debug] [2026-11-03T07:04:12.975Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:12.975Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:12.976Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_ID/versions/latest [none]
+[debug] [2026-11-03T07:04:13.312Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_ID/versions/latest 200
+[debug] [2026-11-03T07:04:13.313Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_ID/versions/latest {"name":"projects/806064271521/secrets/RAZORPAY_KEY_ID/versions/1","createTime":"2026-11-02T18:40:54.158647Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"165f4f7c62a537\""}
+[debug] [2026-11-03T07:04:13.314Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:13.314Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:13.314Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_SECRET [none]
+[debug] [2026-11-03T07:04:13.647Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_SECRET 200
+[debug] [2026-11-03T07:04:13.647Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_SECRET {"name":"projects/806064271521/secrets/RAZORPAY_KEY_SECRET","replication":{"automatic":{}},"createTime":"2026-11-02T18:40:59.751472Z","labels":{"firebase-managed":"functions"},"etag":"\"165f4f7cc7c6b4\""}
+[debug] [2026-11-03T07:04:13.647Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:13.648Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:13.648Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_SECRET/versions/latest [none]
+[debug] [2026-11-03T07:04:14.036Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_SECRET/versions/latest 200
+[debug] [2026-11-03T07:04:14.036Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_KEY_SECRET/versions/latest {"name":"projects/806064271521/secrets/RAZORPAY_KEY_SECRET/versions/1","createTime":"2026-11-02T18:41:06.663915Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"165f4f7d2175eb\""}
+[debug] [2026-11-03T07:04:14.037Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:14.037Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:14.037Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET [none]
+[debug] [2026-11-03T07:04:14.348Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET 200
+[debug] [2026-11-03T07:04:14.348Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET {"name":"projects/806064271521/secrets/RAZORPAY_WEBHOOK_SECRET","replication":{"automatic":{}},"createTime":"2026-11-02T18:41:12.016477Z","labels":{"firebase-managed":"functions"},"etag":"\"165f4f7d8f51f5\""}
+[debug] [2026-11-03T07:04:14.348Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:14.349Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:14.349Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET/versions/latest [none]
+[debug] [2026-11-03T07:04:14.662Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET/versions/latest 200
+[debug] [2026-11-03T07:04:14.662Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET/versions/latest {"name":"projects/806064271521/secrets/RAZORPAY_WEBHOOK_SECRET/versions/1","createTime":"2026-11-02T18:41:29.021555Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"165f4f7e769c73\""}
+[debug] [2026-11-03T07:04:14.662Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:14.663Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:14.663Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/META_CAPI_TOKEN [none]
+[debug] [2026-11-03T07:04:14.989Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/META_CAPI_TOKEN 200
+[debug] [2026-11-03T07:04:14.990Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/META_CAPI_TOKEN {"name":"projects/806064271521/secrets/META_CAPI_TOKEN","replication":{"automatic":{}},"createTime":"2026-11-02T18:39:17.552702Z","labels":{"firebase-managed":"functions"},"etag":"\"165f4f76bca631\""}
+[debug] [2026-11-03T07:04:14.990Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:14.990Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:14.990Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/META_CAPI_TOKEN/versions/latest [none]
+[debug] [2026-11-03T07:04:15.307Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/META_CAPI_TOKEN/versions/latest 200
+[debug] [2026-11-03T07:04:15.307Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/META_CAPI_TOKEN/versions/latest {"name":"projects/806064271521/secrets/META_CAPI_TOKEN/versions/1","createTime":"2026-11-03T06:29:00.470040Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"165f5960c44f18\""}
+[debug] [2026-11-03T07:04:15.308Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:15.308Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:15.308Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/GMAIL_APP_PASSWORD [none]
+[debug] [2026-11-03T07:04:15.637Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/GMAIL_APP_PASSWORD 200
+[debug] [2026-11-03T07:04:15.637Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/GMAIL_APP_PASSWORD {"name":"projects/806064271521/secrets/GMAIL_APP_PASSWORD","replication":{"automatic":{}},"createTime":"2026-11-02T18:41:40.992163Z","labels":{"firebase-managed":"functions"},"etag":"\"165f4f7f3d3877\""}
+[debug] [2026-11-03T07:04:15.637Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:15.637Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:15.637Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/GMAIL_APP_PASSWORD/versions/latest [none]
+[debug] [2026-11-03T07:04:15.956Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/GMAIL_APP_PASSWORD/versions/latest 200
+[debug] [2026-11-03T07:04:15.956Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/GMAIL_APP_PASSWORD/versions/latest {"name":"projects/806064271521/secrets/GMAIL_APP_PASSWORD/versions/1","createTime":"2026-11-02T18:41:50.489418Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"165f4f7fbe2f4a\""}
+[debug] [2026-11-03T07:04:15.956Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:15.956Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:15.956Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/CALENDLY_TOKEN [none]
+[debug] [2026-11-03T07:04:16.279Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/CALENDLY_TOKEN 200
+[debug] [2026-11-03T07:04:16.279Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/CALENDLY_TOKEN {"name":"projects/806064271521/secrets/CALENDLY_TOKEN","replication":{"automatic":{}},"createTime":"2026-11-02T18:39:27.878071Z","labels":{"firebase-managed":"functions"},"etag":"\"165f4f775a51c6\""}
+[debug] [2026-11-03T07:04:16.279Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:16.279Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:04:16.279Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/CALENDLY_TOKEN/versions/latest [none]
+[debug] [2026-11-03T07:04:16.604Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/CALENDLY_TOKEN/versions/latest 200
+[debug] [2026-11-03T07:04:16.605Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/elevate-personality/secrets/CALENDLY_TOKEN/versions/latest {"name":"projects/806064271521/secrets/CALENDLY_TOKEN/versions/1","createTime":"2026-11-03T07:03:50.002412Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"165f59dd500aec\""}
+[info] Prompting for parameters for codebase default:
 [info] 
-┌─────────────────────────────────────────────────────────────┐
-│ ✔  All emulators ready! It is now safe to connect your app. │
-│ i  View Emulator UI at http://127.0.0.1:4000/               │
-└─────────────────────────────────────────────────────────────┘
-
-┌───────────┬────────────────┬─────────────────────────────────┐
-│ Emulator  │ Host:Port      │ View in Emulator UI             │
-├───────────┼────────────────┼─────────────────────────────────┤
-│ Functions │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
-├───────────┼────────────────┼─────────────────────────────────┤
-│ Firestore │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore │
-├───────────┼────────────────┼─────────────────────────────────┤
-│ Hosting   │ 127.0.0.1:5002 │ n/a                             │
-└───────────┴────────────────┴─────────────────────────────────┘
-  Emulator Hub host: 127.0.0.1 port: 4400
-  Other reserved ports: 4500, 9150
-
-Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
- 
-[debug] [2026-11-02T18:18:10.472Z] Nov 02, 2026 11:48:10 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
-INFO: Connected to new websocket client
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:48:10 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\nINFO: Connected to new websocket client\n"}}
-[info] i  hosting: 127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36\""}}
-[info] i  hosting: 127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] "GET /styles.css?v=4 HTTP/1.1" 200 - "http://localhost:5002/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] \"GET /styles.css?v=4 HTTP/1.1\" 200 - \"http://localhost:5002/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36\""}}
-[info] i  hosting: 127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] "GET /assets/pro_image.jpg HTTP/1.1" 200 105604 "http://localhost:5002/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] \"GET /assets/pro_image.jpg HTTP/1.1\" 200 105604 \"http://localhost:5002/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36\""}}
-[info] i  hosting: 127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] "GET /assets/dyc-logo-transparent.png HTTP/1.1" 200 471514 "http://localhost:5002/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] \"GET /assets/dyc-logo-transparent.png HTTP/1.1\" 200 471514 \"http://localhost:5002/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36\""}}
-[info] i  hosting: 127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] "GET /script.js?v=5 HTTP/1.1" 200 - "http://localhost:5002/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [02/Nov/2026:18:18:26 +0000] \"GET /script.js?v=5 HTTP/1.1\" 200 - \"http://localhost:5002/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36\""}}
-[info] i  hosting: 127.0.0.1 - - [02/Nov/2026:18:18:27 +0000] "GET /assets/favicon.png HTTP/1.1" 200 - "http://localhost:5002/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [02/Nov/2026:18:18:27 +0000] \"GET /assets/favicon.png HTTP/1.1\" 200 - \"http://localhost:5002/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36\""}}
-[info] [hosting] Rewriting /api/lead to http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api for local Function asia-south1/api
-[debug] [2026-11-02T18:18:42.130Z] >>> [apiv2][query] POST http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api/api/lead 
-[debug] [2026-11-02T18:18:42.130Z] >>> [apiv2][body] POST http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api/api/lead [stream]
-[debug] [2026-11-02T18:18:42.132Z] [work-queue] {"queuedWork":["/demo-elevate-personality/asia-south1/api/api/lead-2026-11-02T18:18:42.132Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
-[debug] [2026-11-02T18:18:42.132Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/demo-elevate-personality/asia-south1/api/api/lead-2026-11-02T18:18:42.132Z"],"workRunningCount":1}
-[debug] [2026-11-02T18:18:42.133Z] Accepted request POST /demo-elevate-personality/asia-south1/api/api/lead --> asia-south1-api
-[debug] [2026-11-02T18:18:42.133Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
-[debug] [2026-11-02T18:18:42.134Z] [functions] Got req.url=/demo-elevate-personality/asia-south1/api/api/lead, mapping to path=/api/lead {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/demo-elevate-personality/asia-south1/api/api/lead, mapping to path=/api/lead"}}
-[info] i  functions: Loaded environment variables from functions/.env.local 
-[info] i  functions: Trying to access secret RAZORPAY_KEY_ID@latest {"metadata":{"emulator":{"name":"functions"},"message":"Trying to access secret RAZORPAY_KEY_ID@latest"}}
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[info] i  functions: Trying to access secret RAZORPAY_KEY_SECRET@latest {"metadata":{"emulator":{"name":"functions"},"message":"Trying to access secret RAZORPAY_KEY_SECRET@latest"}}
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[info] i  functions: Trying to access secret RAZORPAY_WEBHOOK_SECRET@latest {"metadata":{"emulator":{"name":"functions"},"message":"Trying to access secret RAZORPAY_WEBHOOK_SECRET@latest"}}
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[info] i  functions: Trying to access secret META_CAPI_TOKEN@latest {"metadata":{"emulator":{"name":"functions"},"message":"Trying to access secret META_CAPI_TOKEN@latest"}}
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[info] i  functions: Trying to access secret GMAIL_APP_PASSWORD@latest {"metadata":{"emulator":{"name":"functions"},"message":"Trying to access secret GMAIL_APP_PASSWORD@latest"}}
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[debug] [2026-11-02T18:18:42.138Z] Checked if tokens are valid: true, expires at: 1793644797252
-[info] i  functions: Trying to access secret CALENDLY_TOKEN@latest {"metadata":{"emulator":{"name":"functions"},"message":"Trying to access secret CALENDLY_TOKEN@latest"}}
-[debug] [2026-11-02T18:18:42.139Z] Checked if tokens are valid: true, expires at: 1793644797252
-[debug] [2026-11-02T18:18:42.139Z] Checked if tokens are valid: true, expires at: 1793644797252
-[debug] [2026-11-02T18:18:42.139Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_ID/versions/latest:access [none]
-[debug] [2026-11-02T18:18:42.140Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_SECRET/versions/latest:access [none]
-[debug] [2026-11-02T18:18:42.140Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET/versions/latest:access [none]
-[debug] [2026-11-02T18:18:42.141Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/META_CAPI_TOKEN/versions/latest:access [none]
-[debug] [2026-11-02T18:18:42.141Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/GMAIL_APP_PASSWORD/versions/latest:access [none]
-[debug] [2026-11-02T18:18:42.141Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/CALENDLY_TOKEN/versions/latest:access [none]
-[debug] [2026-11-02T18:18:42.356Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_ID/versions/latest:access 403
-[debug] [2026-11-02T18:18:42.356Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_ID/versions/latest:access {"error":{"code":403,"message":"Permission denied on resource project demo-elevate-personality.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"CONSUMER_INVALID","domain":"googleapis.com","metadata":{"containerInfo":"demo-elevate-personality","consumer":"projects/demo-elevate-personality","service":"secretmanager.googleapis.com"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Permission denied on resource project demo-elevate-personality."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console","url":"https://console.developers.google.com"}]}]}}
-[debug] [2026-11-02T18:18:42.370Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/META_CAPI_TOKEN/versions/latest:access 403
-[debug] [2026-11-02T18:18:42.370Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/META_CAPI_TOKEN/versions/latest:access {"error":{"code":403,"message":"Permission denied on resource project demo-elevate-personality.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"CONSUMER_INVALID","domain":"googleapis.com","metadata":{"service":"secretmanager.googleapis.com","containerInfo":"demo-elevate-personality","consumer":"projects/demo-elevate-personality"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Permission denied on resource project demo-elevate-personality."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console","url":"https://console.developers.google.com"}]}]}}
-[debug] [2026-11-02T18:18:42.370Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/GMAIL_APP_PASSWORD/versions/latest:access 403
-[debug] [2026-11-02T18:18:42.370Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/GMAIL_APP_PASSWORD/versions/latest:access {"error":{"code":403,"message":"Permission denied on resource project demo-elevate-personality.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"CONSUMER_INVALID","domain":"googleapis.com","metadata":{"service":"secretmanager.googleapis.com","containerInfo":"demo-elevate-personality","consumer":"projects/demo-elevate-personality"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Permission denied on resource project demo-elevate-personality."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console","url":"https://console.developers.google.com"}]}]}}
-[debug] [2026-11-02T18:18:42.377Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/CALENDLY_TOKEN/versions/latest:access 403
-[debug] [2026-11-02T18:18:42.377Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/CALENDLY_TOKEN/versions/latest:access {"error":{"code":403,"message":"Permission denied on resource project demo-elevate-personality.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"CONSUMER_INVALID","domain":"googleapis.com","metadata":{"service":"secretmanager.googleapis.com","containerInfo":"demo-elevate-personality","consumer":"projects/demo-elevate-personality"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Permission denied on resource project demo-elevate-personality."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console","url":"https://console.developers.google.com"}]}]}}
-[debug] [2026-11-02T18:18:42.671Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_SECRET/versions/latest:access 403
-[debug] [2026-11-02T18:18:42.671Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_SECRET/versions/latest:access {"error":{"code":403,"message":"Permission denied on resource project demo-elevate-personality.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"CONSUMER_INVALID","domain":"googleapis.com","metadata":{"service":"secretmanager.googleapis.com","consumer":"projects/demo-elevate-personality","containerInfo":"demo-elevate-personality"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Permission denied on resource project demo-elevate-personality."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console","url":"https://console.developers.google.com"}]}]}}
-[debug] [2026-11-02T18:18:42.691Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET/versions/latest:access 403
-[debug] [2026-11-02T18:18:42.691Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET/versions/latest:access {"error":{"code":403,"message":"Permission denied on resource project demo-elevate-personality.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"CONSUMER_INVALID","domain":"googleapis.com","metadata":{"service":"secretmanager.googleapis.com","containerInfo":"demo-elevate-personality","consumer":"projects/demo-elevate-personality"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Permission denied on resource project demo-elevate-personality."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console","url":"https://console.developers.google.com"}]}]}}
-[error] ⬢  functions: Unable to access secret environment variables from Google Cloud Secret Manager. Make sure the credential used for the Functions Emulator have access or provide override values in /Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/.secret.local:
-	FirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_ID/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.
-	FirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_SECRET/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.
-	FirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.
-	FirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/META_CAPI_TOKEN/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.
-	FirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/GMAIL_APP_PASSWORD/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.
-	FirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/CALENDLY_TOKEN/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality. {"metadata":{"emulator":{"name":"functions"},"message":"Unable to access secret environment variables from Google Cloud Secret Manager. Make sure the credential used for the Functions Emulator have access or provide override values in /Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/.secret.local:\n\tFirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_ID/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.\n\tFirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_KEY_SECRET/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.\n\tFirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/RAZORPAY_WEBHOOK_SECRET/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.\n\tFirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/META_CAPI_TOKEN/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.\n\tFirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/GMAIL_APP_PASSWORD/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality.\n\tFirebaseError: Request to https://secretmanager.googleapis.com/v1/projects/demo-elevate-personality/secrets/CALENDLY_TOKEN/versions/latest:access had HTTP Error: 403, Permission denied on resource project demo-elevate-personality."}}
-[debug] [2026-11-02T18:18:42.697Z] [worker-pool] addWorker(asia-south1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(asia-south1-api)"}}
-[debug] [2026-11-02T18:18:42.698Z] [worker-pool] Adding worker with key asia-south1-api, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key asia-south1-api, total=1"}}
-[debug] [2026-11-02T18:18:43.088Z] [runtime-status] [77020] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-admin/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[runtime-status] [77020] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-admin/lib/index.js\"}"}}
-[debug] [2026-11-02T18:18:43.088Z] [runtime-status] [77020] Resolved module firebase-functions {"declared":true,"installed":true,"version":"6.6.0","resolution":"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-functions/lib/v2/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[runtime-status] [77020] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"6.6.0\",\"resolution\":\"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-functions/lib/v2/index.js\"}"}}
-[debug] [2026-11-02T18:18:43.088Z] [runtime-status] [77020] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[runtime-status] [77020] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
-[debug] [2026-11-02T18:18:43.088Z] [runtime-status] [77020] Resolved module firebase-functions {"declared":true,"installed":true,"version":"6.6.0","resolution":"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-functions/lib/v2/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[runtime-status] [77020] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"6.6.0\",\"resolution\":\"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-functions/lib/v2/index.js\"}"}}
-[debug] [2026-11-02T18:18:43.134Z] [runtime-status] [77020] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-admin/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[runtime-status] [77020] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-admin/lib/index.js\"}"}}
-[debug] [2026-11-02T18:18:43.135Z] [runtime-status] [77020] Resolved module firebase-functions {"declared":true,"installed":true,"version":"6.6.0","resolution":"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-functions/lib/v2/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[runtime-status] [77020] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"6.6.0\",\"resolution\":\"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-functions/lib/v2/index.js\"}"}}
-[debug] [2026-11-02T18:18:43.172Z] [runtime-status] [77020] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.7.0","resolution":"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-admin/lib/index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[runtime-status] [77020] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions/node_modules/firebase-admin/lib/index.js\"}}"}}
-[debug] [2026-11-02T18:18:43.229Z] [runtime-status] [77020] Functions runtime initialized. {"cwd":"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions","node_version":"20.20.2"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[runtime-status] [77020] Functions runtime initialized. {\"cwd\":\"/Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions\",\"node_version\":\"20.20.2\"}"}}
-[debug] [2026-11-02T18:18:43.230Z] [runtime-status] [77020] Listening to port: /var/folders/0x/dwx46kz94b35_gm5w8tvf6q00000gp/T/fire_emu_2533eff627fbad65.sock {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[runtime-status] [77020] Listening to port: /var/folders/0x/dwx46kz94b35_gm5w8tvf6q00000gp/T/fire_emu_2533eff627fbad65.sock"}}
-[debug] [2026-11-02T18:18:43.311Z] [worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: IDLE"}}
-[debug] [2026-11-02T18:18:43.311Z] [worker-pool] submitRequest(triggerId=asia-south1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=asia-south1-api)"}}
-[info] i  functions: Beginning execution of "asia-south1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Beginning execution of \"asia-south1-api\""}}
-[debug] [2026-11-02T18:18:43.311Z] [worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: BUSY"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_KEY_ID\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_KEY_ID\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"RAZORPAY_KEY_ID\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_KEY_SECRET\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_KEY_SECRET\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"RAZORPAY_KEY_SECRET\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_WEBHOOK_SECRET\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_WEBHOOK_SECRET\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"RAZORPAY_WEBHOOK_SECRET\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"META_CAPI_TOKEN\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"META_CAPI_TOKEN\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"META_CAPI_TOKEN\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"GMAIL_APP_PASSWORD\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"GMAIL_APP_PASSWORD\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"GMAIL_APP_PASSWORD\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"CALENDLY_TOKEN\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"CALENDLY_TOKEN\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"CALENDLY_TOKEN\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[debug] [2026-11-02T18:18:43.470Z] Nov 02, 2026 11:48:43 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:48:43 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:18:43.785Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
-[info] i  functions: Finished "asia-south1-api" in 473.76175ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Finished \"asia-south1-api\" in 473.76175ms"}}
-[debug] [2026-11-02T18:18:43.785Z] [worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: IDLE"}}
-[debug] [2026-11-02T18:18:43.785Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
-[debug] [2026-11-02T18:18:43.785Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Finishing up request with event=close"}}
-[debug] [2026-11-02T18:18:43.785Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
-[debug] [2026-11-02T18:18:43.786Z] <<< [apiv2][status] POST http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api/api/lead 200
-[debug] [2026-11-02T18:18:43.786Z] <<< [apiv2][body] POST http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api/api/lead [stream]
-[info] i  hosting: 127.0.0.1 - - [02/Nov/2026:18:18:43 +0000] "POST /api/lead HTTP/1.1" 200 226 "http://localhost:5002/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [02/Nov/2026:18:18:43 +0000] \"POST /api/lead HTTP/1.1\" 200 226 \"http://localhost:5002/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36\""}}
-[info] i  hosting: 127.0.0.1 - - [02/Nov/2026:18:18:45 +0000] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 187 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [02/Nov/2026:18:18:45 +0000] \"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1\" 404 187 \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36\""}}
-[info] [hosting] Rewriting /api/lead to http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api for local Function asia-south1/api
-[debug] [2026-11-02T18:18:52.764Z] >>> [apiv2][query] POST http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api/api/lead 
-[debug] [2026-11-02T18:18:52.764Z] >>> [apiv2][body] POST http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api/api/lead [stream]
-[debug] [2026-11-02T18:18:52.766Z] [work-queue] {"queuedWork":["/demo-elevate-personality/asia-south1/api/api/lead-2026-11-02T18:18:52.766Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
-[debug] [2026-11-02T18:18:52.767Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/demo-elevate-personality/asia-south1/api/api/lead-2026-11-02T18:18:52.766Z"],"workRunningCount":1}
-[debug] [2026-11-02T18:18:52.767Z] Accepted request POST /demo-elevate-personality/asia-south1/api/api/lead --> asia-south1-api
-[debug] [2026-11-02T18:18:52.767Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
-[debug] [2026-11-02T18:18:52.767Z] [functions] Got req.url=/demo-elevate-personality/asia-south1/api/api/lead, mapping to path=/api/lead {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/demo-elevate-personality/asia-south1/api/api/lead, mapping to path=/api/lead"}}
-[debug] [2026-11-02T18:18:52.767Z] [worker-pool] submitRequest(triggerId=asia-south1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=asia-south1-api)"}}
-[info] i  functions: Beginning execution of "asia-south1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Beginning execution of \"asia-south1-api\""}}
-[debug] [2026-11-02T18:18:52.768Z] [worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: BUSY"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_KEY_ID\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_KEY_ID\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"RAZORPAY_KEY_ID\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_KEY_SECRET\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_KEY_SECRET\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"RAZORPAY_KEY_SECRET\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_WEBHOOK_SECRET\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"RAZORPAY_WEBHOOK_SECRET\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"RAZORPAY_WEBHOOK_SECRET\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"META_CAPI_TOKEN\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"META_CAPI_TOKEN\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"META_CAPI_TOKEN\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"GMAIL_APP_PASSWORD\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"GMAIL_APP_PASSWORD\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"GMAIL_APP_PASSWORD\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[info] >  {"severity":"WARNING","message":"No value found for secret parameter \"CALENDLY_TOKEN\". A function can only access a secret if you include the secret in the function's dependency array."} {"user":{"severity":"WARNING","message":"No value found for secret parameter \"CALENDLY_TOKEN\". A function can only access a secret if you include the secret in the function's dependency array."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"WARNING\",\"message\":\"No value found for secret parameter \\\"CALENDLY_TOKEN\\\". A function can only access a secret if you include the secret in the function's dependency array.\"}"}}
-[debug] [2026-11-02T18:18:52.790Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
-[info] i  functions: Finished "asia-south1-api" in 22.424792ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Finished \"asia-south1-api\" in 22.424792ms"}}
-[debug] [2026-11-02T18:18:52.790Z] [worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"[worker-asia-south1-api-32878239-c870-41a3-9aa2-b73e6705c412]: IDLE"}}
-[debug] [2026-11-02T18:18:52.790Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
-[debug] [2026-11-02T18:18:52.790Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"asia-south1-api"},"extension":{},"message":"Finishing up request with event=close"}}
-[debug] [2026-11-02T18:18:52.790Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
-[debug] [2026-11-02T18:18:52.790Z] <<< [apiv2][status] POST http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api/api/lead 200
-[debug] [2026-11-02T18:18:52.790Z] <<< [apiv2][body] POST http://127.0.0.1:5001/demo-elevate-personality/asia-south1/api/api/lead [stream]
-[info] i  hosting: 127.0.0.1 - - [02/Nov/2026:18:18:52 +0000] "POST /api/lead HTTP/1.1" 200 227 "http://localhost:5002/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [02/Nov/2026:18:18:52 +0000] \"POST /api/lead HTTP/1.1\" 200 227 \"http://localhost:5002/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36\""}}
-[debug] [2026-11-02T18:19:36.188Z] Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:19:36.220Z] Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:19:36.342Z] Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:19:36.350Z] Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:19:36.375Z] Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:19:40.114Z] Nov 02, 2026 11:49:40 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:40 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:19:40.114Z] Nov 02, 2026 11:49:40 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:40 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:19:43.330Z] Nov 02, 2026 11:49:43 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreListenHandler onClose
-INFO: channel closed
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:43 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreListenHandler onClose\nINFO: channel closed\n"}}
-[debug] [2026-11-02T18:19:48.094Z] Nov 02, 2026 11:49:48 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:48 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:19:48.096Z] Nov 02, 2026 11:49:48 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:48 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
-[debug] [2026-11-02T18:19:48.096Z] Nov 02, 2026 11:49:48 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
- {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 02, 2026 11:49:48 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[info] 
+[info] 
+[info] 
+[info] 
+[info] 
+[info] i  functions: Created new local file functions/.env.elevate-personality to store param values. We suggest explicitly adding or excluding this file from version control. 
+[info] i  functions: Loaded environment variables from functions/.env.elevate-personality 
+[info] i  functions: Loaded environment variables from functions/.env.elevate-personality 
+[info] i  functions: Writing new parameter values to disk: functions/.env.elevate-personality 
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged /Users/glo17864/Desktop/Personal/DebugYourCareer-ElevateYou/functions (46.39 KB) for uploading 
+[info] i  functions: ensuring required API cloudscheduler.googleapis.com is enabled... 
+[debug] [2026-11-03T07:05:21.632Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:21.632Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:21.632Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/cloudscheduler.googleapis.com [none]
+[debug] [2026-11-03T07:05:21.632Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/cloudscheduler.googleapis.com  x-goog-user-project=806064271521
+[debug] [2026-11-03T07:05:28.633Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/cloudscheduler.googleapis.com 200
+[debug] [2026-11-03T07:05:28.633Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/cloudscheduler.googleapis.com [omitted]
+[warn] ⚠  functions: missing required API cloudscheduler.googleapis.com. Enabling now... 
+[debug] [2026-11-03T07:05:28.634Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:28.634Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:28.634Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/cloudscheduler.googleapis.com:enable [none]
+[debug] [2026-11-03T07:05:28.634Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/cloudscheduler.googleapis.com:enable  x-goog-user-project=806064271521
+[debug] [2026-11-03T07:05:31.127Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/cloudscheduler.googleapis.com:enable 200
+[debug] [2026-11-03T07:05:31.128Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/cloudscheduler.googleapis.com:enable [omitted]
+[info] i  functions: ensuring required API run.googleapis.com is enabled... 
+[debug] [2026-11-03T07:05:41.140Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:41.140Z] Checked if tokens are valid: true, expires at: 1793690927879
+[info] i  functions: ensuring required API eventarc.googleapis.com is enabled... 
+[debug] [2026-11-03T07:05:41.140Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:41.140Z] Checked if tokens are valid: true, expires at: 1793690927879
+[info] i  functions: ensuring required API pubsub.googleapis.com is enabled... 
+[debug] [2026-11-03T07:05:41.141Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:41.141Z] Checked if tokens are valid: true, expires at: 1793690927879
+[info] i  functions: ensuring required API storage.googleapis.com is enabled... 
+[debug] [2026-11-03T07:05:41.141Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:41.141Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:41.141Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/run.googleapis.com [none]
+[debug] [2026-11-03T07:05:41.141Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/run.googleapis.com  x-goog-user-project=806064271521
+[debug] [2026-11-03T07:05:41.142Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/eventarc.googleapis.com [none]
+[debug] [2026-11-03T07:05:41.142Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/eventarc.googleapis.com  x-goog-user-project=806064271521
+[debug] [2026-11-03T07:05:41.143Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/pubsub.googleapis.com [none]
+[debug] [2026-11-03T07:05:41.143Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/pubsub.googleapis.com  x-goog-user-project=806064271521
+[debug] [2026-11-03T07:05:41.145Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/storage.googleapis.com [none]
+[debug] [2026-11-03T07:05:41.145Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/storage.googleapis.com  x-goog-user-project=806064271521
+[debug] [2026-11-03T07:05:42.942Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/eventarc.googleapis.com 200
+[debug] [2026-11-03T07:05:42.942Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/eventarc.googleapis.com [omitted]
+[warn] ⚠  functions: missing required API eventarc.googleapis.com. Enabling now... 
+[debug] [2026-11-03T07:05:42.942Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:42.942Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:42.942Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/eventarc.googleapis.com:enable [none]
+[debug] [2026-11-03T07:05:42.942Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/eventarc.googleapis.com:enable  x-goog-user-project=806064271521
+[debug] [2026-11-03T07:05:42.978Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/storage.googleapis.com 200
+[debug] [2026-11-03T07:05:42.978Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/storage.googleapis.com [omitted]
+[info] ✔  functions: required API storage.googleapis.com is enabled 
+[debug] [2026-11-03T07:05:43.238Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/pubsub.googleapis.com 200
+[debug] [2026-11-03T07:05:43.239Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/pubsub.googleapis.com [omitted]
+[info] ✔  functions: required API pubsub.googleapis.com is enabled 
+[debug] [2026-11-03T07:05:44.324Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/run.googleapis.com 200
+[debug] [2026-11-03T07:05:44.325Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/806064271521/services/run.googleapis.com [omitted]
+[warn] ⚠  functions: missing required API run.googleapis.com. Enabling now... 
+[debug] [2026-11-03T07:05:44.326Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:44.326Z] Checked if tokens are valid: true, expires at: 1793690927879
+[debug] [2026-11-03T07:05:44.326Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/run.googleapis.com:enable [none]
+[debug] [2026-11-03T07:05:44.326Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/run.googleapis.com:enable  x-goog-user-project=806064271521
+[debug] [2026-11-03T07:05:44.878Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/eventarc.googleapis.com:enable 200
+[debug] [2026-11-03T07:05:44.878Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/eventarc.googleapis.com:enable [omitted]
+[debug] [2026-11-03T07:05:46.339Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/run.googleapis.com:enable 200
+[debug] [2026-11-03T07:05:46.339Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/806064271521/services/run.googleapis.com:enable [omitted]
