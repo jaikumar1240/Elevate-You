@@ -131,6 +131,8 @@ Leads who don't pay stay in `/admin` with their stage (form filled / checkout cl
    firebase deploy --only functions,firestore
    firebase deploy --only hosting
    ```
+   Firebase Hosting deploys exclude hidden directories and logs. The Hosting emulator serves from the repository root and does not apply those exclusions; keep it bound to localhost.
+   Automatic cleanup of old function images is disabled in `elevate-personality`; monitor Artifact Registry storage and configure retention when appropriate.
 4. **Razorpay webhook** (Dashboard → Webhooks):
    - URL: `https://elevate-personality.web.app/api/razorpay-webhook`
    - Events: `payment.captured`, `order.paid`
