@@ -110,7 +110,7 @@ MIT
 **Flow:** Book button → lead form (name, WhatsApp, email, status) → lead saved in Firestore → prefilled Razorpay popup → server verifies the payment → compact paid confirmation → prefilled Calendly page in the **same tab**.
 Leads who don't pay stay in `/admin` with their stage (form filled / checkout closed / payment failed), so you can call them.
 
-After payment, the same browser retains a "Continue booking" link without charging again. Refresh/Back never automatically redirects. If local storage is unavailable, the immediate link and redirect still work; WhatsApp support can recover the paid booking. There is no dependency on Calendly's embed JavaScript or browser popup permissions.
+After payment, the same browser retains a "Continue booking" link without charging again. Refresh/Back never automatically redirects. Returning customers see a paid confirmation with automatic status checks every 30 seconds while the page is visible; checks pause when leaving or hiding the page and resume on return. Customers who already booked are told not to book or pay again while synchronization catches up. An API-confirmed receipt is retained across refreshes without storing contact prefill or a scheduling URL; if saving it fails, the existing paid recovery state is kept. If local storage is unavailable, the immediate link and redirect still work; WhatsApp support can recover the paid booking. There is no dependency on Calendly's embed JavaScript or browser popup permissions.
 
 **Payment reminder:** about 30 minutes after an unpaid form submission, the `paymentReminders` function (runs every 10 min) emails the lead once from your Gmail. The email has a one-click link (`/?resume=<token>`) that reopens the form already filled in, plus a WhatsApp help link. Leads older than 24h are skipped. Clicks show up in the lead's timeline in `/admin` and as the GA4 event `reminder_click`.
 
@@ -160,6 +160,8 @@ Each payment has an opaque reference passed in Calendly's `utm_term`. Original a
 
 This records **initial booking only**, not live appointment status. Use Calendly for cancellations/rescheduling. Old paid-but-unbooked records gain a reference when a fresh link is issued; uncorrelated historical bookings need manual review. Legacy browser-confirmed bookings are labeled separately in the CRM and are not automatically backfilled as API-confirmed conversions. Returning customers with such records are asked to check their confirmation email or contact support instead of being prompted to book again.
 
+Multiple valid matches produce `ambiguous_match` review instead of choosing a meeting. The return screen hides the scheduling action, explains the review, and continues checking for confirmation. A subsequent due worker retry starts a fresh scan so a stale or cancelled duplicate cannot permanently poison matching; paginated retries resume from their saved progress. Review remains visible if a later scan finds no match or encounters an error, and clears only after a unique booking is verified. The CRM displays any retry error separately from the review reason. Errors back off for at least 30 minutes; browser checks read the stored state and do not force an immediate Calendly scan. If multiple active matches remain, review the Calendly confirmations and retain the intended appointment before retrying; the worker never cancels or chooses one automatically.
+
 The worker uses single-field `bookingSyncAt` and `conversionAt` due-time queries; Firestore's default single-field indexes suffice. No new composite index is required.
 
 ### Analytics (event dictionary)
@@ -201,6 +203,7 @@ For missing credentials, configure the secret and redeploy `bookingSync`; retrya
 `https://elevate-personality.web.app/admin` has:
 - Google sign-in, limited to jaikumar1240@gmail.com.
 - Live leads with funnel stage and source.
+- An activity timeline showing the newest 12 events first, with local timestamps, payment amounts, and API-verified versus unverified booking labels. The count indicates when older events are hidden.
 - Call and WhatsApp buttons.
 - CRM status, follow-up date and notes.
 - CSV export.

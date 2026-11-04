@@ -14,10 +14,16 @@ function browser(deferTimers = false) {
     const elements = new Map();
     const storage = new Map();
     const listeners = new Map();
+    const documentListeners = new Map();
     const timers = new Map();
+    let timerId = 0;
     const context = {
         URL, URLSearchParams, console,
-        setTimeout: (callback) => { if (deferTimers) timers.set(1, callback); else callback(); return 1; },
+        setTimeout: (callback) => {
+            const id = ++timerId;
+            if (deferTimers) timers.set(id, callback); else callback();
+            return id;
+        },
         clearTimeout: (id) => timers.delete(id),
         requestAnimationFrame: (callback) => callback(),
         localStorage: {
@@ -26,7 +32,7 @@ function browser(deferTimers = false) {
             removeItem: (key) => storage.delete(key),
         },
         document: {
-            addEventListener() {},
+            addEventListener: (type, callback) => documentListeners.set(type, callback),
             querySelectorAll: () => [],
             body: { classList: { add() {} } },
             getElementById: (id) => {
@@ -38,7 +44,7 @@ function browser(deferTimers = false) {
     };
     vm.createContext(context);
     vm.runInContext(`${source}\nglobalThis.funnel = LeadFunnel; globalThis.buildUrl = buildCalendlyUrl;`, context);
-    return { context, navigations, elements, storage, listeners, timers };
+    return { context, navigations, elements, storage, listeners, documentListeners, timers };
 }
 
 const booking = {
@@ -108,6 +114,38 @@ test('a pending booking becomes confirmed automatically after Calendly sync with
     assert.equal(navigations.length, 0);
 });
 
+test('background booking checks do not scroll or repeat analytics while waiting', async () => {
+    const { context, storage, elements, timers } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    let views = 0;
+    let scrolls = 0;
+    context.window.gtag = (command, name) => { if (name === 'booking_view') views++; };
+    context.document.getElementById('booking-success').scrollIntoView = () => { scrolls++; };
+    context.fetch = async () => ({ ok: true, json: async () => ({ ...booking, booked: false }) });
+    await context.funnel.resumePendingBooking();
+    const initialViews = views;
+    const initialScrolls = scrolls;
+
+    const [timerId, recheck] = timers.entries().next().value;
+    timers.delete(timerId);
+    await recheck();
+    assert.equal(views, initialViews);
+    assert.equal(scrolls, initialScrolls);
+    assert.equal(elements.get('calendly-direct-link').hidden, false);
+    assert.equal(timers.size, 1);
+});
+
+test('a returned payment awaiting sync does not tell an already-booked customer to book again', async () => {
+    const { context, storage, elements } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    context.fetch = async () => ({ ok: true, json: async () => ({ ...booking, booked: false }) });
+    await context.funnel.resumePendingBooking();
+    assert.equal(elements.get('booking-status-title').textContent, 'Your payment is confirmed.');
+    assert.match(elements.get('calendly-setup-note').textContent, /already booked\? do not book again/i);
+    assert.match(elements.get('calendly-setup-note').textContent, /checks.*automatically/i);
+    assert.equal(elements.get('calendly-direct-link').hidden, false);
+});
+
 test('an API-confirmed booking remains visible after a page refresh', async () => {
     const initial = browser(true);
     initial.storage.set('dyc.pendingBooking', JSON.stringify(booking));
@@ -122,6 +160,17 @@ test('an API-confirmed booking remains visible after a page refresh', async () =
     assert.equal(refreshed.elements.get('calendly-direct-link').hidden, true);
     assert.equal(refreshed.storage.has('dyc.pendingBooking'), false);
     assert.equal(refreshed.navigations.length, 0);
+});
+
+test('a failed confirmed-receipt save retains the paid state for a later recheck', async () => {
+    const { context, storage, elements } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    context.localStorage.setItem = () => { throw new Error('Storage quota reached'); };
+    context.fetch = async () => ({ ok: true, json: async () => ({ booked: true }) });
+    await context.funnel.resumePendingBooking();
+    assert.match(elements.get('booking-status-title').textContent, /booking is confirmed/i);
+    assert.equal(storage.has('dyc.pendingBooking'), true, 'Keep the paid state when the receipt cannot be saved');
+    assert.equal(JSON.parse(storage.get('dyc.pendingBooking')).paymentId, booking.paymentId);
 });
 
 test('a legacy booking under review never offers a duplicate scheduling link', async () => {
@@ -140,6 +189,46 @@ test('a legacy booking under review never offers a duplicate scheduling link', a
     assert.match(elements.get('calendly-setup-note').textContent, /whatsapp.*do not pay again/i);
     assert.equal(storage.has('dyc.pendingBooking'), true);
     assert.equal(navigations.length, 0);
+});
+
+test('ambiguous booking review explains the issue and updates when the server confirms it', async () => {
+    const { context, storage, elements, timers } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    let checks = 0;
+    context.fetch = async () => ({
+        ok: true,
+        json: async () => ++checks === 1
+            ? { booked: false, review: true, reviewReason: 'ambiguous_match' }
+            : { booked: true },
+    });
+
+    await context.funnel.resumePendingBooking();
+    assert.equal(elements.get('calendly-direct-link').hidden, true);
+    assert.match(elements.get('calendly-setup-note').textContent, /multiple.*booking/i);
+    assert.match(elements.get('calendly-setup-note').textContent, /do not book or pay again/i);
+    assert.equal(timers.size, 1);
+    const [timerId, recheck] = timers.entries().next().value;
+    timers.delete(timerId);
+    await recheck();
+    assert.match(elements.get('booking-status-title').textContent, /booking is confirmed/i);
+    assert.equal(timers.size, 0);
+});
+
+test('a failed recheck cannot reopen scheduling after an ambiguous booking review', async () => {
+    const { context, storage, elements, timers } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    context.fetch = async () => ({
+        ok: true, json: async () => ({ booked: false, review: true, reviewReason: 'ambiguous_match' }),
+    });
+    await context.funnel.resumePendingBooking();
+    context.fetch = async () => { throw new Error('Network unavailable'); };
+    const [timerId, recheck] = timers.entries().next().value;
+    timers.delete(timerId);
+    await recheck();
+    assert.equal(elements.get('calendly-direct-link').hidden, true);
+    assert.match(elements.get('booking-status-title').textContent, /review/i);
+    assert.match(elements.get('calendly-setup-note').textContent, /could not recheck/i);
+    assert.match(elements.get('calendly-setup-note').textContent, /do not book or pay again/i);
 });
 
 test('a failed older booking recheck cannot replace a newer payment screen', async () => {
@@ -201,6 +290,55 @@ test('browser Back cancels a pending redirect and rechecks booking without navig
     assert.equal(navigations.length, 0);
 });
 
+test('leaving the page stops booking polling even if an in-flight check finishes later', async () => {
+    const { context, storage, listeners, timers } = browser(true);
+    context.funnel.init();
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    let respond;
+    context.fetch = () => new Promise((resolve) => { respond = resolve; });
+    const checking = context.funnel.resumePendingBooking();
+    listeners.get('pagehide')();
+    respond({ ok: true, json: async () => ({ ...booking, booked: false }) });
+    await checking;
+    assert.equal(timers.size, 0);
+});
+
+test('booking polling pauses in a hidden tab and checks again when the tab becomes visible', async () => {
+    const { context, storage, documentListeners, timers } = browser(true);
+    context.funnel.init();
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    let checks = 0;
+    context.fetch = async () => {
+        checks++;
+        return { ok: true, json: async () => ({ ...booking, booked: false }) };
+    };
+    await context.funnel.resumePendingBooking();
+    assert.equal(timers.size, 1);
+    const visibilityChanged = documentListeners.get('visibilitychange');
+    assert.equal(typeof visibilityChanged, 'function');
+    context.document.hidden = true;
+    await visibilityChanged();
+    assert.equal(timers.size, 0);
+    context.document.hidden = false;
+    await visibilityChanged();
+    assert.equal(checks, 2);
+    assert.equal(timers.size, 1);
+});
+
+test('overlapping booking rechecks share one in-flight request per payment', async () => {
+    const { context, storage, timers } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    const responses = [];
+    context.fetch = () => new Promise((resolve) => responses.push(resolve));
+    const first = context.funnel.resumePendingBooking();
+    const second = context.funnel.resumePendingBooking();
+    const requests = responses.length;
+    for (const respond of responses) respond({ ok: true, json: async () => ({ ...booking, booked: false }) });
+    await Promise.all([first, second]);
+    assert.equal(requests, 1);
+    assert.equal(timers.size, 1);
+});
+
 test('only server-verified payment opens booking, even when browser storage is unavailable', async () => {
     for (const verified of [true, false]) {
         const { context, navigations } = browser();
@@ -242,7 +380,52 @@ test('re-verifying an existing booking shows its state without reopening Calendl
     }
 });
 
+test('a booking confirmed during payment verification also survives refresh', async () => {
+    const initial = browser(true);
+    initial.storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    initial.context.funnel.lead = { leadId: booking.leadId, prefill: booking.prefill };
+    initial.context.funnel.showView = () => {};
+    initial.context.funnel.close = () => {};
+    initial.context.fetch = async () => ({
+        ok: true, json: async () => ({ booked: true, plan: booking.plan, paymentId: booking.paymentId }),
+    });
+    await initial.context.funnel.verify({});
+    const refreshed = browser(true);
+    for (const [key, value] of initial.storage) refreshed.storage.set(key, value);
+    await refreshed.context.funnel.resumePendingBooking();
+    assert.match(refreshed.elements.get('booking-status-title')?.textContent || '', /booking is confirmed/i);
+    const receipt = JSON.parse(refreshed.storage.get('dyc.confirmedBooking'));
+    assert.equal(receipt.prefill, undefined);
+    assert.equal(receipt.bookingUrl, undefined);
+});
+
+test('payment verification returning ambiguity keeps automatic review checks active', async () => {
+    const { context, storage, timers, elements } = browser(true);
+    context.funnel.lead = { leadId: booking.leadId, prefill: booking.prefill };
+    context.funnel.showView = () => {};
+    context.funnel.close = () => {};
+    let checks = 0;
+    context.fetch = async () => ({
+        ok: true, json: async () => ++checks === 1
+            ? { booked: false, review: true, reviewReason: 'ambiguous_match', plan: booking.plan, paymentId: booking.paymentId }
+            : { booked: true },
+    });
+    await context.funnel.verify({});
+    assert.equal(JSON.parse(storage.get('dyc.pendingBooking')).review, true);
+    assert.equal(timers.size, 1);
+    const [timerId, recheck] = timers.entries().next().value;
+    timers.delete(timerId);
+    await recheck();
+    assert.match(elements.get('booking-status-title').textContent, /booking is confirmed/i);
+});
+
 test('compact paid confirmation omits redundant step panels above the booking action', () => {
     const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
     assert.equal(/class="booking-success__step"/.test(html), false, 'Redundant step panels must be absent');
+});
+
+test('the booking-return fix uses a newer script revision than the deployed v6', () => {
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const revision = html.match(/src="script\.js\?v=(\d+)"/);
+    assert.ok(revision && Number(revision[1]) >= 7, 'Use a new asset revision so browsers do not retain the old return flow');
 });

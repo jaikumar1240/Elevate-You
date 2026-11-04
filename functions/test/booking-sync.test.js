@@ -115,6 +115,118 @@ test('uncorrelated historical bookings are review-only, never email-only matches
     assert.equal(payment.bookingSyncError, 'missing_booking_identity');
 });
 
+test('ambiguity retries discard stale candidates after a duplicate booking is cancelled', async () => {
+    const { syncBookings } = require(modulePath);
+    const db = createDb();
+    await seed(db);
+    const remaining = { ...invitee, uri: `${eventUri}/invitees/invitee2` };
+    let activeInvitees = [invitee, remaining];
+    const args = {
+        db, FieldValue, cfg: { calendlySyncToken: 'read' }, now: () => now,
+        createReader: () => reader({
+            invitees: async () => ({ collection: activeInvitees, pagination: {} }),
+            getInvitee: async () => remaining,
+        }),
+    };
+    await syncBookings(args);
+    assert.equal(db.store.get('payments/pay_old').bookingSyncState, 'review');
+
+    activeInvitees = [remaining];
+    await syncBookings({ ...args, now: () => now + 1800_000 });
+    const payment = db.store.get('payments/pay_old');
+    assert.equal(payment.bookingSyncState, 'confirmed');
+    assert.equal(payment.calendlyInviteeUri, remaining.uri);
+    assert.equal(db.store.get('leads/919876543210').history.length, 1);
+});
+
+test('ambiguity review remains visible when a later scan finds no active match', async () => {
+    const { syncBookings } = require(modulePath);
+    const db = createDb();
+    await seed(db);
+    const duplicate = { ...invitee, uri: `${eventUri}/invitees/invitee2` };
+    let activeInvitees = [invitee, duplicate];
+    const args = {
+        db, FieldValue, cfg: { calendlySyncToken: 'read' }, now: () => now,
+        createReader: () => reader({
+            invitees: async () => ({ collection: activeInvitees, pagination: {} }),
+        }),
+    };
+
+    await syncBookings(args);
+    activeInvitees = [];
+    await syncBookings({ ...args, now: () => now + 1800_000 });
+
+    const payment = db.store.get('payments/pay_old');
+    assert.equal(payment.bookingSyncState, 'review');
+    assert.equal(payment.bookingSyncError, 'ambiguous_match');
+    assert.equal(payment.bookedAt, undefined);
+    assert.ok(payment.bookingSyncAt.getTime() > now + 1800_000);
+});
+
+test('ambiguity review resumes a bounded scan until a single match is confirmed', async () => {
+    const { syncBookings } = require(modulePath);
+    const db = createDb();
+    await seed(db, 'pay_old', { bookingSyncState: 'review', bookingSyncError: 'ambiguous_match' });
+    const visited = [];
+    let remaining = 2;
+    const api = reader({
+        events: async () => {
+            assert.ok(remaining-- > 0);
+            return { collection: [event], pagination: {} };
+        },
+        invitees: async (uri, { pageToken }) => {
+            assert.ok(remaining-- > 0);
+            visited.push(pageToken || 'first');
+            return pageToken
+                ? { collection: [], pagination: {} }
+                : { collection: [invitee], pagination: { next_page_token: 'second' } };
+        },
+        getEvent: async () => { assert.ok(remaining-- > 0); return event; },
+        getInvitee: async () => { assert.ok(remaining-- > 0); return invitee; },
+    });
+    Object.defineProperty(api, 'remaining', { get: () => remaining });
+    const args = { db, FieldValue, cfg: { calendlySyncToken: 'read' }, now: () => now, createReader: () => api };
+
+    await syncBookings(args);
+    assert.equal(db.store.get('payments/pay_old').bookingSyncState, 'review');
+    remaining = 4;
+    await syncBookings({ ...args, now: () => now + 600_000 });
+
+    assert.equal(db.store.get('payments/pay_old').bookingSyncState, 'confirmed');
+    assert.deepEqual(visited, ['first', 'second']);
+});
+
+test('a Calendly error does not clear an existing ambiguity review', async () => {
+    const { syncBookings } = require(modulePath);
+    const db = createDb();
+    await seed(db, 'pay_old', { bookingSyncState: 'review', bookingSyncError: 'ambiguous_match' });
+    let rateLimited = true;
+    const args = {
+        db, FieldValue, cfg: { calendlySyncToken: 'read' }, now: () => now,
+        createReader: () => reader({
+            identity: async () => {
+                if (rateLimited) throw Object.assign(new Error('Rate limited'), { code: 'calendly_429', retryAfterMs: 3600_000 });
+                return { userUri: 'https://api.calendly.com/users/user1', eventTypeUri: eventType };
+            },
+        }),
+    };
+
+    await syncBookings(args);
+    let payment = db.store.get('payments/pay_old');
+    assert.equal(payment.bookingSyncState, 'review');
+    assert.equal(payment.bookingSyncError, 'ambiguous_match');
+    assert.equal(payment.bookingSyncRetryError, 'calendly_429');
+    assert.equal(payment.bookedAt, undefined);
+    assert.ok(payment.bookingSyncAt.getTime() >= now + 3600_000);
+
+    rateLimited = false;
+    await syncBookings({ ...args, now: () => now + 3600_000 });
+    payment = db.store.get('payments/pay_old');
+    assert.equal(payment.bookingSyncState, 'confirmed');
+    assert.equal(payment.bookingSyncError, undefined);
+    assert.equal(payment.bookingSyncRetryError, undefined);
+});
+
 test('Calendly rate limits pause the shared poller until Retry-After, including later invocations', async () => {
     const { syncBookings } = require(modulePath);
     const db = createDb();

@@ -92,7 +92,10 @@ async function syncBookings({ db, FieldValue, cfg, createReader, now = Date.now 
             return current;
         });
         if (!payment) continue;
-        const scan = payment.bookingScan || { events: [], eventPage: null, inviteePage: null, loaded: false, match: null };
+        const ambiguousReview = payment.bookingSyncState === 'review' && payment.bookingSyncError === 'ambiguous_match';
+        const scan = (ambiguousReview && !payment.bookingScan?.ambiguityRetry ? null : payment.bookingScan) ||
+            { events: [], eventPage: null, inviteePage: null, loaded: false, match: null };
+        if (ambiguousReview) scan.ambiguityRetry = true;
         try {
             if (!cfg.calendlySyncToken) throw Object.assign(new Error('Missing read token'), { code: 'missing_token' });
             if (!/^[A-Za-z0-9_-]{24}$/.test(payment.bookingRef || '') || !payment.bookingIdentity?.email ||
@@ -108,9 +111,10 @@ async function syncBookings({ db, FieldValue, cfg, createReader, now = Date.now 
                 const lead = match ? (await tx.get(leadRef)).data() : null;
                 const patch = {
                     bookingLeaseId: FieldValue.delete(), bookingLeaseUntil: FieldValue.delete(),
-                    bookingSyncState: match ? 'confirmed' : 'pending',
+                    bookingSyncState: match ? 'confirmed' : ambiguousReview ? 'review' : 'pending',
                     bookingSyncAt: match ? FieldValue.delete() : new Date(time + 600_000),
-                    bookingSyncError: FieldValue.delete(),
+                    bookingSyncError: !match && ambiguousReview ? 'ambiguous_match' : FieldValue.delete(),
+                    bookingSyncRetryError: FieldValue.delete(),
                     bookingScan: complete ? FieldValue.delete() : scan,
                 };
                 if (match) {
@@ -140,9 +144,11 @@ async function syncBookings({ db, FieldValue, cfg, createReader, now = Date.now 
                 if (current.bookingLeaseId !== lease || current.bookedAt) return;
                 tx.update(doc.ref, {
                     bookingLeaseId: FieldValue.delete(), bookingLeaseUntil: FieldValue.delete(),
-                    bookingSyncState: ['missing_booking_identity', 'ambiguous_match'].includes(code) ? 'review' : 'error',
-                    bookingSyncError: code, bookingSyncAt: new Date(time + delay),
-                    bookingScan: ['calendly_400', 'calendly_404'].includes(code) ? FieldValue.delete() : scan,
+                    bookingSyncState: ambiguousReview || ['missing_booking_identity', 'ambiguous_match'].includes(code) ? 'review' : 'error',
+                    bookingSyncError: ambiguousReview ? 'ambiguous_match' : code,
+                    bookingSyncRetryError: ambiguousReview && code !== 'ambiguous_match' ? code : FieldValue.delete(),
+                    bookingSyncAt: new Date(time + delay),
+                    bookingScan: ['ambiguous_match', 'calendly_400', 'calendly_404'].includes(code) ? FieldValue.delete() : scan,
                 });
             });
             counts.failed++;
