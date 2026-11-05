@@ -101,6 +101,25 @@ firebase deploy
 
 Alternative targets — Vercel, Heroku, or any static-friendly host — work too. Only `server.js` requires Node; the rest is static.
 
+## Search visibility
+
+The site publishes `/robots.txt`, `/sitemap.xml`, and the articles under `/blog/`. After deploying Hosting changes:
+
+1. Verify the `https://elevate-personality.web.app/` URL-prefix property in [Google Search Console](https://search.google.com/search-console).
+2. Open **Sitemaps**, submit `sitemap.xml`, and check for processing errors.
+3. Use **URL Inspection** on the homepage and individual articles. Test the live URL and request indexing for important pages.
+
+Google says [crawling can take days to weeks](https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl), and neither sitemap submission nor an indexing request guarantees search placement. If the public domain changes, update the canonical URLs, sitemap, and `robots.txt` together.
+
+To check Hosting's sitemap and 404 behavior locally with Node.js 22 and the Firebase CLI:
+
+```bash
+firebase emulators:exec --project demo-elevate-seo --only hosting \
+  'FIREBASE_HOSTING_TEST_URL=http://127.0.0.1:5000 node --test functions/test/seo-hosting.test.js'
+```
+
+Replace port `5000` with the Hosting emulator port if configured differently.
+
 ## License
 
 MIT
