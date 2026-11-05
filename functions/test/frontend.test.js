@@ -429,3 +429,36 @@ test('the booking-return fix uses a newer script revision than the deployed v6',
     const revision = html.match(/src="script\.js\?v=(\d+)"/);
     assert.ok(revision && Number(revision[1]) >= 7, 'Use a new asset revision so browsers do not retain the old return flow');
 });
+
+test('the public page loads and initializes the requested OpenAI pixel', () => {
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const head = html.match(/<head>([\s\S]*?)<\/head>/i)[1];
+    const pixelScripts = [...head.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)]
+        .map((match) => match[1]).filter((script) => /\boaiq\b|bzrcdn\.openai\.com/.test(script));
+    assert.equal(pixelScripts.length, 1, 'Install the OpenAI pixel once in the page head');
+
+    const inserted = [];
+    const first = { parentNode: { insertBefore: (element, before) => {
+        assert.equal(before, first);
+        inserted.push(element);
+    } } };
+    const context = vm.createContext({
+        document: {
+            createElement: (tag) => {
+                assert.equal(tag, 'script');
+                return { set async(value) { this.isAsync = Boolean(value); }, get async() { return this.isAsync; } };
+            },
+            getElementsByTagName: (tag) => { assert.equal(tag, 'script'); return [first]; },
+        },
+    });
+    context.window = context;
+    vm.runInContext(pixelScripts[0], context);
+
+    assert.equal(inserted.length, 1);
+    assert.equal(inserted[0].src, 'https://bzrcdn.openai.com/sdk/oaiq.min.js');
+    assert.equal(inserted[0].async, true);
+    assert.equal(context.oaiq.q.length, 1);
+    assert.equal(context.oaiq.q[0][0], 'init');
+    assert.equal(context.oaiq.q[0][1].pixelId, '7na1xkDwiTedMniHSAd3aw');
+    assert.equal(context.oaiq.q[0][1].debug, true);
+});

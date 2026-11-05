@@ -175,6 +175,7 @@ The worker uses single-field `bookingSyncAt` and `conversionAt` due-time queries
 
 - Lead and Purchase retain their existing browser/server behavior. Schedule is produced only after API confirmation, never on a redirect, calendar open, or browser message.
 - **Meta:** test with `META_TEST_EVENT_CODE` in Events Manager → Test events. Retries reuse `schedule_<paymentId>`. Bookings outside the seven-day send window are visibly skipped rather than restamped.
+- **ChatGPT Ads:** the OpenAI Measurement Pixel is initialized in `index.html` with debug logging enabled. Initialization alone does not send page-view or conversion events; those require explicit `oaiq("measure", ...)` calls and any applicable measurement consent.
 - **GA4 / Google Ads:**
   - Real `client_id` and available `session_id` are read through `gtag('get', ...)`, without waiting for analytics during submission/navigation. Missing IDs remain missing; phone-derived lead IDs are never used as Google user IDs.
   - The payload contains no name, email, phone, or prefilled booking URL. Explicit `ga-disable-G-TQDPKWBBW0`, Do Not Track, Global Privacy Control, and `window.dycAnalyticsConsent` are honored at capture/submission. An existing consent manager can set `analyticsStorage`, `adUserData`, and `adPersonalization` to `GRANTED`/`DENIED` on that object. Contact-form consent does not grant analytics consent.

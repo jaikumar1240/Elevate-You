@@ -1,0 +1,28 @@
+/* Blog styles — builds on the design tokens in /styles.css */
+.blog-wrap { max-width: 760px; margin: 0 auto; padding: 40px 20px 60px; }
+.blog-wrap--wide { max-width: 980px; }
+.blog-crumbs { font-size: 0.85rem; color: var(--muted); margin-bottom: 18px; }
+.blog-crumbs a { color: var(--brand-600); text-decoration: none; }
+.blog-title { font-size: clamp(1.9rem, 4.5vw, 2.7rem); line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 12px; }
+.blog-meta { font-size: 0.88rem; color: var(--muted); margin-bottom: 28px; }
+.blog-lead { font-size: 1.15rem; color: var(--ink-soft); line-height: 1.7; margin-bottom: 28px; }
+.blog-body h2 { font-size: 1.55rem; margin: 38px 0 12px; color: var(--ink); letter-spacing: -0.01em; }
+.blog-body h3 { font-size: 1.15rem; margin: 24px 0 8px; color: var(--ink); }
+.blog-body p, .blog-body li { font-size: 1.04rem; line-height: 1.8; color: var(--ink-soft); }
+.blog-body p { margin-bottom: 16px; }
+.blog-body ul, .blog-body ol { margin: 0 0 18px 22px; }
+.blog-body li { margin-bottom: 8px; }
+.blog-body a { color: var(--brand-600); }
+.blog-body blockquote { border-left: 4px solid var(--brand-600); background: var(--brand-50); padding: 14px 18px; border-radius: 8px; margin: 20px 0; }
+.blog-cta { margin: 44px 0 10px; padding: 28px; border-radius: 16px; background: var(--grad-ink); color: #fff; text-align: center; }
+.blog-cta h2 { color: #fff; margin: 0 0 8px; font-size: 1.4rem; }
+.blog-cta p { color: rgba(255,255,255,0.8); margin-bottom: 18px; }
+.blog-cta a { display: inline-block; background: var(--grad-accent); color: #101223; font-weight: 700; padding: 12px 26px; border-radius: 999px; text-decoration: none; }
+.blog-related { margin-top: 40px; }
+.blog-related h2 { font-size: 1.2rem; margin-bottom: 10px; }
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 28px; }
+.blog-card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; text-decoration: none; box-shadow: var(--sh-xs); transition: transform .15s, box-shadow .15s; }
+.blog-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(16,18,35,0.1); }
+.blog-card h2 { font-size: 1.12rem; color: var(--ink); margin: 6px 0 8px; line-height: 1.3; }
+.blog-card p { font-size: 0.95rem; color: var(--muted); line-height: 1.6; }
+.blog-card .tag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--brand-600); }

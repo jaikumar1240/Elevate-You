@@ -1390,3 +1390,7 @@ body.lead-modal-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
     .lead-modal__dialog, .lead-modal__backdrop { animation: none; }
 }
+
+.footer-links { font-size: 0.88rem; color: rgba(255,255,255,0.7); }
+.footer-links a { color: rgba(255,255,255,0.85); text-decoration: none; }
+.footer-links a:hover { text-decoration: underline; }
