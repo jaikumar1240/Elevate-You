@@ -341,6 +341,9 @@ const LeadFunnel = {
     lastFocus: null,
     paying: false,
     verifying: false,
+    bookingViewVersion: 0,
+    bookingViewDismissed: false,
+    bookingViewPaymentId: null,
 
     init() {
         const modal = document.getElementById('leadModal');
@@ -442,6 +445,8 @@ const LeadFunnel = {
         this.prefillForm();
         this.setFormError('');
         this.showView('form');
+
+        this.hideBooking();
 
         this.lastFocus = document.activeElement;
         this.els.modal.hidden = false;
@@ -701,6 +706,7 @@ const LeadFunnel = {
             this.verifying = false;
             this.paying = false;
             this.close();
+            this.bookingViewDismissed = false;
             this.showBooking(booking, {
                 autoNavigate: !res.booked && !res.review, booked: !!res.booked,
                 review: !!res.review, reviewReason: res.reviewReason,
@@ -740,7 +746,19 @@ const LeadFunnel = {
         if (pending?.paymentId === booking.paymentId) storeRemove(CONFIG.storage.booking);
     },
 
+    hideBooking() {
+        this.bookingViewVersion++;
+        this.bookingViewDismissed = true;
+        this.bookingViewPaymentId = null;
+        const section = document.getElementById('booking-success');
+        if (section) section.hidden = true;
+        document.body.classList.remove('payment-success-active');
+        clearTimeout(this.bookingRedirectTimer);
+        clearTimeout(this.bookingPollTimer);
+    },
+
     showBooking(booking, { autoNavigate = false, booked = false, checking = false, review = false, reviewReason = '', background = false } = {}) {
+        this.bookingViewPaymentId = booking.paymentId;
         const section = document.getElementById('booking-success');
         const planCopy = document.getElementById('booking-plan-copy');
         const directLink = document.getElementById('calendly-direct-link');
@@ -803,19 +821,32 @@ const LeadFunnel = {
 
     async resumePendingBooking({ background = false } = {}) {
         clearTimeout(this.bookingPollTimer);
-        if (this.bookingPageHidden || document.hidden) return;
+        if (this.bookingViewDismissed || this.bookingPageHidden) return;
         const pending = storeGet(CONFIG.storage.booking);
+        if (pending?.leadId && pending?.paymentId) {
+            if (this.bookingViewPaymentId && this.bookingViewPaymentId !== pending.paymentId) return;
+            // A review was already shown; the server keeps the payment, so do not keep reopening it on every visit.
+            if (pending.review && (!background || document.getElementById('booking-success')?.hidden !== false)) {
+                this.hideBooking();
+                storeRemove(CONFIG.storage.booking);
+                return;
+            }
+        }
+        if (document.hidden) return;
         if (!pending?.leadId || !pending?.paymentId) {
             const confirmed = storeGet(CONFIG.storage.confirmedBooking);
-            if (confirmed?.paymentId && confirmed?.plan) this.showBooking(confirmed, { booked: true, background });
+            if (confirmed?.paymentId && confirmed?.plan && (!this.bookingViewPaymentId || this.bookingViewPaymentId === confirmed.paymentId)) {
+                this.showBooking(confirmed, { booked: true, background });
+            }
             return;
         }
         if (this.bookingCheckPaymentId === pending.paymentId) return;
         this.bookingCheckPaymentId = pending.paymentId;
+        const viewVersion = this.bookingViewVersion;
         if (!background) this.showBooking(pending, { checking: true });
         try {
             const res = await api('/booking-link', { leadId: pending.leadId, paymentId: pending.paymentId });
-            if (storeGet(CONFIG.storage.booking)?.paymentId !== pending.paymentId) return;
+            if (viewVersion !== this.bookingViewVersion || storeGet(CONFIG.storage.booking)?.paymentId !== pending.paymentId) return;
             if (res.booked) {
                 this.showBooking(pending, { booked: true, background });
                 this.rememberConfirmedBooking(pending);
@@ -834,7 +865,7 @@ const LeadFunnel = {
                 this.showBooking(booking, { background });
             }
         } catch (err) {
-            if (storeGet(CONFIG.storage.booking)?.paymentId !== pending.paymentId) return;
+            if (viewVersion !== this.bookingViewVersion || storeGet(CONFIG.storage.booking)?.paymentId !== pending.paymentId) return;
             this.showBooking(pending, { review: !!pending.review, reviewReason: pending.reviewReason, background });
             const note = document.getElementById('calendly-setup-note');
             if (note) note.textContent = pending.review

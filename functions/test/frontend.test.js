@@ -34,7 +34,10 @@ function browser(deferTimers = false) {
         document: {
             addEventListener: (type, callback) => documentListeners.set(type, callback),
             querySelectorAll: () => [],
-            body: { classList: { add() {} } },
+            body: { classList: (() => {
+                const classes = new Set();
+                return { add: (name) => classes.add(name), remove: (name) => classes.delete(name), contains: (name) => classes.has(name) };
+            })() },
             getElementById: (id) => {
                 if (!elements.has(id)) elements.set(id, { hidden: true, scrollIntoView() {}, addEventListener() {}, querySelectorAll: () => [] });
                 return elements.get(id);
@@ -53,6 +56,14 @@ const booking = {
     bookingUrl: 'https://calendly.com/x/y?utm_term=opaque-reference',
     prefill: { name: 'Asha & Verma', email: 'asha+career@example.com', contact: '+919876543210' },
 };
+
+function preparePurchase(context) {
+    const stub = () => ({ textContent: '', hidden: true, setAttribute() {}, focus() {}, querySelectorAll: () => [] });
+    context.funnel.els = { planName: stub(), planPrice: stub(), modal: stub(), submit: stub(), form: stub() };
+    context.funnel.prefillForm = () => {};
+    context.funnel.setFormError = () => {};
+    context.funnel.showView = () => {};
+}
 
 test('fresh paid transition opens same-tab Calendly; returning stays manual without an embed', () => {
     const { context, navigations, elements } = browser();
@@ -212,6 +223,195 @@ test('ambiguous booking review explains the issue and updates when the server co
     await recheck();
     assert.match(elements.get('booking-status-title').textContent, /booking is confirmed/i);
     assert.equal(timers.size, 0);
+});
+
+test('a booking review already shown is cleared on refresh instead of reappearing', async () => {
+    const { context, storage, elements, timers } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify({ ...booking, review: true, reviewReason: 'ambiguous_match' }));
+    let checks = 0;
+    context.fetch = async () => {
+        checks++;
+        return { ok: true, json: async () => ({ booked: false, review: true, reviewReason: 'ambiguous_match' }) };
+    };
+    await context.funnel.resumePendingBooking();
+    assert.equal(elements.get('booking-success')?.hidden ?? true, true);
+    assert.equal(storage.has('dyc.pendingBooking'), false);
+    assert.equal(checks, 0);
+    assert.equal(timers.size, 0);
+});
+
+test('a saved review stays hidden when the page first loads in a background tab', async () => {
+    const { context, storage, elements, documentListeners } = browser(true);
+    context.document.hidden = true;
+    storage.set('dyc.pendingBooking', JSON.stringify({ ...booking, review: true, reviewReason: 'ambiguous_match' }));
+    let checks = 0;
+    context.fetch = async () => {
+        checks++;
+        return { ok: true, json: async () => ({ review: true, reviewReason: 'ambiguous_match' }) };
+    };
+    context.funnel.init();
+
+    context.document.hidden = false;
+    await documentListeners.get('visibilitychange')();
+
+    assert.equal(elements.get('booking-success')?.hidden ?? true, true);
+    assert.equal(storage.has('dyc.pendingBooking'), false);
+    assert.equal(checks, 0);
+});
+
+test('a reviewed booking is hidden when returning to a cached page', () => {
+    const { context, storage, elements, listeners } = browser(true);
+    context.funnel.init();
+    storage.set('dyc.pendingBooking', JSON.stringify({ ...booking, review: true, reviewReason: 'ambiguous_match' }));
+    context.funnel.showBooking(booking, { review: true, reviewReason: 'ambiguous_match' });
+
+    listeners.get('pagehide')();
+    listeners.get('pageshow')({ persisted: true });
+
+    assert.equal(elements.get('booking-success').hidden, true);
+    assert.equal(context.document.body.classList.contains('payment-success-active'), false);
+});
+
+test('a cached review stays hidden when the restored tab is initially in the background', async () => {
+    const { context, storage, elements, listeners, documentListeners } = browser(true);
+    context.funnel.init();
+    storage.set('dyc.pendingBooking', JSON.stringify({ ...booking, review: true, reviewReason: 'ambiguous_match' }));
+    context.funnel.showBooking(booking, { review: true, reviewReason: 'ambiguous_match' });
+    context.fetch = async () => ({
+        ok: true, json: async () => ({ review: true, reviewReason: 'ambiguous_match' }),
+    });
+
+    listeners.get('pagehide')();
+    context.document.hidden = true;
+    listeners.get('pageshow')({ persisted: true });
+    context.document.hidden = false;
+    await documentListeners.get('visibilitychange')();
+
+    assert.equal(elements.get('booking-success').hidden, true);
+    assert.equal(storage.has('dyc.pendingBooking'), false);
+});
+
+test('starting a new purchase hides an earlier booking panel', () => {
+    const { context, elements } = browser(true);
+    context.funnel.showBooking(booking, { review: true, reviewReason: 'ambiguous_match' });
+    preparePurchase(context);
+    context.funnel.open('diagnosis', 'pricing');
+    assert.equal(elements.get('booking-success').hidden, true);
+    assert.equal(context.document.body.classList.contains('payment-success-active'), false);
+});
+
+test('starting a new purchase cancels the previous Calendly redirect', () => {
+    const { context, timers } = browser(true);
+    context.funnel.showBooking(booking, { autoNavigate: true });
+    assert.equal(timers.size, 1);
+    preparePurchase(context);
+
+    context.funnel.open('diagnosis', 'pricing');
+
+    assert.equal(timers.size, 0);
+});
+
+test('starting a new purchase cancels the previous booking poll', async () => {
+    const { context, storage, timers } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    context.fetch = async () => ({
+        ok: true, json: async () => ({ review: true, reviewReason: 'ambiguous_match' }),
+    });
+    await context.funnel.resumePendingBooking();
+    assert.equal(timers.size, 1);
+    preparePurchase(context);
+
+    context.funnel.open('diagnosis', 'pricing');
+
+    assert.equal(timers.size, 0);
+});
+
+test('an in-flight booking check cannot reopen the panel after starting a new purchase', async () => {
+    const { context, storage, elements, timers } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    let respond;
+    context.fetch = () => new Promise((resolve) => { respond = resolve; });
+    const checking = context.funnel.resumePendingBooking();
+    preparePurchase(context);
+    context.funnel.open('diagnosis', 'pricing');
+
+    respond({ ok: true, json: async () => ({ review: true, reviewReason: 'ambiguous_match' }) });
+    await checking;
+
+    assert.equal(elements.get('booking-success').hidden, true);
+    assert.equal(context.document.body.classList.contains('payment-success-active'), false);
+    assert.equal(timers.size, 0);
+    assert.equal(JSON.parse(storage.get('dyc.pendingBooking')).paymentId, booking.paymentId);
+});
+
+test('returning to the tab does not reopen an old booking after starting a new purchase', async () => {
+    const { context, storage, elements, documentListeners } = browser(true);
+    context.funnel.init();
+    storage.set('dyc.pendingBooking', JSON.stringify({ ...booking, review: true, reviewReason: 'ambiguous_match' }));
+    context.funnel.showBooking(booking, { review: true, reviewReason: 'ambiguous_match' });
+    preparePurchase(context);
+    context.funnel.open('diagnosis', 'pricing');
+    let checks = 0;
+    context.fetch = async () => {
+        checks++;
+        return { ok: true, json: async () => ({ review: true, reviewReason: 'ambiguous_match' }) };
+    };
+
+    await documentListeners.get('visibilitychange')();
+
+    assert.equal(elements.get('booking-success').hidden, true);
+    assert.equal(checks, 0);
+    assert.equal(JSON.parse(storage.get('dyc.pendingBooking')).paymentId, booking.paymentId);
+});
+
+test('booking checks resume for a newly verified purchase', async () => {
+    const { context, elements, timers } = browser(true);
+    preparePurchase(context);
+    context.funnel.open('mock', 'pricing');
+    context.funnel.lead = { leadId: booking.leadId, prefill: booking.prefill };
+    let checks = 0;
+    context.fetch = async () => ({
+        ok: true, json: async () => ++checks === 1
+            ? { booked: false, review: true, reviewReason: 'ambiguous_match', plan: booking.plan, paymentId: booking.paymentId }
+            : { booked: true },
+    });
+
+    await context.funnel.verify({});
+    const [timerId, recheck] = timers.entries().next().value;
+    timers.delete(timerId);
+    await recheck();
+
+    assert.equal(checks, 2);
+    assert.match(elements.get('booking-status-title').textContent, /booking is confirmed/i);
+});
+
+test('an older saved review cannot replace a different newly verified booking', async () => {
+    const { context, storage, elements, documentListeners } = browser(true);
+    context.funnel.init();
+    storage.set('dyc.pendingBooking', JSON.stringify({ ...booking, review: true, reviewReason: 'ambiguous_match' }));
+    preparePurchase(context);
+    context.funnel.open('resume', 'pricing');
+    context.funnel.lead = { leadId: booking.leadId, prefill: booking.prefill };
+    const newPlan = { id: 'resume', name: 'Resume Review', price: 199 };
+    let oldChecks = 0;
+    context.fetch = async (url) => ({
+        ok: true,
+        json: async () => {
+            if (url.endsWith('/verify')) {
+                return { booked: false, review: true, reviewReason: 'ambiguous_match', plan: newPlan, paymentId: 'pay_newer' };
+            }
+            oldChecks++;
+            return { booked: false, review: true, reviewReason: 'ambiguous_match' };
+        },
+    });
+    await context.funnel.verify({});
+    assert.match(elements.get('booking-plan-copy').textContent, /resume review/i);
+
+    await documentListeners.get('visibilitychange')();
+
+    assert.match(elements.get('booking-plan-copy').textContent, /resume review/i);
+    assert.equal(oldChecks, 0);
+    assert.equal(JSON.parse(storage.get('dyc.pendingBooking')).paymentId, booking.paymentId);
 });
 
 test('a failed recheck cannot reopen scheduling after an ambiguous booking review', async () => {
@@ -424,10 +624,10 @@ test('compact paid confirmation omits redundant step panels above the booking ac
     assert.equal(/class="booking-success__step"/.test(html), false, 'Redundant step panels must be absent');
 });
 
-test('the booking-return fix uses a newer script revision than the deployed v6', () => {
+test('the booking-review fix uses a script revision newer than v7', () => {
     const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
     const revision = html.match(/src="script\.js\?v=(\d+)"/);
-    assert.ok(revision && Number(revision[1]) >= 7, 'Use a new asset revision so browsers do not retain the old return flow');
+    assert.ok(revision && Number(revision[1]) >= 8, 'Use a new asset revision so browsers do not retain the old review flow');
 });
 
 test('the public page loads and initializes the requested OpenAI pixel', () => {
