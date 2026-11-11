@@ -65,6 +65,69 @@ function preparePurchase(context) {
     context.funnel.showView = () => {};
 }
 
+test('booking links do not repeat prices while each plan shows its actual price', () => {
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const { PLANS: serverPlans } = require('../lib/config');
+    const cards = [...html.matchAll(/<div class="plan-card(?: [^"]*)?">([\s\S]*?)<div class="plan-cta">([\s\S]*?)<\/div>\s*<\/div>/g)];
+    assert.equal(cards.length, Object.keys(serverPlans).length);
+
+    for (const [, card, action] of cards) {
+        const link = action.match(/<a\b([^>]*)>([\s\S]*?)<\/a>/);
+        const planId = link?.[1].match(/data-plan-id="([^"]+)"/)?.[1];
+        const price = card.match(/<div class="plan-price">[\s\S]*?<span class="plan-currency">₹<\/span><span class="plan-amount">([^<]+)<\/span>/);
+        assert.ok(serverPlans[planId], `Unknown plan in booking link: ${planId}`);
+        assert.ok(price, `Missing visible price for ${planId}`);
+        assert.equal(Number(price[1].replace(/,/g, '')), serverPlans[planId].price);
+        assert.doesNotMatch(link[2], /₹|&#8377;|&#x20b9;/i, `${planId} repeats the price on its button`);
+    }
+
+    for (const filename of fs.readdirSync(path.join(root, 'blog')).filter((name) => name.endsWith('.html'))) {
+        const page = fs.readFileSync(path.join(root, 'blog', filename), 'utf8');
+        for (const [, label] of page.matchAll(/<a\b[^>]*href="\/#plans"[^>]*>([\s\S]*?)<\/a>/g)) {
+            assert.doesNotMatch(label, /₹|&#8377;|&#x20b9;/i, `${filename} repeats the price on a booking link`);
+        }
+    }
+});
+
+test('the booking form discloses the selected price before continuing to payment', () => {
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const form = html.match(/<form id="leadForm"[^>]*>([\s\S]*?)<\/form>/)?.[1];
+    assert.ok(form, 'Booking form is present');
+    const pricePosition = form.indexOf('id="leadPlanPrice"');
+    const submitPosition = form.indexOf('id="leadSubmit"');
+    assert.ok(pricePosition >= 0 && pricePosition < submitPosition, 'Show the plan price before the submit button');
+    assert.match(form.slice(0, submitPosition), /plan price/i);
+    const initialLabel = form.match(/<span class="lead-form__submit-label">([^<]+)<\/span>/)?.[1];
+    assert.match(initialLabel || '', /continue to payment/i);
+
+    const { context } = browser(true);
+    const { PLANS: serverPlans } = require('../lib/config');
+    preparePurchase(context);
+    const label = { textContent: initialLabel };
+    context.funnel.els.submit.querySelector = () => label;
+    for (const [planId, plan] of Object.entries(serverPlans)) {
+        context.funnel.open(planId, 'plans');
+        assert.equal(context.funnel.els.planName.textContent, plan.name);
+        assert.equal(Number(context.funnel.els.planPrice.textContent.replace(/[₹,]/g, '')), plan.price);
+    }
+
+    context.funnel.setSubmitting(true);
+    assert.equal(context.funnel.els.submit.disabled, true);
+    context.funnel.setSubmitting(false);
+    assert.equal(context.funnel.els.submit.disabled, false);
+    assert.match(label.textContent, /continue to payment/i);
+});
+
+test('booking copy explains the paid service without judging visitors', () => {
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const howItWorks = html.match(/<section id="how-it-works"[\s\S]*?<\/section>/)?.[0] || '';
+    const faq = html.match(/<section class="faq"[\s\S]*?<\/section>/)?.[0] || '';
+    assert.match(howItWorks, /pay securely/i);
+    assert.match(faq, /₹89/);
+    const judgmentalCopy = html.match(/only serious|serious only|no free slots|aren't committed|wastes both our time|best ₹89 you'll ever spend/i);
+    assert.equal(judgmentalCopy?.[0], undefined, 'Avoid judgmental or high-pressure booking copy');
+});
+
 test('fresh paid transition opens same-tab Calendly; returning stays manual without an embed', () => {
     const { context, navigations, elements } = browser();
     context.funnel.showBooking(booking, { autoNavigate: true });

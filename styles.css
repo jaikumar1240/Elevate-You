@@ -1350,7 +1350,6 @@ body.lead-modal-open { overflow: hidden; }
 }
 .lead-modal__plan-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 .lead-modal__plan-name { font-weight: 700; color: var(--ink); }
-.lead-modal__plan-price { font-weight: 800; font-size: 20px; color: var(--brand-600); white-space: nowrap; }
 .lead-form__title { font-size: 20px; line-height: 1.25; color: var(--ink); margin: 0 0 6px; }
 .lead-form__sub { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
 .lead-field { display: block; margin-bottom: 12px; }
@@ -1373,6 +1372,8 @@ body.lead-modal-open { overflow: hidden; }
 .lead-field__error:empty { display: none; }
 .lead-form__hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; }
 .lead-form__error { background: #fff1f1; color: #b42318; border: 1px solid #fecdca; border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; margin-bottom: 12px; }
+.lead-form__price { color: var(--ink-soft); font-size: 14px; margin: 4px 0 8px; }
+.lead-form__price strong { color: var(--ink); }
 .lead-form__submit { width: 100%; justify-content: center; border: 0; cursor: pointer; font: inherit; font-weight: 700; margin-top: 4px; }
 .lead-form__submit[disabled] { opacity: .7; cursor: wait; transform: none; }
 .lead-form__trust { list-style: none; padding: 0; margin: 14px 0 8px; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
