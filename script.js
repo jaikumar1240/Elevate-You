@@ -510,7 +510,7 @@ const LeadFunnel = {
     setSubmitting(on) {
         this.els.submit.disabled = on;
         const label = this.els.submit.querySelector('.lead-form__submit-label');
-        if (label) label.textContent = on ? 'Saving your details…' : 'Continue to secure payment';
+        if (label) label.textContent = on ? 'Saving your details' : 'Continue';
     },
 
     // ----- step 1: lead ---------------------------------------------------------
