@@ -15,7 +15,13 @@ service cloud.firestore {
       // Admin may only edit CRM fields, never funnel/payment data.
       allow update: if isAdmin()
         && request.resource.data.diff(resource.data).affectedKeys()
-             .hasOnly(['crmStatus', 'notes', 'nextFollowUp', 'crmUpdatedAt']);
+             .hasOnly(['crmStatus', 'notes', 'nextFollowUp', 'crmUpdatedAt',
+                       'contactAttempts', 'lastContactOutcome', 'lastContactedAt',
+                       'firstContactedAt', 'contactLog', 'lostReason'])
+        && (!('contactAttempts' in request.resource.data) || request.resource.data.contactAttempts is int)
+        && (!('contactLog' in request.resource.data)
+            || (request.resource.data.contactLog is list && request.resource.data.contactLog.size() <= 50))
+        && (!('lostReason' in request.resource.data) || request.resource.data.lostReason is string);
     }
 
     match /payments/{paymentId} {

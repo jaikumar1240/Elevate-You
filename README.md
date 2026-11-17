@@ -105,11 +105,13 @@ Alternative targets — Vercel, Heroku, or any static-friendly host — work too
 
 The site publishes `/robots.txt`, `/sitemap.xml`, and the articles under `/blog/`. After deploying Hosting changes:
 
-1. Verify the `https://elevate-personality.web.app/` URL-prefix property in [Google Search Console](https://search.google.com/search-console).
+1. Verify the `https://debugyourcareer.in/` URL-prefix property in [Google Search Console](https://search.google.com/search-console).
 2. Open **Sitemaps**, submit `sitemap.xml`, and check for processing errors.
 3. Use **URL Inspection** on the homepage and individual articles. Test the live URL and request indexing for important pages.
 
-Google says [crawling can take days to weeks](https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl), and neither sitemap submission nor an indexing request guarantees search placement. If the public domain changes, update the canonical URLs, sitemap, and `robots.txt` together.
+The previous Firebase Hosting hostname still serves the same site, so canonical tags alone do not redirect its visitors. Before completing the migration, configure a host-level permanent redirect from each old URL to its matching `https://debugyourcareer.in` URL; a path-only redirect in `firebase.json` would also affect the new domain. Verify both properties in Search Console and use its Change of Address tool if available.
+
+Google says [crawling can take days to weeks](https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl), and neither sitemap submission nor an indexing request guarantees search placement. For future domain changes, update the canonical URLs, sitemap, and `robots.txt` together.
 
 To check Hosting's sitemap and 404 behavior locally with Node.js 22 and the Firebase CLI:
 
@@ -166,7 +168,7 @@ After payment, the same browser retains a "Continue booking" link without chargi
    Firebase Hosting deploys exclude hidden directories and logs. The Hosting emulator serves from the repository root and does not apply those exclusions; keep it bound to localhost.
    Automatic cleanup of old function images is disabled in `elevate-personality`; monitor Artifact Registry storage and configure retention when appropriate.
 4. **Razorpay webhook** (Dashboard → Webhooks):
-   - URL: `https://elevate-personality.web.app/api/razorpay-webhook`
+   - URL: `https://debugyourcareer.in/api/razorpay-webhook`
    - Events: `payment.captured`, `order.paid`
    - Secret: same value as `RAZORPAY_WEBHOOK_SECRET`
 5. **Calendly:** make the event's first custom question "WhatsApp number". It is prefilled as `a1`.
@@ -220,7 +222,7 @@ The ordinary `cd functions && npm test` run skips this one emulator-only test wh
 For missing credentials, configure the secret and redeploy `bookingSync`; retryable delivery states are revisited automatically. Do not blindly reset a GA4 `ambiguous`/`rejected` state: check reporting and request history first. The admin displays up to the latest 2,000 leads/payments; use Firestore for older records.
 
 ### Admin CRM
-`https://elevate-personality.web.app/admin` has:
+`https://debugyourcareer.in/admin` has:
 - Google sign-in, limited to jaikumar1240@gmail.com.
 - Live leads with funnel stage and source.
 - An activity timeline showing the newest 12 events first, with local timestamps, payment amounts, and API-verified versus unverified booking labels. The count indicates when older events are hidden.

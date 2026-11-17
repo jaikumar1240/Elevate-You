@@ -269,3 +269,158 @@ test('CRM timeline does not present legacy bookings as API-confirmed', () => {
     assert.match(items.find((item) => item.includes('Booking recorded (not API-verified)')) || '', /timeline-entry--default/);
     assert.match(items.find((item) => item.includes('Booking recorded (verification unavailable)')) || '', /timeline-entry--default/);
 });
+
+function loadCrm(document = { getElementById: () => ({ addEventListener() {} }) }) {
+    const html = fs.readFileSync(path.join(__dirname, '../../admin.html'), 'utf8');
+    const source = html.match(/<script type="module">([\s\S]*?)<\/script>/)[1]
+        .replace(/^\s*import .+;$/gm, '').replace(/\s*initFilters\(\);\s*boot\(\);\s*$/, '');
+    const context = vm.createContext({ document });
+    vm.runInContext(source, context);
+    return context;
+}
+
+test('CRM priority sort puts fresh uncontacted leads and paid-unbooked buyers ahead of closed leads', () => {
+    const context = loadCrm();
+    const order = vm.runInContext(`(() => {
+        const now = new Date('2026-11-17T10:00:00Z');
+        const ago = (min) => new Date(now.getTime() - min * 60000);
+        return sortLeads([
+            { id: 'closed', status: 'new', crmStatus: 'not_interested', createdAt: ago(1) },
+            { id: 'later', status: 'new', crmStatus: 'contacted', contactAttempts: 1, nextFollowUp: '2026-11-30', createdAt: ago(2) },
+            { id: 'booked', status: 'booked', crmStatus: 'converted', createdAt: ago(3) },
+            { id: 'paid', status: 'paid', crmStatus: 'new', contactAttempts: 1, createdAt: ago(600) },
+            { id: 'fresh', status: 'new', crmStatus: 'new', createdAt: ago(10) },
+        ], 'priority', now).map((l) => l.id).join(',');
+    })()`, context);
+    assert.equal(order, 'fresh,paid,later,closed,booked');
+});
+
+test('CRM first contact attempt records response time, marks the lead contacted, and schedules a retry after no answer', () => {
+    const context = loadCrm();
+    const update = JSON.parse(vm.runInContext(`JSON.stringify(contactUpdate(
+        { crmStatus: 'new' }, 'no_answer', new Date('2026-11-17T10:00:00Z')))`, context));
+    assert.deepEqual(update, {
+        contactAttempts: 1,
+        lastContactOutcome: 'no_answer',
+        lastContactedAt: '2026-11-17T10:00:00.000Z',
+        firstContactedAt: '2026-11-17T10:00:00.000Z',
+        crmStatus: 'contacted',
+        nextFollowUp: '2026-11-18',
+        contactLog: [{ type: 'contact_attempt', outcome: 'no_answer', at: '2026-11-17T10:00:00.000Z' }],
+    });
+});
+
+test('CRM repeat contact attempt preserves first response, progressed status, and a later follow-up', () => {
+    const context = loadCrm();
+    const update = JSON.parse(vm.runInContext(`JSON.stringify(contactUpdate({
+        crmStatus: 'interested', contactAttempts: 2, firstContactedAt: '2026-11-15T09:00:00.000Z', nextFollowUp: '2026-11-20',
+        contactLog: [{ type: 'contact_attempt', outcome: 'no_answer', at: '2026-11-15T09:00:00.000Z' }],
+    }, 'connected', new Date('2026-11-17T10:00:00Z')))`, context));
+    assert.equal(update.contactAttempts, 3);
+    assert.equal('firstContactedAt' in update, false);
+    assert.equal('crmStatus' in update, false);
+    assert.equal('nextFollowUp' in update, false);
+    assert.equal(update.contactLog.length, 2);
+    assert.equal(update.contactLog[1].outcome, 'connected');
+});
+
+test('CRM row flags an uncontacted lead with its waiting time and offers contact logging', () => {
+    const context = loadCrm();
+    const markup = vm.runInContext(`row({ id: 'lead', name: 'A', status: 'new', crmStatus: 'new',
+        createdAt: new Date(Date.now() - 12 * 60000) })`, context);
+    assert.match(markup, /class="speed speed--hot"[^>]*>Not contacted · waiting 12m</);
+    for (const outcome of ['connected', 'no_answer', 'whatsapp']) assert.match(markup, new RegExp(`data-log="${outcome}"`));
+
+    const contacted = vm.runInContext(`row({ id: 'lead', name: 'A', status: 'new', crmStatus: 'contacted',
+        contactAttempts: 3, lastContactOutcome: 'no_answer', createdAt: new Date() })`, context);
+    assert.match(contacted, /3 attempts · last: No answer/);
+    assert.doesNotMatch(contacted, /Not contacted/);
+});
+
+test('CRM offers quick follow-up dates that roll over month boundaries', () => {
+    const context = loadCrm();
+    assert.equal(vm.runInContext(`addDays('2026-11-29', 3)`, context), '2026-12-02');
+    const markup = vm.runInContext(`row({ id: 'lead', name: 'A', status: 'new' })`, context);
+    for (const days of [1, 3, 7]) assert.match(markup, new RegExp(`data-followup="${days}"`));
+});
+
+test('CRM asks for a lost reason only when a lead is marked not interested', () => {
+    const context = loadCrm();
+    const lost = vm.runInContext(`row({ id: 'lead', name: 'A', status: 'new', crmStatus: 'not_interested', lostReason: 'price' })`, context);
+    assert.match(lost, /<select data-field="lostReason"/);
+    assert.match(lost, /<option value="price" selected>Price too high<\/option>/);
+
+    const open = vm.runInContext(`row({ id: 'lead', name: 'A', status: 'new', crmStatus: 'interested' })`, context);
+    assert.doesNotMatch(open, /data-field="lostReason"/);
+});
+
+test('CRM source report shows leads, buyers, conversion, and revenue per source and campaign', () => {
+    const context = loadCrm();
+    const report = JSON.parse(vm.runInContext(`JSON.stringify(sourceReport([
+        { status: 'paid', totalPaid: 199, attribution: { utm_source: 'facebook', utm_campaign: 'resume' } },
+        { status: 'new', attribution: { utm_source: 'facebook', utm_campaign: 'resume' } },
+        { status: 'booked', totalPaid: 89, attribution: { utm_source: 'instagram', utm_campaign: 'content' } },
+        { status: 'new' },
+    ]))`, context));
+    assert.deepEqual(report, [
+        { source: 'facebook', campaign: 'resume', leads: 2, paid: 1, revenue: 199, rate: 50 },
+        { source: 'instagram', campaign: 'content', leads: 1, paid: 1, revenue: 89, rate: 100 },
+        { source: 'direct', campaign: '—', leads: 1, paid: 0, revenue: 0, rate: 0 },
+    ]);
+});
+
+test('CRM source report table escapes attacker-controlled campaign names', () => {
+    const context = loadCrm();
+    const markup = vm.runInContext(`sourceReportMarkup([
+        { status: 'paid', totalPaid: 199, attribution: { utm_source: 'facebook', utm_campaign: '<img src=x onerror=alert(1)>' } },
+    ])`, context);
+    assert.match(markup, /<td>facebook<\/td>/);
+    assert.match(markup, /&lt;img src=x onerror=alert\(1\)&gt;/);
+    assert.doesNotMatch(markup, /<img/);
+    assert.match(markup, /₹199/);
+    assert.match(markup, /100%/);
+});
+
+test('CRM response stats count uncontacted open leads and median first response time', () => {
+    const context = loadCrm();
+    const stats = JSON.parse(vm.runInContext(`JSON.stringify(responseStats([
+        { status: 'new', createdAt: '2025-01-01T10:00:00Z', firstContactedAt: '2025-01-01T10:04:00Z' },
+        { status: 'new', createdAt: '2025-01-01T10:00:00Z', firstContactedAt: '2025-01-01T11:00:00Z' },
+        { status: 'paid', createdAt: '2025-01-01T10:00:00Z', firstContactedAt: '2025-01-01T10:10:00Z' },
+        { status: 'new', createdAt: '2025-01-01T10:00:00Z' },
+        { status: 'new', crmStatus: 'not_interested', createdAt: '2025-01-01T10:00:00Z' },
+    ]))`, context));
+    assert.deepEqual(stats, { waiting: 1, medianMinutes: 10, within5: 1, responded: 3 });
+});
+
+test('CRM KPI cards show leads waiting for first contact and median first response', () => {
+    const kpis = {};
+    const context = loadCrm({ getElementById: (id) => (id === 'kpis' ? kpis : { addEventListener() {} }) });
+    vm.runInContext(`renderKpis([
+        { status: 'new', createdAt: '2025-01-01T10:00:00Z', firstContactedAt: '2025-01-01T10:04:00Z', contactAttempts: 1 },
+        { status: 'new', createdAt: '2025-01-01T10:00:00Z' },
+    ])`, context);
+    assert.match(kpis.innerHTML, /Not contacted yet<\/div><div class="kpi__value">1</);
+    assert.match(kpis.innerHTML, /Median first response<\/div><div class="kpi__value">4m</);
+    assert.match(kpis.innerHTML, /1 of 1 within 5 min/);
+});
+
+test('CRM timeline includes logged contact attempts alongside system history', () => {
+    const context = loadCrm();
+    const markup = vm.runInContext(`timelineDetails({
+        id: 'lead',
+        history: [{ type: 'lead_created', at: '2025-01-01T10:00:00Z' }],
+        contactLog: [{ type: 'contact_attempt', outcome: 'no_answer', at: '2025-01-01T10:05:00Z' }],
+    })`, context);
+    assert.match(markup, /2 events/);
+    assert.match(markup, /Contact attempt: No answer/);
+});
+
+test('CRM CSV export includes contact activity and lost reason', () => {
+    const context = loadCrm();
+    const csv = vm.runInContext(`toCsv([{ name: 'A', status: 'new', crmStatus: 'not_interested', lostReason: 'price',
+        contactAttempts: 2, lastContactOutcome: 'no_answer', firstContactedAt: '2025-01-01T10:04:00.000Z', lastContactedAt: '2025-01-02T10:00:00.000Z' }])`, context);
+    const [header, row] = csv.split('\n');
+    assert.match(header, /"Contact attempts","First contacted","Last contacted","Last outcome","Lost reason"/);
+    assert.match(row, /"2","2025-01-01T10:04:00.000Z","2025-01-02T10:00:00.000Z","No answer","Price too high"/);
+});

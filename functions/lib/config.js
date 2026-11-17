@@ -40,7 +40,7 @@ const params = {
     META_PIXEL_ID: defineString('META_PIXEL_ID', { default: '1145272234680051' }),
     META_TEST_EVENT_CODE: defineString('META_TEST_EVENT_CODE', { default: '' }),
     CALENDLY_URL: defineString('CALENDLY_URL', { default: 'https://calendly.com/jaikumar1240/debugyourcareer' }),
-    SITE_URL: defineString('SITE_URL', { default: 'https://elevate-personality.web.app' }),
+    SITE_URL: defineString('SITE_URL', { default: 'https://debugyourcareer.in' }),
     WHATSAPP_NUMBER: defineString('WHATSAPP_NUMBER', { default: '917827981994' }),
     GA4_MEASUREMENT_ID: defineString('GA4_MEASUREMENT_ID', { default: 'G-TQDPKWBBW0' }),
     GA4_BOOKING_DEBUG: defineString('GA4_BOOKING_DEBUG', { default: 'false' }),

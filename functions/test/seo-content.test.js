@@ -44,8 +44,8 @@ test('resume revision dates are consistent across the article and sitemap', () =
     const article = fs.readFileSync(path.join(__dirname, '../../blog/how-to-write-a-fresher-resume.html'), 'utf8');
     const sitemap = fs.readFileSync(path.join(__dirname, '../../sitemap.xml'), 'utf8');
     const modifiedDate = article.match(/"dateModified":\s*"(\d{4}-\d{2}-\d{2})"/)?.[1];
-    const articleSitemapDate = sitemap.match(/<loc>https:\/\/elevate-personality\.web\.app\/blog\/how-to-write-a-fresher-resume<\/loc><lastmod>([^<]+)<\/lastmod>/)?.[1];
-    const blogSitemapDate = sitemap.match(/<loc>https:\/\/elevate-personality\.web\.app\/blog\/<\/loc><lastmod>([^<]+)<\/lastmod>/)?.[1];
+    const articleSitemapDate = sitemap.match(/<loc>https:\/\/debugyourcareer\.in\/blog\/how-to-write-a-fresher-resume<\/loc><lastmod>([^<]+)<\/lastmod>/)?.[1];
+    const blogSitemapDate = sitemap.match(/<loc>https:\/\/debugyourcareer\.in\/blog\/<\/loc><lastmod>([^<]+)<\/lastmod>/)?.[1];
 
     assert.ok(modifiedDate, 'The article should have a modification date');
     assert.ok(modifiedDate >= '2026-11-06', 'The date should reflect the resume guide update');
@@ -64,4 +64,31 @@ test('About section displays Jai Rajput’s supplied portrait', () => {
     assert.ok(about, 'The About section should be present');
     assert.match(about, /src="assets\/jai-rajput-about\.jpg"/);
     assert.ok(fs.existsSync(path.join(__dirname, '../../assets/jai-rajput-about.jpg')));
+});
+
+test('public URLs, SEO metadata, and site configuration use the new domain', () => {
+    const root = path.join(__dirname, '../..');
+    const oldDomain = `${'elevate-personality'}.${'web.app'}`;
+    const newOrigin = 'https://debugyourcareer.in';
+    const blogPages = fs.readdirSync(path.join(root, 'blog')).filter((name) => name.endsWith('.html'));
+    const files = [
+        'README.md',
+        'index.html',
+        'robots.txt',
+        'sitemap.xml',
+        'functions/lib/config.js',
+        'functions/.env.elevate-personality',
+        ...blogPages.map((name) => path.join('blog', name)),
+    ];
+
+    for (const file of files) {
+        const content = fs.readFileSync(path.join(root, file), 'utf8');
+        assert.ok(!content.includes(oldDomain), `${file} should not reference the previous domain`);
+    }
+
+    const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
+    const sitemapUrls = Array.from(sitemap.matchAll(/<loc>([^<]+)<\/loc>/g), (match) => new URL(match[1]));
+    assert.ok(sitemapUrls.length > 0, 'The sitemap should include public pages');
+    assert.ok(sitemapUrls.every((url) => url.origin === newOrigin), 'Sitemap URLs should use the new domain');
+    assert.match(fs.readFileSync(path.join(root, 'robots.txt'), 'utf8'), /Sitemap: https:\/\/debugyourcareer\.in\/sitemap\.xml/);
 });
