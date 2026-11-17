@@ -92,3 +92,68 @@ test('public URLs, SEO metadata, and site configuration use the new domain', () 
     assert.ok(sitemapUrls.every((url) => url.origin === newOrigin), 'Sitemap URLs should use the new domain');
     assert.match(fs.readFileSync(path.join(root, 'robots.txt'), 'utf8'), /Sitemap: https:\/\/debugyourcareer\.in\/sitemap\.xml/);
 });
+
+const ROOT = path.join(__dirname, '../..');
+const ORIGIN = 'https://debugyourcareer.in';
+const blogArticles = () => fs.readdirSync(path.join(ROOT, 'blog'))
+    .filter((name) => name.endsWith('.html') && name !== 'index.html')
+    .map((name) => name.replace(/\.html$/, ''));
+
+test('every blog article is self-canonical, in the sitemap, and linked from the blog index', () => {
+    const sitemap = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
+    const blogIndex = fs.readFileSync(path.join(ROOT, 'blog/index.html'), 'utf8');
+
+    for (const slug of blogArticles()) {
+        const url = `${ORIGIN}/blog/${slug}`;
+        const html = fs.readFileSync(path.join(ROOT, 'blog', `${slug}.html`), 'utf8');
+        assert.ok(html.includes(`<link rel="canonical" href="${url}">`), `${slug} canonical`);
+        assert.ok(sitemap.includes(`<loc>${url}</loc>`), `${slug} in sitemap`);
+        assert.ok(blogIndex.includes(`href="/blog/${slug}"`), `${slug} linked from blog index`);
+        const article = Array.from(html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g),
+            (m) => JSON.parse(m[1])).find((d) => d['@type'] === 'Article');
+        assert.equal(article?.headline, html.match(/<h1[^>]*>([^<]+)<\/h1>/)?.[1], `${slug} headline`);
+    }
+});
+
+test('blog covers the highest-demand fresher interview and profile topics', () => {
+    const slugs = blogArticles();
+    for (const slug of [
+        'tell-me-about-yourself-answer-for-freshers',
+        'why-should-we-hire-you-answer-for-freshers',
+        'linkedin-profile-tips-for-freshers',
+    ]) {
+        assert.ok(slugs.includes(slug), `missing article: ${slug}`);
+    }
+});
+
+test('public pages redirect legacy Firebase hosts to the canonical domain', () => {
+    const vm = require('node:vm');
+    const pages = ['index.html', 'blog/index.html', ...blogArticles().map((s) => `blog/${s}.html`)];
+    for (const page of pages) {
+        const html = fs.readFileSync(path.join(ROOT, page), 'utf8');
+        const script = html.match(/<script>\s*(\/\*\s*canonical-host\s*\*\/[\s\S]*?)<\/script>/)?.[1];
+        assert.ok(script, `${page} should include the canonical-host redirect`);
+        const run = (hostname) => {
+            let target = null;
+            vm.runInNewContext(script, { location: { hostname, pathname: '/blog/x', search: '?utm_source=a', hash: '#h', replace: (u) => { target = u; } } });
+            return target;
+        };
+        assert.equal(run('elevate-personality.web.app'), 'https://debugyourcareer.in/blog/x?utm_source=a#h');
+        assert.equal(run('elevate-personality.firebaseapp.com'), 'https://debugyourcareer.in/blog/x?utm_source=a#h');
+        assert.equal(run('debugyourcareer.in'), null);
+        assert.equal(run('localhost'), null);
+    }
+});
+
+test('an IndexNow key file is published at the site root', () => {
+    const keys = fs.readdirSync(ROOT).filter((n) => /^[a-f0-9]{32}\.txt$/.test(n));
+    assert.equal(keys.length, 1, 'exactly one IndexNow key file');
+    assert.equal(fs.readFileSync(path.join(ROOT, keys[0]), 'utf8').trim(), keys[0].replace('.txt', ''));
+});
+
+test('homepage links to every blog article', () => {
+    const homepage = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+    for (const slug of blogArticles()) {
+        assert.ok(homepage.includes(`href="/blog/${slug}"`), `homepage should link to ${slug}`);
+    }
+});
