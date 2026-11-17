@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>/* canonical-host */if(/\.(web\.app|firebaseapp\.com)$/.test(location.hostname))location.replace('https://debugyourcareer.in'+location.pathname+location.search+location.hash);</script>
+    <script>
+        let dycResumeToken = (() => {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('resume');
+            if (token) {
+                params.delete('resume');
+                const query = params.toString();
+                window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
+            }
+            return token;
+        })();
+    </script>
     <title>Resume Review, Mock Interview &amp; Placement Prep for Students | DebugYourCareer</title>
     <meta name="description" content="1:1 career coaching for Indian students and fresh graduates. Get a 15-minute career diagnosis for ₹89, plus resume reviews, mock interviews and placement prep. Find out exactly why you keep getting rejected.">
     <meta name="keywords" content="resume review for freshers, mock interview India, placement preparation, career coaching for students, campus placement tips, fresher resume, interview preparation">
@@ -43,6 +55,11 @@
           "image": "https://debugyourcareer.in/assets/pro_image.jpg",
           "description": "1:1 career coaching for Indian students and recent graduates: resume reviews, mock interviews and placement preparation.",
           "founder": { "@type": "Person", "name": "Jai Rajput" },
+          "sameAs": [
+            "https://www.instagram.com/debugyour.career/",
+            "https://www.linkedin.com/company/debugyourcareer",
+            "https://www.youtube.com/@DebugYour.Career"
+          ],
           "areaServed": "IN",
           "priceRange": "₹89 - ₹1499",
           "makesOffer": [
@@ -717,6 +734,7 @@
                 </div>
                 <p class="footer-links"><a href="/blog/">Career Blog</a> · <a href="/blog/how-to-write-a-fresher-resume">Fresher Resume Guide</a> · <a href="/blog/resume-mistakes-freshers-make">Resume Mistakes</a> · <a href="/blog/linkedin-profile-tips-for-freshers">LinkedIn Tips</a></p>
                 <p class="footer-links"><a href="/blog/tell-me-about-yourself-answer-for-freshers">Tell Me About Yourself</a> · <a href="/blog/why-should-we-hire-you-answer-for-freshers">Why Should We Hire You</a> · <a href="/blog/common-hr-interview-questions-for-freshers">HR Interview Questions</a> · <a href="/blog/why-you-keep-getting-rejected-in-interviews">Interview Rejections</a> · <a href="/blog/campus-placement-preparation-roadmap">Placement Roadmap</a></p>
+                <p class="footer-links"><a href="https://www.instagram.com/debugyour.career/">Instagram</a> · <a href="https://www.linkedin.com/company/debugyourcareer">LinkedIn</a> · <a href="https://www.youtube.com/@DebugYour.Career">YouTube</a></p>
                 <p class="footer-copy">&copy; 2026 DebugYourCareer. All rights reserved.</p>
             </div>
         </div>
@@ -832,7 +850,7 @@
     </div>
 
     <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
-    <script src="script.js?v=9"></script>
+    <script src="script.js?v=11"></script>
     <script>
         // Mobile menu
         const hamburger = document.getElementById('hamburger');

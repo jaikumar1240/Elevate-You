@@ -65,6 +65,68 @@ function preparePurchase(context) {
     context.funnel.showView = () => {};
 }
 
+test('reminder tokens are removed before analytics and still resume the lead', async () => {
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const analyticsStart = html.indexOf('<script async src="https://www.googletagmanager.com/');
+    assert.ok(analyticsStart > 0, 'Analytics tag is present');
+
+    const { context, storage } = browser(true);
+    const token = 'synthetic_reminder_token_123';
+    let current = new URL(`https://debugyourcareer.in/?utm_source=facebook&resume=${token}#plans`);
+    const location = {};
+    for (const property of ['href', 'hostname', 'pathname', 'search', 'hash']) {
+        Object.defineProperty(location, property, { get: () => current[property] });
+    }
+    context.window.location = context.location = location;
+    context.window.history = context.history = {
+        replaceState: (_state, _title, url) => { current = new URL(url, current); },
+    };
+    context.document.referrer = '';
+
+    const earlyScripts = html.slice(0, analyticsStart).matchAll(/<script(?![^>]*type=)[^>]*>([\s\S]*?)<\/script>/g);
+    for (const [, script] of earlyScripts) vm.runInContext(script, context);
+
+    assert.equal(current.searchParams.has('resume'), false, 'Analytics must not see the reminder token in the URL');
+    assert.equal(current.searchParams.get('utm_source'), 'facebook');
+    assert.equal(current.hash, '#plans');
+    vm.runInContext('captureAttribution()', context);
+    assert.doesNotMatch(JSON.parse(storage.get('dyc.attribution')).data.landing_page, /resume=/);
+
+    let request;
+    let opened;
+    const values = { name: 'Test User', phone: '9876543210', email: 'test@example.com', currentStatus: 'graduate' };
+    context.funnel.els = { form: { reset() {} } };
+    context.funnel.open = (plan, source) => { opened = [plan, source]; };
+    context.fetch = async (url, options) => {
+        request = { url, body: JSON.parse(options.body) };
+        return { ok: true, json: async () => ({ paid: false, planId: 'mock', values }) };
+    };
+    await context.funnel.resumeFromReminder();
+    assert.equal(request?.url, '/api/resume');
+    assert.equal(request?.body.token, token);
+    assert.deepEqual(opened, ['mock', 'reminder_email']);
+    assert.deepEqual(JSON.parse(storage.get('dyc.lead')).values, values);
+});
+
+test('previously stored attribution does not resend reminder tokens', () => {
+    const { context, storage } = browser(true);
+    storage.set('dyc.attribution', JSON.stringify({
+        savedAt: Date.now(),
+        data: {
+            utm_source: 'facebook',
+            landing_page: 'https://debugyourcareer.in/?utm_source=facebook&resume=synthetic_token',
+            referrer: 'https://debugyourcareer.in/?resume=synthetic_token',
+        },
+    }));
+
+    const attribution = vm.runInContext('getAttribution()', context);
+
+    assert.equal(new URL(attribution.landing_page).searchParams.has('resume'), false);
+    assert.equal(new URL(attribution.referrer).searchParams.has('resume'), false);
+    assert.equal(new URL(attribution.landing_page).searchParams.get('utm_source'), 'facebook');
+    assert.doesNotMatch(storage.get('dyc.attribution'), /resume=/);
+});
+
 test('booking links do not repeat prices while each plan shows its actual price', () => {
     const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
     const { PLANS: serverPlans } = require('../lib/config');
@@ -162,6 +224,29 @@ test('returning customers see API-confirmed bookings without clearing a newer pe
     };
     await context.funnel.resumePendingBooking();
     assert.equal(JSON.parse(storage.get('dyc.pendingBooking')).paymentId, 'pay_newer');
+});
+
+test('restoring a booking records one view while its status is checked', async () => {
+    const { context, storage } = browser(true);
+    storage.set('dyc.pendingBooking', JSON.stringify(booking));
+    let views = 0;
+    context.window.gtag = (_command, name) => { if (name === 'booking_view') views++; };
+    context.fetch = async () => ({ ok: true, json: async () => ({ booked: true }) });
+
+    await context.funnel.resumePendingBooking();
+
+    assert.equal(views, 1);
+});
+
+test('a booking shown in the background is counted when shown in the foreground', () => {
+    const { context } = browser(true);
+    let views = 0;
+    context.window.gtag = (_command, name) => { if (name === 'booking_view') views++; };
+
+    context.funnel.showBooking(booking, { background: true });
+    context.funnel.showBooking(booking);
+
+    assert.equal(views, 1);
 });
 
 test('a pending booking becomes confirmed automatically after Calendly sync without a refresh', async () => {

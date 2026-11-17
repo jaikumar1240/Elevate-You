@@ -157,3 +157,20 @@ test('homepage links to every blog article', () => {
         assert.ok(homepage.includes(`href="/blog/${slug}"`), `homepage should link to ${slug}`);
     }
 });
+
+test('homepage connects the business social profiles for visitors and search engines', () => {
+    const homepage = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+    const profiles = [
+        'https://www.instagram.com/debugyour.career/',
+        'https://www.linkedin.com/company/debugyourcareer',
+        'https://www.youtube.com/@DebugYour.Career',
+    ];
+    const graph = Array.from(homepage.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g),
+        (match) => JSON.parse(match[1])).flatMap((data) => data['@graph'] || [data]);
+    const business = graph.find((item) => item['@id'] === `${ORIGIN}/#business`);
+    assert.ok(business, 'The business structured data should exist');
+    for (const profile of profiles) {
+        assert.ok(homepage.includes(`href="${profile}"`), `Homepage should link to ${profile}`);
+        assert.ok(business.sameAs?.includes(profile), `Business sameAs should include ${profile}`);
+    }
+});

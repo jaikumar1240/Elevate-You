@@ -132,7 +132,28 @@ function captureAttribution() {
 }
 
 function getAttribution() {
-    return storeGet(CONFIG.storage.attribution)?.data || readUrlAttribution();
+    const stored = storeGet(CONFIG.storage.attribution);
+    const attribution = stored?.data || readUrlAttribution();
+    let changed = false;
+    for (const key of ['landing_page', 'referrer']) {
+        if (typeof attribution[key] !== 'string' || !attribution[key]) continue;
+        let url;
+        try {
+            url = new URL(attribution[key]);
+        } catch {
+            console.warn('Invalid saved attribution URL; omitting it');
+            delete attribution[key];
+            changed = true;
+            continue;
+        }
+        if (url.searchParams.has('resume')) {
+            url.searchParams.delete('resume');
+            attribution[key] = url.href;
+            changed = true;
+        }
+    }
+    if (changed && stored?.data) storeSet(CONFIG.storage.attribution, stored);
+    return attribution;
 }
 
 /** Meta browser ids, used by the Conversions API to match server events to the ad click. */
@@ -414,7 +435,11 @@ const LeadFunnel = {
     /** `?resume=<token>` from the payment-reminder email: reopen the form prefilled. */
     async resumeFromReminder() {
         const params = new URLSearchParams(window.location.search);
-        const token = params.get('resume');
+        let token = params.get('resume');
+        if (typeof dycResumeToken !== 'undefined') {
+            token = dycResumeToken || token;
+            dycResumeToken = null;
+        }
         if (!token) return;
         params.delete('resume');
         const qs = params.toString();
@@ -757,7 +782,7 @@ const LeadFunnel = {
         clearTimeout(this.bookingPollTimer);
     },
 
-    showBooking(booking, { autoNavigate = false, booked = false, checking = false, review = false, reviewReason = '', background = false } = {}) {
+    showBooking(booking, { autoNavigate = false, booked = false, checking = false, review = false, reviewReason = '', background = false, trackView = !background } = {}) {
         this.bookingViewPaymentId = booking.paymentId;
         const section = document.getElementById('booking-success');
         const planCopy = document.getElementById('booking-plan-copy');
@@ -816,7 +841,7 @@ const LeadFunnel = {
             this.bookingRedirectTimer = setTimeout(() => window.location.assign(url), 500);
         }
 
-        if (!background) gaEvent('booking_view', { plan_id: booking.plan.id });
+        if (trackView) gaEvent('booking_view', { plan_id: booking.plan.id });
     },
 
     async resumePendingBooking({ background = false } = {}) {
@@ -848,13 +873,13 @@ const LeadFunnel = {
             const res = await api('/booking-link', { leadId: pending.leadId, paymentId: pending.paymentId });
             if (viewVersion !== this.bookingViewVersion || storeGet(CONFIG.storage.booking)?.paymentId !== pending.paymentId) return;
             if (res.booked) {
-                this.showBooking(pending, { booked: true, background });
+                this.showBooking(pending, { booked: true, background, trackView: false });
                 this.rememberConfirmedBooking(pending);
                 return;
             }
             if (res.review) {
                 storeSet(CONFIG.storage.booking, { ...pending, review: true, reviewReason: res.reviewReason });
-                this.showBooking(pending, { review: true, reviewReason: res.reviewReason, background });
+                this.showBooking(pending, { review: true, reviewReason: res.reviewReason, background, trackView: false });
                 if (res.reviewReason !== 'ambiguous_match') return;
             } else {
                 const booking = {
@@ -862,11 +887,11 @@ const LeadFunnel = {
                     prefill: res.prefill || pending.prefill, review: false, reviewReason: '',
                 };
                 storeSet(CONFIG.storage.booking, booking);
-                this.showBooking(booking, { background });
+                this.showBooking(booking, { background, trackView: false });
             }
         } catch (err) {
             if (viewVersion !== this.bookingViewVersion || storeGet(CONFIG.storage.booking)?.paymentId !== pending.paymentId) return;
-            this.showBooking(pending, { review: !!pending.review, reviewReason: pending.reviewReason, background });
+            this.showBooking(pending, { review: !!pending.review, reviewReason: pending.reviewReason, background, trackView: false });
             const note = document.getElementById('calendly-setup-note');
             if (note) note.textContent = pending.review
                 ? 'Your payment is retained, but we could not recheck your booking review. Do not book or pay again. Message us on WhatsApp if you need help.'
