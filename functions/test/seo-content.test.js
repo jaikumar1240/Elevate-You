@@ -56,3 +56,12 @@ test('resume revision dates are consistent across the article and sitemap', () =
     }).format(new Date(`${modifiedDate}T00:00:00Z`));
     assert.ok(article.includes(`Updated ${readableDate}`));
 });
+
+test('About section displays Jai Rajput’s supplied portrait', () => {
+    const homepage = fs.readFileSync(path.join(__dirname, '../../index.html'), 'utf8');
+    const about = homepage.match(/<section id="about-me"[\s\S]*?<\/section>/i)?.[0];
+
+    assert.ok(about, 'The About section should be present');
+    assert.match(about, /src="assets\/jai-rajput-about\.jpg"/);
+    assert.ok(fs.existsSync(path.join(__dirname, '../../assets/jai-rajput-about.jpg')));
+});
