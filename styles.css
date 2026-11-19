@@ -760,6 +760,11 @@ section { padding: 64px 0; position: relative; }
 }
 .plan-tag--featured { background: var(--grad-brand); color: #fff; box-shadow: var(--sh-brand); }
 .plan-tag--gold { background: var(--grad-accent); color: #3a2a00; box-shadow: var(--sh-accent); }
+.plan-card--managed { min-width: 0; }
+.plan-card--managed .plan-price { flex-wrap: wrap; }
+.plan-card--managed .plan-period { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.plan-card--managed .plan-amount { min-width: 0; overflow-wrap: anywhere; }
+.plan-card--managed .plan-tag { position: static; align-self: flex-start; max-width: 100%; margin-bottom: 12px; }
 .plan-cta { margin-top: auto; }
 .plan-btn {
     display: block;

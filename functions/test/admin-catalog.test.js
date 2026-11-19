@@ -112,3 +112,70 @@ test('signing out clears catalog data and ignores an in-flight admin response', 
     assert.equal(t.element('catalogPlans').innerHTML, '');
     assert.equal(t.element('catalogSave').disabled, true);
 });
+
+test('a missing catalog backend shows deployment instructions instead of a JSON parser error', async () => {
+    const t = editor();
+    t.context.fetch = async () => ({
+        ok: false, status: 404,
+        json: async () => { throw new SyntaxError('Unexpected token <'); },
+    });
+
+    await t.context.window.initCatalogAdmin({ getIdToken: async () => 'admin-token' });
+
+    assert.match(t.element('catalogStatus').textContent, /catalog API.*not deployed/i);
+    assert.match(t.element('catalogStatus').textContent, /functions:api/i);
+    assert.equal(t.element('catalogSave').disabled, true);
+});
+
+test('publishing locks editable controls so later typing cannot be silently overwritten', async () => {
+    const t = editor();
+    await t.context.window.initCatalogAdmin({ getIdToken: async () => 'admin-token' });
+    t.element('catalogPlans').querySelectorAll = () => defaultCatalog().plans.map((plan) => ({
+        querySelector: (selector) => {
+            const key = selector.match(/name="([^"]+)"/)[1];
+            return { value: key === 'features' ? plan.features.join('\n') : plan[key], checked: plan.active };
+        },
+    }));
+    let finish;
+    t.context.fetch = async () => new Promise((resolve) => { finish = resolve; });
+    const saving = t.element('catalogForm').submit({ preventDefault() {} });
+    await new Promise((resolve) => setImmediate(resolve));
+
+    assert.equal(t.element('catalogFields').disabled, true);
+    const html = fs.readFileSync(path.join(__dirname, '../../admin.html'), 'utf8');
+    const fields = html.match(/<fieldset\b[^>]*id="catalogFields"[^>]*>([\s\S]*?)<\/fieldset>/)?.[1];
+    for (const id of ['catalogAnnouncement', 'catalogEnabled', 'catalogPlans', 'catalogAdd', 'catalogReload', 'catalogSave']) {
+        assert.ok(fields?.includes(`id="${id}"`), `${id} must be inside the locked fieldset`);
+    }
+
+    finish({ ok: true, json: async () => ({ ...defaultCatalog(), revision: 1 }) });
+    await saving;
+    assert.equal(t.element('catalogFields').disabled, false);
+    assert.match(t.element('catalogStatus').textContent, /Published version 1/);
+});
+
+test('a non-JSON service failure leaves the draft intact and provides a retryable error', async () => {
+    const t = editor();
+    await t.context.window.initCatalogAdmin({ getIdToken: async () => 'admin-token' });
+    t.element('catalogAnnouncement').value = 'Keep this draft';
+    t.context.fetch = async () => ({
+        ok: false, status: 503,
+        json: async () => { throw new SyntaxError('Unexpected token <'); },
+    });
+
+    await t.element('catalogForm').submit({ preventDefault() {} });
+
+    assert.match(t.element('catalogStatus').textContent, /HTTP 503/);
+    assert.match(t.element('catalogStatus').textContent, /retry/i);
+    assert.doesNotMatch(t.element('catalogStatus').textContent, /Unexpected token/);
+    assert.equal(t.element('catalogAnnouncement').value, 'Keep this draft');
+    assert.equal(t.element('catalogFields').disabled, false);
+    assert.equal(t.element('catalogSave').disabled, false);
+});
+
+test('full-length plan names can wrap in admin legends without widening the editor', () => {
+    const html = fs.readFileSync(path.join(__dirname, '../../admin.html'), 'utf8');
+    const legendStyle = html.match(/\.catalog-plan legend\s*\{([^}]+)\}/)?.[1] || '';
+    assert.match(legendStyle, /max-width:\s*100%/);
+    assert.match(legendStyle, /overflow-wrap:\s*anywhere/);
+});

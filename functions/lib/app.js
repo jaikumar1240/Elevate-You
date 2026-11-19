@@ -51,7 +51,11 @@ function createApp(deps) {
     const app = express();
     app.disable('x-powered-by');
     app.set('trust proxy', true);
-    app.use(express.json({ limit: '64kb' }));
+    app.use((req, res, next) => {
+        res.set('Cache-Control', 'no-store');
+        next();
+    });
+    app.use(express.json({ limit: '256kb' }));
 
     const router = express.Router();
     // Express 4 doesn't forward rejected promises to the error handler.

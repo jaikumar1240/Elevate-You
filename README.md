@@ -87,10 +87,15 @@ For production, swap to PostgreSQL or MySQL.
 ## Managing plans and storefront settings
 
 The production site uses the Firebase Functions API and Firestore, not the legacy SQLite server described above.
+Every plan's **Book & pay** button opens the booking form, whose **Pay with Razorpay** button creates a Razorpay order
+at the plan's current admin price and opens Razorpay Standard Checkout. New plans need no separate Razorpay Dashboard
+"Payment Button" ID; such embedded buttons would bypass the CRM, price snapshot and booking verification flow.
 Do not edit HTML or Razorpay payment links to change production prices.
 
 1. Open `/admin` on Firebase Hosting and sign in with the configured, verified admin Google account.
-2. Expand **Plans, pricing & storefront**.
+2. Select the **Plans & pricing** tab. **Leads & follow-ups** contains the CRM; **Reports** shows source and campaign performance.
+   Leads and Reports share filters and summary totals; **Export filtered leads** exports that same selection.
+   Use Left/Right Arrow, Home or End on the tab bar for keyboard navigation.
 3. Edit names, INR prices (up to two decimal places), descriptions, features, price suffixes and badges.
    Use **Move up/down** to set the public display order.
 4. Use **Add plan** for a new offering. New plans start archived: fill in their details and check **Available to buy**.
@@ -98,9 +103,11 @@ Do not edit HTML or Razorpay payment links to change production prices.
 5. Uncheck **Available to buy** to archive an offering; check it again to restore it. Existing IDs cannot be removed,
    so historic orders and reminder links keep their identity. Up to 20 plans, including archived plans, are supported.
 6. Optionally set a plain-text announcement (300 characters maximum) or uncheck **Accept new checkouts** to pause sales.
-7. Click **Publish changes**. Edits are drafts until published; **Discard edits / reload** loads the last saved version.
+7. Click **Publish changes**. Edits are drafts until published and stay intact when switching tabs;
+   **Discard edits / reload** loads the last saved version.
    The last 20 saves record who changed what and when. If another admin/tab saved first, your save is rejected;
    preserve your edits, reload the latest version, then reapply them.
+   The editor is locked while loading or publishing so a completed request cannot overwrite edits made during the save.
 
 The server stores the catalog in `site/catalog`. Without that document, the original six plans remain the defaults.
 The public page fetches `/api/catalog` with caching disabled, renders active plans, and prevents checkout if pricing cannot
@@ -115,11 +122,27 @@ Calendly flow; pack fulfilment and additional sessions are arranged manually. Th
 Browser Firestore access to the catalog remains denied; only the authenticated server API may modify it.
 Do not place API keys, personal information or private notes in descriptions, features, badges or announcements.
 
-Deploy both the API and Hosting together when enabling this feature:
+Deploy the API first and verify the catalog endpoint **before** deploying Hosting:
 
 ```bash
-firebase deploy --only functions:api,hosting
+firebase deploy --only functions:api --project elevate-personality
+curl --fail-with-body "https://debugyourcareer.in/api/catalog?release=$(date +%s)"
+# Continue only after the response contains the expected catalog JSON.
+firebase deploy --only hosting --project elevate-personality
 ```
+
+The unauthenticated catalog request must return HTTP 200 with `plans`, `revision`, `checkoutEnabled` and `announcement`.
+The query parameter avoids reusing a previously cached 404. `/api/health` alone is not a readiness check:
+older API deployments also return `{"ok":true}` but have no catalog routes.
+Without a token, `/api/admin/catalog` must return JSON HTTP 401, not an HTML 404.
+Then verify real admin sign-in and that loading the public page displays the current plans.
+
+If the frontend is deployed without the matching API, both catalog routes return `Cannot GET ...` (404), the admin
+editor cannot load and public checkout is intentionally blocked rather than offering unverified prices.
+Deploy the matching API; changing DNS, weakening authorization or putting a bearer token in source code will not fix this.
+HTML service errors now show a readable message and HTTP status while retaining the current draft.
+After a failed publish, preserve that draft and inspect the latest saved version before retrying:
+an interrupted response does not prove that the server failed to save.
 
 The admin account must match `ADMIN_EMAIL` in Functions and `ADMIN_EMAIL` in `admin.html`; existing CRM Firestore
 rules have the same allowlisted email. Changing admin identity requires updating all three.

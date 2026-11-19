@@ -131,6 +131,30 @@ test('public catalog replaces stale plans with escaped managed cards and announc
     assert.match(elements.get('catalogMessage').textContent, /paused/i);
 });
 
+test('managed plan badges occupy their own row before titles instead of covering them on mobile', () => {
+    const { context } = browser(true);
+    const markup = vm.runInContext(`planCards([{
+        id: 'mock', name: 'Mock Interview', price: 349, period: '/ session',
+        description: 'Practice your interview', features: ['Feedback'], badge: 'Most popular'
+    }], true)`, context);
+    assert.match(markup, /plan-card--managed/);
+    assert.ok(markup.indexOf('class="plan-tag"') < markup.indexOf('<h3>'));
+    const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
+    const badgeStyle = css.match(/\.plan-card--managed \.plan-tag\s*\{([^}]+)\}/)?.[1] || '';
+    assert.match(badgeStyle, /position:\s*static/);
+    assert.match(badgeStyle, /max-width:\s*100%/);
+});
+
+test('managed pricing allows long valid suffixes to wrap rather than widening the mobile grid', () => {
+    const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
+    const cardStyle = css.match(/\.plan-card--managed\s*\{([^}]+)\}/)?.[1] || '';
+    const priceStyle = css.match(/\.plan-card--managed \.plan-price\s*\{([^}]+)\}/)?.[1] || '';
+    const suffixStyle = css.match(/\.plan-card--managed \.plan-period\s*\{([^}]+)\}/)?.[1] || '';
+    assert.match(cardStyle, /min-width:\s*0/);
+    assert.match(priceStyle, /flex-wrap:\s*wrap/);
+    assert.match(suffixStyle, /overflow-wrap:\s*anywhere/);
+});
+
 test('checkout cannot open for unverified pricing, paused sales or removed plans', () => {
     const { context, elements } = browser(true);
     preparePurchase(context);
@@ -238,7 +262,7 @@ test('the booking form discloses the selected price before continuing to payment
     assert.ok(pricePosition >= 0 && pricePosition < submitPosition, 'Show the plan price before the submit button');
     assert.match(form.slice(0, submitPosition), /plan price/i);
     const initialLabel = form.match(/<span class="lead-form__submit-label">([^<]+)<\/span>/)?.[1];
-    assert.match(initialLabel || '', /continue to payment/i);
+    assert.match(initialLabel || '', /^pay with razorpay$/i);
 
     const { context } = browser(true);
     const { PLANS: serverPlans } = require('../lib/config');
@@ -255,7 +279,7 @@ test('the booking form discloses the selected price before continuing to payment
     assert.equal(context.funnel.els.submit.disabled, true);
     context.funnel.setSubmitting(false);
     assert.equal(context.funnel.els.submit.disabled, false);
-    assert.match(label.textContent, /continue to payment/i);
+    assert.match(label.textContent, /^pay with razorpay$/i);
 });
 
 test('booking copy explains the paid service without judging visitors', () => {

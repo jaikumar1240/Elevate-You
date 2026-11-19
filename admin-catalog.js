@@ -44,7 +44,15 @@
             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
             ...(body ? { body: JSON.stringify(body) } : {}),
         });
-        const result = await response.json();
+        if (response.status === 404) {
+            throw new Error('The catalog API is not deployed. Deploy functions:api before Hosting, then reload this page.');
+        }
+        let result;
+        try {
+            result = await response.json();
+        } catch {
+            throw new Error(`Catalog service returned an invalid response (HTTP ${response.status}). Your draft is unchanged. Check the latest saved version before you retry publishing.`);
+        }
         if (!response.ok) throw new Error(result.error || 'Could not load or save the catalog.');
         return result;
     }
@@ -73,6 +81,7 @@
         const draft = readForm();
         const savingUser = user;
         $('catalogSave').disabled = true;
+        $('catalogFields').disabled = true;
         $('catalogStatus').textContent = 'Publishing...';
         try {
             const saved = await request('POST', draft);
@@ -84,7 +93,10 @@
         } catch (error) {
             if (user === savingUser) $('catalogStatus').textContent = error.message;
         } finally {
-            if (user === savingUser) $('catalogSave').disabled = false;
+            if (user === savingUser) {
+                $('catalogSave').disabled = false;
+                $('catalogFields').disabled = false;
+            }
         }
     });
 
@@ -137,6 +149,7 @@
         catalog = null;
         dirty = false;
         $('catalogSave').disabled = true;
+        $('catalogFields').disabled = true;
         $('catalogPlans').innerHTML = '';
         $('catalogHistory').innerHTML = '';
         $('catalogAnnouncement').value = '';
@@ -151,9 +164,13 @@
             dirty = false;
             render();
             $('catalogSave').disabled = false;
+            $('catalogFields').disabled = false;
             $('catalogStatus').textContent = `Version ${catalog.revision}. Changes go live only when you publish.`;
         } catch (error) {
-            if (user === identity) $('catalogStatus').textContent = error.message;
+            if (user === identity) {
+                $('catalogStatus').textContent = error.message;
+                $('catalogFields').disabled = false;
+            }
         }
     };
 })();

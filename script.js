@@ -60,15 +60,15 @@ function escapeCatalogText(value) {
 
 function planCards(plans, enabled) {
     return plans.map((plan) => `
-        <div class="plan-card">
+        <div class="plan-card plan-card--managed">
+            ${plan.badge ? `<div class="plan-tag">${escapeCatalogText(plan.badge)}</div>` : ''}
             <h3>${escapeCatalogText(plan.name)}</h3>
             <div class="plan-price"><span class="plan-currency">₹</span><span class="plan-amount">${Number(plan.price).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
                 <span class="plan-period">${escapeCatalogText(plan.period)}</span></div>
             <p class="plan-desc">${escapeCatalogText(plan.description)}</p>
             <ul class="plan-features">${plan.features.map((feature) => `<li><i class="fas fa-check" aria-hidden="true"></i> ${escapeCatalogText(feature)}</li>`).join('')}</ul>
-            ${plan.badge ? `<div class="plan-tag">${escapeCatalogText(plan.badge)}</div>` : ''}
             <div class="plan-cta"><button type="button" class="plan-btn plan-btn--secondary book-cta" data-plan-id="${escapeCatalogText(plan.id)}"
-                ${enabled ? '' : 'disabled'}>Choose this plan</button></div>
+                ${enabled ? '' : 'disabled'}>Book &amp; pay</button></div>
         </div>`).join('');
 }
 
@@ -604,7 +604,7 @@ const LeadFunnel = {
     setSubmitting(on) {
         this.els.submit.disabled = on;
         const label = this.els.submit.querySelector('.lead-form__submit-label');
-        if (label) label.textContent = on ? 'Saving your details' : 'Continue to payment';
+        if (label) label.textContent = on ? 'Saving your details' : 'Pay with Razorpay';
     },
 
     // ----- step 1: lead ---------------------------------------------------------

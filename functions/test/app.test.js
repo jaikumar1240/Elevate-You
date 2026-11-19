@@ -90,6 +90,16 @@ test('catalog administration requires a verified admin token on reads and writes
     assert.deepEqual(allowed.body.history, []);
 });
 
+test('catalog authorization failures are not cached before the admin signs in', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    for (const token of ['', 'visitor', 'expired']) {
+        const result = await t.get('/api/admin/catalog', token ? { Authorization: `Bearer ${token}` } : {});
+        assert.ok([401, 403].includes(result.status));
+        assert.equal(result.headers.get('cache-control'), 'no-store');
+    }
+});
+
 test('admin can publish reordered plans with an audit trail and stale edits cannot overwrite them', async (ctx) => {
     const t = await setup();
     ctx.after(t.close);
@@ -134,6 +144,27 @@ test('catalog rejects invalid prices, unsafe IDs and destructive plan removal wi
         assert.ok(result.body.error);
         assert.equal(t.db.store.has('site/catalog'), false);
     }
+});
+
+test('all twenty plans can be published with valid full-length multilingual content', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    const headers = { Authorization: 'Bearer admin' };
+    const catalog = (await t.get('/api/admin/catalog', headers)).body;
+    while (catalog.plans.length < 20) {
+        catalog.plans.push({ ...catalog.plans[0], id: `extra-${catalog.plans.length}` });
+    }
+    catalog.plans = catalog.plans.map((plan) => ({
+        ...plan, name: '\u540d'.repeat(80), description: '\u6587'.repeat(600),
+        period: '\u671f'.repeat(40), badge: '\u65b0'.repeat(40),
+        features: Array(10).fill('\u5b66'.repeat(160)),
+    }));
+
+    const result = await t.post('/api/admin/catalog', catalog, headers);
+
+    assert.equal(result.status, 200);
+    assert.equal(result.body.plans.length, 20);
+    assert.equal(result.body.plans[0].description, catalog.plans[0].description);
 });
 
 test('checkout uses managed prices while existing orders keep their purchased identity', async (ctx) => {

@@ -17,7 +17,23 @@
         body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; }
         button, input, select, textarea { font: inherit; }
         a { color: var(--brand); }
-        .hidden { display: none !important; }
+        .hidden, [hidden] { display: none !important; }
+        :focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
+        button:disabled { opacity: .55; cursor: not-allowed; }
+        .admin-intro { margin-bottom: 20px; }
+        .admin-intro h2 { margin: 0 0 6px; font-size: 24px; }
+        .admin-intro p, .panel-heading p { color: var(--muted); line-height: 1.6; margin: 6px 0 16px; }
+        .admin-tabs { display: flex; gap: 6px; padding: 6px; margin-bottom: 22px; background: #fff; border: 1px solid var(--line); border-radius: var(--r); }
+        .admin-tab { flex: 1; border: 0; border-radius: 8px; padding: 14px 12px; background: transparent; color: var(--muted); font-weight: 700; cursor: pointer; }
+        .admin-tab[aria-selected=true] { color: #4338ca; background: var(--brand-50); }
+        .admin-tab:hover { background: var(--brand-50); }
+        .panel-heading h2 { font-size: 20px; margin: 0; }
+        .catalog-group { padding: 16px; margin-bottom: 20px; border: 1px solid var(--line); border-radius: var(--r); background: #fafbfe; }
+        .catalog-group h3 { margin-top: 0; }
+        .catalog-toolbar { position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--line); padding: 14px 0; margin-top: 16px; z-index: 2; }
+        .filter-field { display: flex; flex: 1 1 170px; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; min-width: 0; }
+        .filter-field--search { flex: 2 1 280px; }
+        .table-hint { color: var(--muted); font-size: 12px; }
 
         .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 24px; background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
         .topbar h1 { font-size: 18px; margin: 0; }
@@ -44,7 +60,8 @@
 
         .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 12px; margin-bottom: 14px; }
         .filters input, .filters select { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff; }
-        .filters input[type=search] { min-width: 240px; flex: 1; }
+        .filter-field input, .filter-field select { width: 100%; min-width: 0; min-height: 38px; }
+        .filters input[type=search] { min-width: 0; width: 100%; }
         .filters .count { color: var(--muted); margin-left: auto; }
         .chips { display: flex; gap: 6px; flex-wrap: wrap; }
         .chip { border: 1px solid var(--line); background: #fff; padding: 6px 10px; border-radius: 999px; cursor: pointer; font-size: 12px; font-weight: 600; }
@@ -101,15 +118,28 @@
         .report-table th, .report-table td { padding: 8px 10px; }
         .catalog-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
         .catalog-plan { min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 18px 0; }
-        .catalog-plan legend { font-weight: 700; }
+        .catalog-plan legend { font-weight: 700; max-width: 100%; overflow-wrap: anywhere; }
         #catalogForm label { display: block; margin: 8px 0; font-weight: 600; }
         #catalogForm input:not([type=checkbox]), #catalogForm textarea { display: block; width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 6px; margin-top: 5px; }
         #catalogForm textarea { resize: vertical; }
         #catalogForm .catalog-check { display: flex; align-items: center; gap: 8px; }
+        #catalogFields { min-width: 0; border: 0; padding: 0; margin: 0; }
         #catalogStatus { overflow-wrap: anywhere; }
         #catalogHistory { padding-left: 20px; font-size: 12px; overflow-wrap: anywhere; }
         #catalogHistory li { margin: 8px 0; }
-        @media (max-width: 700px) { main { padding: 12px; } .topbar { padding: 12px; } }
+        @media (max-width: 700px) {
+            main { padding: 16px 12px; }
+            .topbar { padding: 12px; flex-wrap: wrap; }
+            .topbar .who { flex-wrap: wrap; min-width: 0; }
+            #whoEmail { overflow-wrap: anywhere; }
+            .admin-tab { font-size: 12px; padding: 12px 6px; }
+            .admin-tab i { display: none; }
+            .filters > .filter-field { flex: 1 1 180px; }
+            .filters input[type=search] { min-width: 0; width: 100%; }
+            .filters select { width: 100%; min-width: 0; }
+            .catalog-fields { grid-template-columns: minmax(0, 1fr); }
+            .catalog-plan { padding: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -117,51 +147,65 @@
         <h1><i class="fas fa-bug" style="color:var(--brand)"></i> Site admin</h1>
         <div class="who hidden" id="who">
             <span id="whoEmail"></span>
-            <button class="btn btn--sm" id="exportBtn"><i class="fas fa-file-csv"></i> Export CSV</button>
+            <a class="btn btn--sm" href="/" target="_blank" rel="noopener">View website</a>
             <button class="btn btn--sm" id="signOutBtn">Sign out</button>
         </div>
     </header>
 
     <section class="signin" id="signin">
         <h2>Admin sign-in</h2>
-        <p>Sign in with the admin Google account to see leads.</p>
+        <p>Manage leads, plans, pricing and reports with your admin Google account.</p>
         <button class="btn btn--primary" id="signInBtn"><i class="fab fa-google"></i> Sign in with Google</button>
         <div class="error" id="signinError"></div>
     </section>
 
     <main id="app" class="hidden">
-        <details class="report" id="catalogPanel">
-            <summary>Plans, pricing &amp; storefront</summary>
+        <div class="admin-intro">
+            <h2>Your workspace</h2>
+            <p>Follow up with leads, manage your offerings and see what brings customers in.</p>
+        </div>
+        <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+            <button type="button" class="admin-tab" id="tab-leads" role="tab" aria-controls="panel-leads" aria-selected="true" tabindex="0"><i class="fas fa-users" aria-hidden="true"></i> Leads &amp; follow-ups</button>
+            <button type="button" class="admin-tab" id="tab-catalog" role="tab" aria-controls="panel-catalog" aria-selected="false" tabindex="-1"><i class="fas fa-tags" aria-hidden="true"></i> Plans &amp; pricing</button>
+            <button type="button" class="admin-tab" id="tab-reports" role="tab" aria-controls="panel-reports" aria-selected="false" tabindex="-1"><i class="fas fa-chart-bar" aria-hidden="true"></i> Reports</button>
+        </div>
+        <section class="report" id="panel-catalog" role="tabpanel" aria-labelledby="tab-catalog" tabindex="0" hidden>
+            <div class="panel-heading"><h2>Plans, pricing &amp; storefront</h2>
             <p>Edit plan prices, descriptions and features, add plans, or archive them without changing past purchases.
-                Prices apply to new orders only. Saved changes are public immediately.</p>
+                Prices apply to new orders only. Switch tabs freely; your draft stays here until you publish or reload.</p></div>
             <form id="catalogForm">
+                <fieldset id="catalogFields" disabled aria-label="Plans and storefront settings">
+                <div class="catalog-group">
+                <h3>Storefront settings</h3>
                 <label>Site announcement
                     <input id="catalogAnnouncement" maxlength="300" placeholder="Optional announcement shown above pricing">
                 </label>
                 <label class="catalog-check"><input type="checkbox" id="catalogEnabled"> Accept new checkouts</label>
                 <p class="sub">Pausing checkout does not cancel existing orders or paid bookings. Plan IDs cannot be changed after publishing.
                     All plans use the existing Calendly booking flow; arrange delivery of multi-session packs manually.</p>
+                </div>
+                <h3>Your plans</h3>
+                <p class="sub">Plans appear on your website in this order. Uncheck availability to archive a plan without affecting past purchases.</p>
                 <div id="catalogPlans"></div>
-                <div class="actions">
+                <div class="actions catalog-toolbar">
                     <button class="btn" type="button" id="catalogAdd">Add plan</button>
                     <button class="btn" type="button" id="catalogReload">Discard edits / reload</button>
                     <button class="btn btn--primary" type="submit" id="catalogSave" disabled>Publish changes</button>
                     <a class="btn" href="/" target="_blank" rel="noopener">View website</a>
                 </div>
+                </fieldset>
                 <p id="catalogStatus" role="status" aria-live="polite"></p>
             </form>
             <details><summary>Recent change history (last 20 saves)</summary><ol id="catalogHistory"></ol></details>
-        </details>
-        <section class="kpis" id="kpis"></section>
-        <details class="report" id="reportPanel">
-            <summary>Source &amp; campaign performance <span class="sub">(uses current filters)</span></summary>
-            <div id="report"></div>
-        </details>
+        </section>
+        <div data-admin-shared="leads reports">
+        <section class="kpis" id="kpis" aria-label="Summary for current filters"></section>
         <p id="bookingStatusError" role="status"></p>
 
-        <section class="filters">
-            <input type="search" id="search" placeholder="Search name, phone, email, campaign…">
-            <select id="fFunnel">
+        <section class="filters" aria-label="Lead and report filters">
+            <label class="filter-field filter-field--search">Find a lead
+            <input type="search" id="search" placeholder="Name, phone, email, campaign…"></label>
+            <label class="filter-field">Payment / booking stage<select id="fFunnel">
                 <option value="">All funnel stages</option>
                 <option value="unpaid">Unpaid (call these)</option>
                 <option value="new">Form filled</option>
@@ -170,25 +214,29 @@
                 <option value="payment_failed">Payment failed</option>
                 <option value="paid">Paid, not booked</option>
                 <option value="booked">Booked</option>
-            </select>
-            <select id="fCrm"></select>
-            <select id="fPlan"><option value="">All plans</option></select>
-            <select id="fSource"><option value="">All sources</option></select>
-            <select id="fRange">
+            </select></label>
+            <label class="filter-field">Follow-up status<select id="fCrm"></select></label>
+            <label class="filter-field">Plan<select id="fPlan"><option value="">All plans</option></select></label>
+            <label class="filter-field">Source<select id="fSource"><option value="">All sources</option></select></label>
+            <label class="filter-field">Date range<select id="fRange">
                 <option value="">All time</option>
                 <option value="1">Today</option>
                 <option value="7">Last 7 days</option>
                 <option value="30">Last 30 days</option>
-            </select>
+            </select></label>
             <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="fDue"> Follow-up due</label>
-            <select id="fSort" title="Sort leads">
+            <label class="filter-field">Lead order<select id="fSort">
                 <option value="priority">Sort: Call priority</option>
                 <option value="newest">Sort: Newest first</option>
                 <option value="followup">Sort: Follow-up date</option>
-            </select>
+            </select></label>
             <span class="count" id="count"></span>
+            <button class="btn btn--sm" id="exportBtn"><i class="fas fa-file-csv" aria-hidden="true"></i> Export filtered leads</button>
         </section>
-
+        </div>
+        <section id="panel-leads" role="tabpanel" aria-labelledby="tab-leads" tabindex="0">
+        <div class="panel-heading"><h2>Leads &amp; follow-ups</h2><p>Start with call priority to reach leads who need attention. Record contact attempts, notes and the next follow-up in each row.</p></div>
+        <p class="table-hint">On smaller screens, scroll the table sideways to see follow-up controls.</p>
         <div class="table-wrap">
             <table>
                 <thead>
@@ -205,9 +253,16 @@
             </table>
             <div class="empty hidden" id="empty">No leads match these filters.</div>
         </div>
+        </section>
+        <section class="report" id="panel-reports" role="tabpanel" aria-labelledby="tab-reports" tabindex="0" hidden>
+            <div class="panel-heading"><h2>Source &amp; campaign performance</h2>
+            <p>Compare the sources bringing in leads and payments. The summary and report use the filters above, shared with the Leads tab.</p></div>
+            <div class="table-wrap" id="report"></div>
+        </section>
     </main>
 
-    <script src="/admin-catalog.js?v=1"></script>
+    <script src="/admin-tabs.js?v=1"></script>
+    <script src="/admin-catalog.js?v=2"></script>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
