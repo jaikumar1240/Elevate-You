@@ -58,6 +58,7 @@ const booking = {
 };
 
 function preparePurchase(context) {
+    vm.runInContext('Catalog.ready = true; Catalog.checkoutEnabled = true;', context);
     const stub = () => ({ textContent: '', hidden: true, setAttribute() {}, focus() {}, querySelectorAll: () => [] });
     context.funnel.els = { planName: stub(), planPrice: stub(), modal: stub(), submit: stub(), form: stub() };
     context.funnel.prefillForm = () => {};
@@ -106,6 +107,83 @@ test('reminder tokens are removed before analytics and still resume the lead', a
     assert.equal(request?.body.token, token);
     assert.deepEqual(opened, ['mock', 'reminder_email']);
     assert.deepEqual(JSON.parse(storage.get('dyc.lead')).values, values);
+});
+
+test('public catalog replaces stale plans with escaped managed cards and announces checkout pauses', async () => {
+    const { context, elements } = browser(true);
+    const catalog = {
+        revision: 3, checkoutEnabled: false, announcement: '<strong>Back soon</strong>',
+        plans: [{
+            id: 'career-pack', name: '<img src=x>', price: 250.5, active: true,
+            period: '/ pack', description: '<script>bad</script>', features: ['Feedback & support'], badge: 'New',
+        }],
+    };
+    context.fetch = async () => ({ ok: true, json: async () => catalog });
+    assert.equal(vm.runInContext('typeof loadCatalog', context), 'function');
+    await vm.runInContext('loadCatalog()', context);
+    const markup = elements.get('plansGrid').innerHTML;
+    assert.match(markup, /career-pack/);
+    assert.match(markup, /250.5/);
+    assert.match(markup, /&lt;img/);
+    assert.doesNotMatch(markup, /<script>|<img src=x/);
+    assert.doesNotMatch(markup, /Diagnosis Session/);
+    assert.equal(elements.get('catalogAnnouncement').textContent, catalog.announcement);
+    assert.match(elements.get('catalogMessage').textContent, /paused/i);
+});
+
+test('checkout cannot open for unverified pricing, paused sales or removed plans', () => {
+    const { context, elements } = browser(true);
+    preparePurchase(context);
+    vm.runInContext('Catalog.ready = false;', context);
+    context.funnel.open('mock', 'plans');
+    assert.equal(context.funnel.els.modal.hidden, true);
+    assert.match(elements.get('catalogMessage').textContent, /load/i);
+    vm.runInContext('Catalog.ready = true; Catalog.checkoutEnabled = false;', context);
+    context.funnel.open('mock', 'plans');
+    assert.equal(context.funnel.els.modal.hidden, true);
+    assert.match(elements.get('catalogMessage').textContent, /paused/i);
+    vm.runInContext('Catalog.checkoutEnabled = true;', context);
+    context.funnel.open('nonexistent', 'plans');
+    assert.equal(context.funnel.els.modal.hidden, true);
+    assert.match(elements.get('catalogMessage').textContent, /available/i);
+});
+
+test('checkout submits the price shown when the customer opened the form', async () => {
+    const { context } = browser(true);
+    preparePurchase(context);
+    context.funnel.open('mock', 'plans');
+    context.funnel.formValues = () => ({ name: 'Test User', phone: '9876543210', email: 'test@example.com' });
+    context.funnel.setFieldError = () => {};
+    context.funnel.setSubmitting = () => {};
+    vm.runInContext(`
+        getAttribution = () => ({});
+        googleMetadata = () => ({});
+        readUrlAttribution = () => ({});
+        getMetaIds = () => ({});
+        api = async (_path, payload) => { globalThis.sent = payload; throw new Error('Connection failed'); };
+        PLANS.mock.price = 999;
+    `, context);
+    await context.funnel.submit();
+    assert.equal(context.sent.expectedPrice, 349);
+});
+
+test('reminder links wait for current catalog pricing before opening their plan', async () => {
+    const { context } = browser(true);
+    context.window.location = { search: '?resume=synthetic_reminder_token_123', pathname: '/', hash: '' };
+    context.window.history = { replaceState() {} };
+    context.funnel.els = { form: { reset() {} } };
+    context.fetch = async () => ({ ok: true, json: async () => ({ paid: false, planId: 'mock', values: { phone: '9876543210' } }) });
+    let release;
+    context.catalogLoading = new Promise((resolve) => { release = resolve; });
+    vm.runInContext('Catalog.loading = catalogLoading;', context);
+    let opened = false;
+    context.funnel.open = () => { opened = true; };
+    const resuming = context.funnel.resumeFromReminder();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(opened, false);
+    release();
+    await resuming;
+    assert.equal(opened, true);
 });
 
 test('previously stored attribution does not resend reminder tokens', () => {
@@ -185,7 +263,7 @@ test('booking copy explains the paid service without judging visitors', () => {
     const howItWorks = html.match(/<section id="how-it-works"[\s\S]*?<\/section>/)?.[0] || '';
     const faq = html.match(/<section class="faq"[\s\S]*?<\/section>/)?.[0] || '';
     assert.match(howItWorks, /pay securely/i);
-    assert.match(faq, /₹89/);
+    assert.match(faq, /current options and prices before you book/i);
     const judgmentalCopy = html.match(/only serious|serious only|no free slots|aren't committed|wastes both our time|best ₹89 you'll ever spend/i);
     assert.equal(judgmentalCopy?.[0], undefined, 'Avoid judgmental or high-pressure booking copy');
 });

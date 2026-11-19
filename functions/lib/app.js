@@ -3,8 +3,9 @@
 const crypto = require('crypto');
 const express = require('express');
 const { validateLead, isLeadId, clean } = require('./validate');
-const { PLANS, CURRENCY } = require('./config');
+const { CURRENCY } = require('./config');
 const { REMINDER_DELAY_MS } = require('./reminders');
+const { defaultCatalog, readCatalog, publicCatalog, validateCatalog, catalogChanges } = require('./catalog');
 
 const CHECKOUT_EVENTS = new Set(['checkout_opened', 'checkout_closed', 'payment_failed']);
 const newResumeToken = () => crypto.randomBytes(18).toString('base64url');
@@ -50,7 +51,7 @@ function createApp(deps) {
     const app = express();
     app.disable('x-powered-by');
     app.set('trust proxy', true);
-    app.use(express.json({ limit: '20kb' }));
+    app.use(express.json({ limit: '64kb' }));
 
     const router = express.Router();
     // Express 4 doesn't forward rejected promises to the error handler.
@@ -63,16 +64,71 @@ function createApp(deps) {
 
     const historyEntry = (type, extra = {}) => ({ type, at: new Date().toISOString(), ...extra });
 
+    router.get('/catalog', async (req, res) => {
+        res.set('Cache-Control', 'no-store').json(publicCatalog(await readCatalog(db)));
+    });
+
+    async function requireAdmin(req, res, next) {
+        const token = /^Bearer (\S+)$/.exec(req.headers.authorization || '')?.[1];
+        if (!token) return res.status(401).json({ error: 'Admin sign-in required.' });
+        let identity;
+        try {
+            identity = await deps.verifyIdToken(token);
+        } catch {
+            return res.status(401).json({ error: 'Sign-in expired. Please sign in again.' });
+        }
+        if (!identity.email_verified || identity.email !== getConfig().adminEmail) {
+            return res.status(403).json({ error: 'Admin access required.' });
+        }
+        req.adminEmail = identity.email;
+        next();
+    }
+
+    router.get('/admin/catalog', requireAdmin, async (req, res) => {
+        res.set('Cache-Control', 'no-store').json(await readCatalog(db));
+    });
+
+    router.post('/admin/catalog', requireAdmin, async (req, res) => {
+        const validationError = validateCatalog(req.body);
+        if (validationError) return res.status(400).json({ error: validationError });
+        const { revision, announcement, checkoutEnabled } = req.body;
+        const plans = req.body.plans.map(({ id, name, price, description, period, badge, active, features }) => ({
+            id, name: name.trim(), price, description: description.trim(), period: period.trim(),
+            badge: badge.trim(), active, features: features.map((feature) => feature.trim()),
+        }));
+        const result = await db.runTransaction(async (tx) => {
+            const ref = db.collection('site').doc('catalog');
+            const snapshot = await tx.get(ref);
+            const previous = snapshot.exists ? snapshot.data() : defaultCatalog();
+            if (previous.revision !== revision) return null;
+            if (previous.plans.some((plan) => !plans.some((next) => next.id === plan.id))) {
+                return { error: 'Keep existing plan IDs. Archive a plan instead of deleting it.' };
+            }
+            const next = {
+                revision: revision + 1, plans, announcement, checkoutEnabled,
+                history: [{
+                    by: req.adminEmail, at: new Date().toISOString(), revision: revision + 1,
+                    summary: catalogChanges(previous, { plans, announcement, checkoutEnabled }),
+                }, ...previous.history].slice(0, 20),
+            };
+            tx.set(ref, next);
+            return next;
+        });
+        if (!result) return res.status(409).json({ error: 'Someone changed the catalog. Reload the latest version before saving.' });
+        if (result.error) return res.status(400).json(result);
+        res.set('Cache-Control', 'no-store').json(result);
+    });
+
     function metaArgs(cfg) {
         return { pixelId: cfg.metaPixelId, token: cfg.metaToken, testEventCode: cfg.metaTestEventCode };
     }
 
-    async function createOrder(cfg, leadId, planId, snapshot) {
+    async function createOrder(cfg, leadId, plan, snapshot) {
         if (!cfg.razorpayKeyId || !cfg.razorpayKeySecret) return null;
-        const plan = PLANS[planId];
+        const planId = plan.id;
         const rzp = createRazorpay(cfg.razorpayKeyId, cfg.razorpayKeySecret);
         const order = await rzp.orders.create({
-            amount: plan.price * 100,
+            amount: Math.round(plan.price * 100),
             currency: CURRENCY,
             receipt: `${leadId}-${Date.now()}`.slice(0, 40),
             notes: { leadId, planId, planName: plan.name },
@@ -203,8 +259,14 @@ function createApp(deps) {
         const body = req.body || {};
         if (body.website) return res.status(400).json({ error: 'Invalid submission' }); // honeypot
 
-        const planId = PLANS[body.planId] ? body.planId : 'diagnosis';
-        const plan = PLANS[planId];
+        const catalog = await readCatalog(db);
+        const planId = body.planId || 'diagnosis';
+        const plan = catalog.plans.find((item) => item.id === planId);
+        if (!catalog.checkoutEnabled) return res.status(409).json({ error: 'New checkouts are paused. Please contact us for help.' });
+        if (!plan?.active) return res.status(409).json({ error: 'This plan is no longer available. Reload the page to choose another plan.' });
+        if (body.expectedPrice !== undefined && body.expectedPrice !== plan.price) {
+            return res.status(409).json({ error: 'The plan price has changed. Reload the page to review the current price before continuing.' });
+        }
         const { errors, lead: input } = validateLead(body);
         if (Object.keys(errors).length) return res.status(400).json({ error: 'Please fix the highlighted fields', fields: errors });
 
@@ -277,7 +339,7 @@ function createApp(deps) {
 
         let order = null;
         let orderError = null;
-        const orderPromise = createOrder(cfg, leadId, planId, { ...input, client }).then((o) => { order = o; }, (err) => { orderError = err; });
+        const orderPromise = createOrder(cfg, leadId, plan, { ...input, client }).then((o) => { order = o; }, (err) => { orderError = err; });
         await Promise.allSettled([...side, orderPromise]);
         if (orderError) console.error('Razorpay order failed', orderError);
 

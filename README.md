@@ -84,12 +84,47 @@ SQLite, stored at `personality_sessions.db` (legacy filename — kept to avoid b
 
 For production, swap to PostgreSQL or MySQL.
 
-## Customising plans
+## Managing plans and storefront settings
 
-The five pricing tiers live in the `#plans` section of `index.html`. To change price or copy:
-- Update the `<span class="plan-amount">` and `<span class="plan-period">` for the card
-- Update the mailto `subject` and `body` to match the new price
-- For the ₹89 plan, the `<a href>` points to a Razorpay payment-button URL — update that too if the price changes
+The production site uses the Firebase Functions API and Firestore, not the legacy SQLite server described above.
+Do not edit HTML or Razorpay payment links to change production prices.
+
+1. Open `/admin` on Firebase Hosting and sign in with the configured, verified admin Google account.
+2. Expand **Plans, pricing & storefront**.
+3. Edit names, INR prices (up to two decimal places), descriptions, features, price suffixes and badges.
+   Use **Move up/down** to set the public display order.
+4. Use **Add plan** for a new offering. New plans start archived: fill in their details and check **Available to buy**.
+   IDs must be unique lowercase letters/numbers/hyphens and cannot change once published.
+5. Uncheck **Available to buy** to archive an offering; check it again to restore it. Existing IDs cannot be removed,
+   so historic orders and reminder links keep their identity. Up to 20 plans, including archived plans, are supported.
+6. Optionally set a plain-text announcement (300 characters maximum) or uncheck **Accept new checkouts** to pause sales.
+7. Click **Publish changes**. Edits are drafts until published; **Discard edits / reload** loads the last saved version.
+   The last 20 saves record who changed what and when. If another admin/tab saved first, your save is rejected;
+   preserve your edits, reload the latest version, then reapply them.
+
+The server stores the catalog in `site/catalog`. Without that document, the original six plans remain the defaults.
+The public page fetches `/api/catalog` with caching disabled, renders active plans, and prevents checkout if pricing cannot
+be loaded. Visitors already on the page must reload to see published changes. If a price changes after a form opens,
+the server rejects its stale price and asks the customer to reload rather than silently charging a different amount.
+
+Orders and payments retain their original name and amount. Pausing sales or archiving a plan does not cancel
+existing Razorpay orders or block payment verification and paid booking access. All plans currently share the existing
+Calendly flow; pack fulfilment and additional sessions are arranged manually. This does not add subscriptions or per-plan calendars.
+
+`GET /api/admin/catalog` and `POST /api/admin/catalog` require a Firebase ID token for the verified `ADMIN_EMAIL` account.
+Browser Firestore access to the catalog remains denied; only the authenticated server API may modify it.
+Do not place API keys, personal information or private notes in descriptions, features, badges or announcements.
+
+Deploy both the API and Hosting together when enabling this feature:
+
+```bash
+firebase deploy --only functions:api,hosting
+```
+
+The admin account must match `ADMIN_EMAIL` in Functions and `ADMIN_EMAIL` in `admin.html`; existing CRM Firestore
+rules have the same allowlisted email. Changing admin identity requires updating all three.
+For local development use the Firebase Hosting, Functions and Firestore emulators with Node.js 22.
+`npm start` runs the legacy SQLite app and does not provide the managed catalog API.
 
 ## Deployment
 
@@ -108,6 +143,9 @@ The site publishes `/robots.txt`, `/sitemap.xml`, and the articles under `/blog/
 1. Verify the `https://debugyourcareer.in/` URL-prefix property in [Google Search Console](https://search.google.com/search-console).
 2. Open **Sitemaps**, submit `sitemap.xml`, and check for processing errors.
 3. Use **URL Inspection** on the homepage and individual articles. Test the live URL and request indexing for important pages.
+4. Do not create a Google Business Profile unless you have a physical location where you meet customers, or you visit them in person. Google's [guidelines](https://support.google.com/business/answer/3038177) exclude online-only businesses.
+
+`www.debugyourcareer.in` is a Firebase Hosting custom domain that permanently redirects to the apex domain, preserving the path and query string. Its GoDaddy DNS record is a `www` CNAME pointing to the site's default Firebase Hosting hostname.
 
 The previous Firebase Hosting hostname still serves the same site, so canonical tags alone do not redirect its visitors. Before completing the migration, configure a host-level permanent redirect from each old URL to its matching `https://debugyourcareer.in` URL; a path-only redirect in `firebase.json` would also affect the new domain. Verify both properties in Search Console and use its Change of Address tool if available.
 

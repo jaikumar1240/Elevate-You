@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Leads CRM · DebugYourCareer</title>
+    <title>Admin · DebugYourCareer</title>
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -99,12 +99,22 @@
         .report summary { color: var(--ink); font-weight: 700; font-size: 14px; margin: 0; }
         .report-table { min-width: 0; margin-top: 10px; }
         .report-table th, .report-table td { padding: 8px 10px; }
+        .catalog-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+        .catalog-plan { min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 18px 0; }
+        .catalog-plan legend { font-weight: 700; }
+        #catalogForm label { display: block; margin: 8px 0; font-weight: 600; }
+        #catalogForm input:not([type=checkbox]), #catalogForm textarea { display: block; width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 6px; margin-top: 5px; }
+        #catalogForm textarea { resize: vertical; }
+        #catalogForm .catalog-check { display: flex; align-items: center; gap: 8px; }
+        #catalogStatus { overflow-wrap: anywhere; }
+        #catalogHistory { padding-left: 20px; font-size: 12px; overflow-wrap: anywhere; }
+        #catalogHistory li { margin: 8px 0; }
         @media (max-width: 700px) { main { padding: 12px; } .topbar { padding: 12px; } }
     </style>
 </head>
 <body>
     <header class="topbar">
-        <h1><i class="fas fa-bug" style="color:var(--brand)"></i> Leads CRM</h1>
+        <h1><i class="fas fa-bug" style="color:var(--brand)"></i> Site admin</h1>
         <div class="who hidden" id="who">
             <span id="whoEmail"></span>
             <button class="btn btn--sm" id="exportBtn"><i class="fas fa-file-csv"></i> Export CSV</button>
@@ -120,6 +130,28 @@
     </section>
 
     <main id="app" class="hidden">
+        <details class="report" id="catalogPanel">
+            <summary>Plans, pricing &amp; storefront</summary>
+            <p>Edit plan prices, descriptions and features, add plans, or archive them without changing past purchases.
+                Prices apply to new orders only. Saved changes are public immediately.</p>
+            <form id="catalogForm">
+                <label>Site announcement
+                    <input id="catalogAnnouncement" maxlength="300" placeholder="Optional announcement shown above pricing">
+                </label>
+                <label class="catalog-check"><input type="checkbox" id="catalogEnabled"> Accept new checkouts</label>
+                <p class="sub">Pausing checkout does not cancel existing orders or paid bookings. Plan IDs cannot be changed after publishing.
+                    All plans use the existing Calendly booking flow; arrange delivery of multi-session packs manually.</p>
+                <div id="catalogPlans"></div>
+                <div class="actions">
+                    <button class="btn" type="button" id="catalogAdd">Add plan</button>
+                    <button class="btn" type="button" id="catalogReload">Discard edits / reload</button>
+                    <button class="btn btn--primary" type="submit" id="catalogSave" disabled>Publish changes</button>
+                    <a class="btn" href="/" target="_blank" rel="noopener">View website</a>
+                </div>
+                <p id="catalogStatus" role="status" aria-live="polite"></p>
+            </form>
+            <details><summary>Recent change history (last 20 saves)</summary><ol id="catalogHistory"></ol></details>
+        </details>
         <section class="kpis" id="kpis"></section>
         <details class="report" id="reportPanel">
             <summary>Source &amp; campaign performance <span class="sub">(uses current filters)</span></summary>
@@ -175,6 +207,7 @@
         </div>
     </main>
 
+    <script src="/admin-catalog.js?v=1"></script>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
@@ -391,6 +424,7 @@
             onAuthStateChanged(auth, (user) => {
                 unsubscribe?.();
                 unsubscribe = null;
+                window.initCatalogAdmin(null);
                 if (!user) return showSignin();
                 if (user.email !== ADMIN_EMAIL) {
                     signOut(auth);
@@ -401,6 +435,7 @@
                 $('app').classList.remove('hidden');
                 $('who').classList.remove('hidden');
                 $('whoEmail').textContent = user.email;
+                window.initCatalogAdmin(user);
                 listen();
             });
         }

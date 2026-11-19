@@ -5,6 +5,16 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
+test('editable prices are not repeated in static marketing copy or structured offers', () => {
+    const root = path.join(__dirname, '../..');
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const outsideInitialCards = html.replace(/<div class="plans-grid"[\s\S]*?<!-- Comparison note -->/, '');
+    assert.doesNotMatch(outsideInitialCards, /₹\s*(?:89|199|349|799|1,499|1499)|"price":|"priceRange":|data-target="89"/);
+    assert.match(html, /id="plansGrid" hidden/);
+    const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
+    assert.match(css, /#plans\s+\[hidden\][^{]*\{[^}]*display:\s*none\s*!important/);
+});
+
 test('fresher resume guide includes an adaptable no-experience template', () => {
     const article = fs.readFileSync(path.join(__dirname, '../../blog/how-to-write-a-fresher-resume.html'), 'utf8');
     const template = article.match(/<section id="resume-template"[\s\S]*?<\/section>/i);
@@ -64,6 +74,35 @@ test('About section displays Jai Rajput’s supplied portrait', () => {
     assert.ok(about, 'The About section should be present');
     assert.match(about, /src="assets\/jai-rajput-about\.jpg"/);
     assert.ok(fs.existsSync(path.join(__dirname, '../../assets/jai-rajput-about.jpg')));
+});
+
+test('pages render small logo assets and defer below-the-fold images', () => {
+    const root = path.join(__dirname, '../..');
+    const pages = ['index.html', '404.html', ...fs.readdirSync(path.join(root, 'blog'))
+        .filter((file) => file.endsWith('.html')).map((file) => `blog/${file}`)];
+
+    for (const page of pages) {
+        const html = fs.readFileSync(path.join(root, page), 'utf8');
+        const renderedLogos = html.match(/<(?:img|link)\b[^>]*dyc-logo[^>]*>/g) || [];
+
+        assert.ok(renderedLogos.length > 0, `${page} should render the logo`);
+        for (const tag of renderedLogos) {
+            assert.doesNotMatch(tag, /dyc-logo-transparent\.png/, `${page} should not render the full-size logo: ${tag}`);
+        }
+        for (const img of html.match(/<img\b[^>]*>/g) || []) {
+            assert.match(img, /\bwidth="\d+"/, `${page} image needs width: ${img}`);
+            assert.match(img, /\bheight="\d+"/, `${page} image needs height: ${img}`);
+        }
+    }
+
+    for (const file of ['dyc-logo-96.png', 'dyc-logo-180.png']) {
+        const size = fs.statSync(path.join(root, 'assets', file)).size;
+        assert.ok(size < 40 * 1024, `${file} should be small (was ${size} bytes)`);
+    }
+
+    const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    assert.match(homepage, /<img\b[^>]*jai-rajput-about[^>]*loading="lazy"/);
+    assert.match(homepage, /<img\b[^>]*footer-logo__img[^>]*loading="lazy"/);
 });
 
 test('public URLs, SEO metadata, and site configuration use the new domain', () => {

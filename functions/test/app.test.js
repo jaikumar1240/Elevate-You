@@ -21,6 +21,10 @@ function setup(overrides = {}) {
     let n = 0;
     const app = createApp({
         db, FieldValue,
+        verifyIdToken: async (token) => {
+            if (token === 'expired') throw new Error('Expired token');
+            return { email: ['admin', 'unverified'].includes(token) ? cfg.adminEmail : 'visitor@example.com', email_verified: token !== 'unverified' };
+        },
         getConfig: () => cfg,
         createRazorpay: () => ({
             orders: {
@@ -42,7 +46,11 @@ function setup(overrides = {}) {
                 const res = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
                 return { status: res.status, body: await res.json().catch(() => null) };
             };
-            resolve({ db, calls, post, close: () => server.close() });
+            const get = async (path, headers = {}) => {
+                const res = await fetch(base + path, { headers });
+                return { status: res.status, body: await res.json().catch(() => null), headers: res.headers };
+            };
+            resolve({ db, calls, post, get, close: () => server.close() });
         });
     });
 }
@@ -53,6 +61,144 @@ const validLead = {
 };
 
 const sign = (orderId, paymentId) => crypto.createHmac('sha256', SECRET).update(`${orderId}|${paymentId}`).digest('hex');
+
+test('public catalog exposes the initial purchasable plans without caching', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    const result = await t.get('/api/catalog');
+    assert.equal(result.status, 200);
+    assert.equal(result.body.revision, 0);
+    assert.equal(result.body.checkoutEnabled, true);
+    assert.equal(result.body.plans.length, 6);
+    assert.equal(result.body.plans.find((p) => p.id === 'mock').price, 349);
+    assert.ok(result.body.plans.every((p) => p.description && p.features.length));
+    assert.equal(result.headers.get('cache-control'), 'no-store');
+});
+
+test('catalog administration requires a verified admin token on reads and writes', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    for (const token of ['', 'visitor', 'expired', 'unverified']) {
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const read = await t.get('/api/admin/catalog', headers);
+        const write = await t.post('/api/admin/catalog', {}, headers);
+        assert.ok([401, 403].includes(read.status), `read rejected for ${token}`);
+        assert.ok([401, 403].includes(write.status), `write rejected for ${token}`);
+    }
+    const allowed = await t.get('/api/admin/catalog', { Authorization: 'Bearer admin' });
+    assert.equal(allowed.status, 200);
+    assert.deepEqual(allowed.body.history, []);
+});
+
+test('admin can publish reordered plans with an audit trail and stale edits cannot overwrite them', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    const headers = { Authorization: 'Bearer admin' };
+    const initial = (await t.get('/api/admin/catalog', headers)).body;
+    const plans = initial.plans.map((plan) => ({ ...plan, active: plan.id !== 'resume' }));
+    plans.unshift({ ...plans[plans.length - 1], id: 'career-pack', name: 'Career Pack', price: 250.50 });
+    const edit = { revision: 0, plans, announcement: 'Bookings open for December.', checkoutEnabled: true };
+    const saved = await t.post('/api/admin/catalog', edit, headers);
+    assert.equal(saved.status, 200);
+    assert.equal(saved.body.revision, 1);
+    assert.equal(saved.body.plans[0].name, 'Career Pack');
+    assert.equal(saved.body.history[0].by, 'admin@example.com');
+    assert.ok(saved.body.history[0].at);
+    const publicResult = (await t.get('/api/catalog')).body;
+    assert.equal(publicResult.announcement, edit.announcement);
+    assert.equal(publicResult.plans[0].price, 250.50);
+    assert.equal(publicResult.plans.some((p) => p.id === 'resume'), false);
+    assert.equal(publicResult.history, undefined);
+    const stale = await t.post('/api/admin/catalog', edit, headers);
+    assert.equal(stale.status, 409);
+    assert.equal(t.db.store.get('site/catalog').revision, 1);
+});
+
+test('catalog rejects invalid prices, unsafe IDs and destructive plan removal without saving', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    const headers = { Authorization: 'Bearer admin' };
+    const catalog = (await t.get('/api/admin/catalog', headers)).body;
+    const changes = [
+        { revision: -1 }, { revision: '0' }, { plans: [] },
+        { announcement: 'x'.repeat(301) }, { checkoutEnabled: 'yes' },
+        ...[-1, 0, '199', 1.001, 1000001, null].map((price) => ({ plans: [{ ...catalog.plans[0], price }, ...catalog.plans.slice(1)] })),
+        ...[{ id: '../x' }, { name: '' }, { active: 'false' }, { features: [''] }, { features: Array(11).fill('Feature') }, { description: 'x'.repeat(601) }]
+            .map((patch) => ({ plans: [{ ...catalog.plans[0], ...patch }, ...catalog.plans.slice(1)] })),
+        { plans: [catalog.plans[0], catalog.plans[0], ...catalog.plans.slice(1)] },
+        { plans: catalog.plans.slice(1) },
+    ];
+    for (const change of changes) {
+        const result = await t.post('/api/admin/catalog', { ...catalog, ...change }, headers);
+        assert.equal(result.status, 400, JSON.stringify(change).slice(0, 100));
+        assert.ok(result.body.error);
+        assert.equal(t.db.store.has('site/catalog'), false);
+    }
+});
+
+test('checkout uses managed prices while existing orders keep their purchased identity', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    const first = (await t.post('/api/lead', validLead)).body;
+    const headers = { Authorization: 'Bearer admin' };
+    const catalog = (await t.get('/api/admin/catalog', headers)).body;
+    catalog.plans.find((p) => p.id === 'mock').price = 499.99;
+    catalog.plans.find((p) => p.id === 'mock').name = 'Updated Mock';
+    await t.post('/api/admin/catalog', catalog, headers);
+    const next = await t.post('/api/lead', { ...validLead, price: 1 });
+    assert.equal(next.body.plan.price, 499.99);
+    assert.equal(next.body.order.amount, 49999);
+    assert.equal(t.calls.orders[1].amount, 49999);
+    const paid = await t.post('/api/verify', {
+        leadId: first.leadId, razorpay_order_id: first.order.id, razorpay_payment_id: 'pay_original',
+        razorpay_signature: sign(first.order.id, 'pay_original'),
+    });
+    assert.equal(paid.status, 200);
+    assert.equal(paid.body.plan.price, 349);
+    assert.equal(paid.body.plan.name, 'Mock Interview');
+});
+
+test('checkout rejects unavailable plans, paused sales and changed displayed prices before creating orders', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    const headers = { Authorization: 'Bearer admin' };
+    const catalog = (await t.get('/api/admin/catalog', headers)).body;
+    catalog.plans.find((p) => p.id === 'mock').active = false;
+    await t.post('/api/admin/catalog', catalog, headers);
+    for (const planId of ['mock', 'unknown', '__proto__']) {
+        const result = await t.post('/api/lead', { ...validLead, planId });
+        assert.equal(result.status, 409);
+        assert.ok(result.body.error);
+    }
+    const stale = await t.post('/api/lead', { ...validLead, planId: 'resume', expectedPrice: 89 });
+    assert.equal(stale.status, 409);
+    const latest = (await t.get('/api/admin/catalog', headers)).body;
+    latest.checkoutEnabled = false;
+    await t.post('/api/admin/catalog', latest, headers);
+    const paused = await t.post('/api/lead', { ...validLead, planId: 'resume' });
+    assert.equal(paused.status, 409);
+    assert.match(paused.body.error, /paused/i);
+    assert.equal(t.calls.orders.length, 0);
+    assert.equal(t.db.store.has('leads/919876543210'), false);
+});
+
+test('catalog history describes price and availability changes instead of accepting a forged audit trail', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    const headers = { Authorization: 'Bearer admin' };
+    const catalog = (await t.get('/api/admin/catalog', headers)).body;
+    catalog.plans.find((plan) => plan.id === 'mock').price = 500;
+    catalog.plans.find((plan) => plan.id === 'resume').active = false;
+    catalog.checkoutEnabled = false;
+    catalog.history = [{ by: 'forged', summary: 'hidden' }];
+    const saved = await t.post('/api/admin/catalog', catalog, headers);
+    assert.equal(saved.status, 200);
+    assert.match(saved.body.history[0].summary, /mock.*349.*500/);
+    assert.match(saved.body.history[0].summary, /resume.*archived/);
+    assert.match(saved.body.history[0].summary, /checkout paused/i);
+    assert.equal(saved.body.history.length, 1);
+    assert.equal(saved.body.history[0].by, 'admin@example.com');
+});
 
 test('booking reference preserves the paid order identity and analytics across later submissions', async (ctx) => {
     const t = await setup();

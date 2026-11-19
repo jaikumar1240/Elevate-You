@@ -21,7 +21,7 @@
 // Configuration
 // ---------------------------------------------------------------------------
 
-/** Display-only copy of functions/lib/config.js PLANS. The server decides the price charged. */
+/** Initial display defaults; replaced by /api/catalog before a purchase can start. */
 const PLANS = {
     diagnosis: { name: 'Diagnosis Session', price: 89 },
     resume: { name: 'Resume Review', price: 199 },
@@ -51,6 +51,63 @@ const CONFIG = {
 };
 
 const ATTRIBUTION_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid'];
+const Catalog = { ready: false, checkoutEnabled: false };
+
+function escapeCatalogText(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function planCards(plans, enabled) {
+    return plans.map((plan) => `
+        <div class="plan-card">
+            <h3>${escapeCatalogText(plan.name)}</h3>
+            <div class="plan-price"><span class="plan-currency">₹</span><span class="plan-amount">${Number(plan.price).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
+                <span class="plan-period">${escapeCatalogText(plan.period)}</span></div>
+            <p class="plan-desc">${escapeCatalogText(plan.description)}</p>
+            <ul class="plan-features">${plan.features.map((feature) => `<li><i class="fas fa-check" aria-hidden="true"></i> ${escapeCatalogText(feature)}</li>`).join('')}</ul>
+            ${plan.badge ? `<div class="plan-tag">${escapeCatalogText(plan.badge)}</div>` : ''}
+            <div class="plan-cta"><button type="button" class="plan-btn plan-btn--secondary book-cta" data-plan-id="${escapeCatalogText(plan.id)}"
+                ${enabled ? '' : 'disabled'}>Choose this plan</button></div>
+        </div>`).join('');
+}
+
+async function loadCatalog() {
+    const message = document.getElementById('catalogMessage');
+    const grid = document.getElementById('plansGrid');
+    const retry = document.getElementById('catalogRetry');
+    try {
+        const response = await fetch(`${CONFIG.apiBase}/catalog`, { cache: 'no-store' });
+        if (!response.ok) throw new Error('Current plans could not be loaded.');
+        const catalog = await response.json();
+        if (!Array.isArray(catalog.plans) || typeof catalog.checkoutEnabled !== 'boolean') throw new Error('Invalid plan catalog.');
+        for (const id of Object.keys(PLANS)) delete PLANS[id];
+        for (const plan of catalog.plans) {
+            Object.defineProperty(PLANS, plan.id, { value: plan, configurable: true, enumerable: true, writable: true });
+        }
+        Catalog.ready = true;
+        Catalog.checkoutEnabled = catalog.checkoutEnabled;
+        grid.innerHTML = planCards(catalog.plans, catalog.checkoutEnabled);
+        grid.hidden = false;
+        const announcement = document.getElementById('catalogAnnouncement');
+        announcement.textContent = catalog.announcement;
+        announcement.hidden = !catalog.announcement;
+        message.textContent = !catalog.checkoutEnabled ? 'New checkouts are paused. Please contact us for help.'
+            : !catalog.plans.length ? 'No plans are available right now. Please contact us.' : '';
+        retry.hidden = true;
+        document.querySelectorAll('.book-cta').forEach((button) => {
+            button.hidden = !Object.hasOwn(PLANS, button.dataset.planId);
+            button.setAttribute('aria-disabled', String(!catalog.checkoutEnabled));
+        });
+    } catch (error) {
+        console.error('Catalog load failed', error);
+        Catalog.ready = false;
+        Catalog.checkoutEnabled = false;
+        grid.hidden = true;
+        message.textContent = 'Current plans could not be loaded. Please retry or contact us before paying.';
+        retry.hidden = false;
+    }
+}
 
 // ---------------------------------------------------------------------------
 // Bootstrap
@@ -63,7 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initCtaTracking();
     initFaqTracking();
     initContactTracking();
+    Catalog.loading = loadCatalog();
     LeadFunnel.init();
+    document.getElementById('catalogRetry')?.addEventListener('click', loadCatalog);
 });
 
 // ---------------------------------------------------------------------------
@@ -385,12 +444,12 @@ const LeadFunnel = {
             views: modal.querySelectorAll('[data-view]'),
         };
 
-        document.querySelectorAll('.book-cta').forEach((btn) => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const location = btn.closest('section')?.id || (btn.closest('#stickyCTA') ? 'sticky' : 'unknown');
-                this.open(btn.dataset.planId, location);
-            });
+        document.addEventListener('click', (event) => {
+            const button = event.target.closest('.book-cta');
+            if (!button) return;
+            event.preventDefault();
+            const location = button.closest('section')?.id || (button.closest('#stickyCTA') ? 'sticky' : 'unknown');
+            this.open(button.dataset.planId, location);
         });
 
         modal.querySelectorAll('[data-close-modal]').forEach((el) => el.addEventListener('click', () => this.close()));
@@ -449,6 +508,7 @@ const LeadFunnel = {
             const res = await api('/resume', { token });
             gaEvent('reminder_click', { plan_id: res.planId, already_paid: res.paid });
             if (res.paid) return;
+            await Catalog.loading;
             storeSet(CONFIG.storage.lead, { leadId: `91${res.values.phone}`, values: res.values });
             this.els.form.reset();
             this.open(res.planId, 'reminder_email');
@@ -460,10 +520,19 @@ const LeadFunnel = {
     // ----- modal --------------------------------------------------------------
 
     open(planId, location) {
+        if (!Catalog.ready || !Catalog.checkoutEnabled || !Object.hasOwn(PLANS, planId)) {
+            const message = document.getElementById('catalogMessage');
+            message.textContent = !Catalog.ready ? 'Please load current pricing before booking.'
+                : !Catalog.checkoutEnabled ? 'New checkouts are paused. Please contact us.'
+                    : 'This plan is no longer available. Please choose another plan.';
+            message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
         // Switching plans needs a new order; keep the saved details though.
         if (this.lead && this.lead.plan?.id !== planId) this.lead = null;
-        this.planId = PLANS[planId] ? planId : 'diagnosis';
+        this.planId = planId;
         const plan = { id: this.planId, ...PLANS[this.planId] };
+        this.expectedPrice = plan.price;
 
         this.els.planName.textContent = plan.name;
         this.els.planPrice.textContent = `₹${plan.price}`;
@@ -535,7 +604,7 @@ const LeadFunnel = {
     setSubmitting(on) {
         this.els.submit.disabled = on;
         const label = this.els.submit.querySelector('.lead-form__submit-label');
-        if (label) label.textContent = on ? 'Saving your details' : 'Continue';
+        if (label) label.textContent = on ? 'Saving your details' : 'Continue to payment';
     },
 
     // ----- step 1: lead ---------------------------------------------------------
@@ -559,6 +628,7 @@ const LeadFunnel = {
                 ...values,
                 phone,
                 planId: this.planId,
+                expectedPrice: this.expectedPrice,
                 consent: true,
                 analytics: googleMetadata(),
                 attribution: { ...attribution, ...readUrlAttribution() },

@@ -6,6 +6,7 @@ const logger = require('firebase-functions/logger');
 const { setGlobalOptions } = require('firebase-functions/v2');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const { getAuth } = require('firebase-admin/auth');
 const Razorpay = require('razorpay');
 
 const { REGION, secrets, bookingSecrets, params, secretValue } = require('./lib/config');
@@ -41,6 +42,7 @@ const app = createApp({
     db,
     FieldValue,
     getConfig,
+    verifyIdToken: (token) => getAuth().verifyIdToken(token, true),
     createRazorpay: (keyId, keySecret) => new Razorpay({ key_id: keyId, key_secret: keySecret }),
     sendMetaEvent,
     sendAlert,

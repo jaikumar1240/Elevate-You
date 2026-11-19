@@ -3,9 +3,8 @@
 const { defineSecret, defineString } = require('firebase-functions/params');
 
 /**
- * Server-side source of truth for prices. The client only sends a planId;
- * the amount charged always comes from here.
- * Keep in sync with PLANS in /script.js (display only).
+ * Initial prices, used until an admin publishes the Firestore plan catalog.
+ * Checkout always resolves prices server-side from that catalog.
  */
 const PLANS = {
     diagnosis: { name: 'Diagnosis Session', price: 89 },

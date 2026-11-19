@@ -547,6 +547,7 @@ section { padding: 64px 0; position: relative; }
 }
 .coach-image-img {
     width: 100%;
+    height: auto;
     aspect-ratio: 1;
     object-fit: cover;
     border-radius: var(--r-lg);
@@ -770,6 +771,11 @@ section { padding: 64px 0; position: relative; }
     border-radius: var(--r-pill);
     transition: transform var(--t-fast), box-shadow var(--t), background var(--t);
 }
+#plans [hidden], .book-cta[hidden] { display: none !important; }
+button.plan-btn { width: 100%; border: 0; cursor: pointer; font-family: inherit; }
+button.plan-btn:disabled, .book-cta[aria-disabled="true"] { opacity: .6; cursor: not-allowed; }
+.catalog-notice { padding: 14px; border-radius: var(--r-lg); background: var(--surface); white-space: pre-wrap; overflow-wrap: anywhere; }
+.plan-card h3, .plan-card .plan-desc, .plan-card .plan-features, .plan-card .plan-tag { overflow-wrap: anywhere; }
 .plan-btn--primary { background: var(--grad-brand); color: #fff; box-shadow: var(--sh-brand); }
 .plan-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 22px 46px -12px rgba(108,76,241,0.55); }
 .plan-btn--secondary { background: var(--ink); color: #fff; }
