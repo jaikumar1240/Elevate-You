@@ -96,6 +96,7 @@ function createApp(deps) {
         const validationError = validateCatalog(req.body);
         if (validationError) return res.status(400).json({ error: validationError });
         const { revision, announcement, checkoutEnabled } = req.body;
+        const buttonLabels = { plan: req.body.buttonLabels.plan.trim(), payment: req.body.buttonLabels.payment.trim() };
         const plans = req.body.plans.map(({ id, name, price, description, period, badge, active, features }) => ({
             id, name: name.trim(), price, description: description.trim(), period: period.trim(),
             badge: badge.trim(), active, features: features.map((feature) => feature.trim()),
@@ -109,10 +110,10 @@ function createApp(deps) {
                 return { error: 'Keep existing plan IDs. Archive a plan instead of deleting it.' };
             }
             const next = {
-                revision: revision + 1, plans, announcement, checkoutEnabled,
+                revision: revision + 1, plans, announcement, checkoutEnabled, buttonLabels,
                 history: [{
                     by: req.adminEmail, at: new Date().toISOString(), revision: revision + 1,
-                    summary: catalogChanges(previous, { plans, announcement, checkoutEnabled }),
+                    summary: catalogChanges(previous, { plans, announcement, checkoutEnabled, buttonLabels }),
                 }, ...previous.history].slice(0, 20),
             };
             tx.set(ref, next);

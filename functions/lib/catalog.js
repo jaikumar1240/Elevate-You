@@ -35,21 +35,25 @@ const DETAILS = {
     },
 };
 
+const DEFAULT_BUTTON_LABELS = { plan: 'Book now', payment: 'Continue' };
+
 function defaultCatalog() {
     return {
-        revision: 0, checkoutEnabled: true, announcement: '', history: [],
+        revision: 0, checkoutEnabled: true, announcement: '', history: [], buttonLabels: { ...DEFAULT_BUTTON_LABELS },
         plans: Object.entries(PLANS).map(([id, plan]) => ({ id, ...plan, ...DETAILS[id], active: true })),
     };
 }
 
 async function readCatalog(db) {
     const snapshot = await db.collection('site').doc('catalog').get();
-    return snapshot.exists ? snapshot.data() : defaultCatalog();
+    if (!snapshot.exists) return defaultCatalog();
+    const catalog = snapshot.data();
+    return { ...catalog, buttonLabels: { ...DEFAULT_BUTTON_LABELS, ...catalog.buttonLabels } };
 }
 
 function publicCatalog(catalog) {
-    const { revision, checkoutEnabled, announcement } = catalog;
-    return { revision, checkoutEnabled, announcement, plans: catalog.plans.filter((plan) => plan.active) };
+    const { revision, checkoutEnabled, announcement, buttonLabels } = catalog;
+    return { revision, checkoutEnabled, announcement, buttonLabels, plans: catalog.plans.filter((plan) => plan.active) };
 }
 
 function validateCatalog(input) {
@@ -59,6 +63,9 @@ function validateCatalog(input) {
         || typeof input.checkoutEnabled !== 'boolean' || !text(input.announcement, 300)
         || !Array.isArray(input.plans) || input.plans.length < 1 || input.plans.length > 20) {
         return 'Provide a revision, 1-20 plans, checkout availability and an announcement of up to 300 characters.';
+    }
+    if (!input.buttonLabels || !text(input.buttonLabels.plan, 40, true) || !text(input.buttonLabels.payment, 40, true)) {
+        return 'Plan and payment button labels are required (up to 40 characters each).';
     }
     const ids = new Set();
     for (const plan of input.plans) {
@@ -97,6 +104,7 @@ function catalogChanges(previous, next) {
     if (previous.plans.map((p) => p.id).join(',') !== next.plans.map((p) => p.id).join(',')) changes.push('Display order updated');
     if (previous.checkoutEnabled !== next.checkoutEnabled) changes.push(`Checkout ${next.checkoutEnabled ? 'enabled' : 'paused'}`);
     if (previous.announcement !== next.announcement) changes.push('Announcement updated');
+    if (JSON.stringify(previous.buttonLabels) !== JSON.stringify(next.buttonLabels)) changes.push('Button labels updated');
     return changes.join('; ') || 'Published without changes';
 }
 

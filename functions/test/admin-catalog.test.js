@@ -52,6 +52,23 @@ test('admin catalog loads with an ID token and renders editable fields as escape
     assert.match(t.element('catalogPlans').innerHTML, /&lt;img/);
 });
 
+test('admin can review and publish the website plan and payment button labels', async () => {
+    const t = editor();
+    await t.context.window.initCatalogAdmin({ getIdToken: async () => 'admin-token' });
+    assert.equal(t.element('catalogPlanButton').value, 'Book now');
+    assert.equal(t.element('catalogPaymentButton').value, 'Continue');
+    t.element('catalogPlanButton').value = 'Choose this plan';
+    t.element('catalogPaymentButton').value = 'Pay securely';
+    let payload;
+    t.context.fetch = async (_url, options) => {
+        payload = JSON.parse(options.body);
+        return { ok: true, json: async () => ({ ...defaultCatalog(), ...payload, revision: 1 }) };
+    };
+    await t.element('catalogForm').submit({ preventDefault() {} });
+    assert.deepEqual(payload.buttonLabels, { plan: 'Choose this plan', payment: 'Pay securely' });
+    assert.equal(t.element('catalogPlanButton').value, 'Choose this plan');
+});
+
 test('admin publishing sends edited fields and keeps unsaved edits after a conflict', async () => {
     const t = editor();
     await t.context.window.initCatalogAdmin({ getIdToken: async () => 'admin-token' });

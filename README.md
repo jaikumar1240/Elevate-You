@@ -87,8 +87,9 @@ For production, swap to PostgreSQL or MySQL.
 ## Managing plans and storefront settings
 
 The production site uses the Firebase Functions API and Firestore, not the legacy SQLite server described above.
-Every plan's **Book & pay** button opens the booking form, whose **Pay with Razorpay** button creates a Razorpay order
-at the plan's current admin price and opens Razorpay Standard Checkout. New plans need no separate Razorpay Dashboard
+Every plan's **Book now** button opens the booking form, whose **Continue** button creates a Razorpay order
+at the plan's current admin price and opens Razorpay Standard Checkout. Both button texts can be changed under
+**Plans & pricing → Storefront settings** (up to 40 characters each); every change is recorded in the version history. New plans need no separate Razorpay Dashboard
 "Payment Button" ID; such embedded buttons would bypass the CRM, price snapshot and booking verification flow.
 Do not edit HTML or Razorpay payment links to change production prices.
 

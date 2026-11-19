@@ -11,6 +11,8 @@
     function render() {
         $('catalogAnnouncement').value = catalog.announcement;
         $('catalogEnabled').checked = catalog.checkoutEnabled;
+        $('catalogPlanButton').value = catalog.buttonLabels.plan;
+        $('catalogPaymentButton').value = catalog.buttonLabels.payment;
         $('catalogPlans').innerHTML = catalog.plans.map((plan, index) => `
             <fieldset class="catalog-plan" data-index="${index}">
                 <legend>${escape(plan.name)}${plan.active ? '' : ' (archived)'}</legend>
@@ -62,6 +64,7 @@
             revision: catalog.revision,
             announcement: $('catalogAnnouncement').value,
             checkoutEnabled: $('catalogEnabled').checked,
+            buttonLabels: { plan: $('catalogPlanButton').value, payment: $('catalogPaymentButton').value },
             plans: [...$('catalogPlans').querySelectorAll('fieldset')].map((fieldset) => {
                 const field = (name) => fieldset.querySelector(`[name="${name}"]`);
                 return {
@@ -154,6 +157,8 @@
         $('catalogHistory').innerHTML = '';
         $('catalogAnnouncement').value = '';
         $('catalogEnabled').checked = false;
+        $('catalogPlanButton').value = '';
+        $('catalogPaymentButton').value = '';
         $('catalogStatus').textContent = '';
         if (!identity) return;
         $('catalogStatus').textContent = 'Loading plans...';

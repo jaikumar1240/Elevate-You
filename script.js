@@ -51,14 +51,15 @@ const CONFIG = {
 };
 
 const ATTRIBUTION_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid'];
-const Catalog = { ready: false, checkoutEnabled: false };
+const DEFAULT_BUTTON_LABELS = { plan: 'Book now', payment: 'Continue' };
+const Catalog = { ready: false, checkoutEnabled: false, buttonLabels: { ...DEFAULT_BUTTON_LABELS } };
 
 function escapeCatalogText(value) {
     return String(value ?? '').replace(/[&<>"']/g, (c) =>
         ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-function planCards(plans, enabled) {
+function planCards(plans, enabled, buttonLabel = DEFAULT_BUTTON_LABELS.plan) {
     return plans.map((plan) => `
         <div class="plan-card plan-card--managed">
             ${plan.badge ? `<div class="plan-tag">${escapeCatalogText(plan.badge)}</div>` : ''}
@@ -68,7 +69,7 @@ function planCards(plans, enabled) {
             <p class="plan-desc">${escapeCatalogText(plan.description)}</p>
             <ul class="plan-features">${plan.features.map((feature) => `<li><i class="fas fa-check" aria-hidden="true"></i> ${escapeCatalogText(feature)}</li>`).join('')}</ul>
             <div class="plan-cta"><button type="button" class="plan-btn plan-btn--secondary book-cta" data-plan-id="${escapeCatalogText(plan.id)}"
-                ${enabled ? '' : 'disabled'}>Book &amp; pay</button></div>
+                ${enabled ? '' : 'disabled'}>${escapeCatalogText(buttonLabel)}</button></div>
         </div>`).join('');
 }
 
@@ -87,7 +88,8 @@ async function loadCatalog() {
         }
         Catalog.ready = true;
         Catalog.checkoutEnabled = catalog.checkoutEnabled;
-        grid.innerHTML = planCards(catalog.plans, catalog.checkoutEnabled);
+        Catalog.buttonLabels = { ...DEFAULT_BUTTON_LABELS, ...catalog.buttonLabels };
+        grid.innerHTML = planCards(catalog.plans, catalog.checkoutEnabled, Catalog.buttonLabels.plan);
         grid.hidden = false;
         const announcement = document.getElementById('catalogAnnouncement');
         announcement.textContent = catalog.announcement;
@@ -536,6 +538,7 @@ const LeadFunnel = {
 
         this.els.planName.textContent = plan.name;
         this.els.planPrice.textContent = `₹${plan.price}`;
+        this.setSubmitting(false);
         this.prefillForm();
         this.setFormError('');
         this.showView('form');
@@ -604,7 +607,7 @@ const LeadFunnel = {
     setSubmitting(on) {
         this.els.submit.disabled = on;
         const label = this.els.submit.querySelector('.lead-form__submit-label');
-        if (label) label.textContent = on ? 'Saving your details' : 'Pay with Razorpay';
+        if (label) label.textContent = on ? 'Saving your details' : Catalog.buttonLabels.payment;
     },
 
     // ----- step 1: lead ---------------------------------------------------------

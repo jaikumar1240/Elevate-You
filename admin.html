@@ -181,6 +181,15 @@
                     <input id="catalogAnnouncement" maxlength="300" placeholder="Optional announcement shown above pricing">
                 </label>
                 <label class="catalog-check"><input type="checkbox" id="catalogEnabled"> Accept new checkouts</label>
+                <div class="catalog-fields">
+                    <label>Plan card button text
+                        <input id="catalogPlanButton" required maxlength="40" placeholder="Book now">
+                    </label>
+                    <label>Booking form payment button text
+                        <input id="catalogPaymentButton" required maxlength="40" placeholder="Continue">
+                    </label>
+                </div>
+                <p class="sub">Shown on every plan card and on the booking form button that opens Razorpay Checkout.</p>
                 <p class="sub">Pausing checkout does not cancel existing orders or paid bookings. Plan IDs cannot be changed after publishing.
                     All plans use the existing Calendly booking flow; arrange delivery of multi-session packs manually.</p>
                 </div>
@@ -262,7 +271,7 @@
     </main>
 
     <script src="/admin-tabs.js?v=1"></script>
-    <script src="/admin-catalog.js?v=2"></script>
+    <script src="/admin-catalog.js?v=3"></script>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';

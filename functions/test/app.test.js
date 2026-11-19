@@ -75,6 +75,33 @@ test('public catalog exposes the initial purchasable plans without caching', asy
     assert.equal(result.headers.get('cache-control'), 'no-store');
 });
 
+test('catalogs saved before button labels existed show the default Book now and Continue labels', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    const legacy = (await t.get('/api/admin/catalog', { Authorization: 'Bearer admin' })).body;
+    delete legacy.buttonLabels;
+    t.db.store.set('site/catalog', legacy);
+    const expected = { plan: 'Book now', payment: 'Continue' };
+    assert.deepEqual((await t.get('/api/catalog')).body.buttonLabels, expected);
+    assert.deepEqual((await t.get('/api/admin/catalog', { Authorization: 'Bearer admin' })).body.buttonLabels, expected);
+});
+
+test('admin can rename storefront buttons with an audit entry while blank or overlong labels are rejected', async (ctx) => {
+    const t = await setup();
+    ctx.after(t.close);
+    const headers = { Authorization: 'Bearer admin' };
+    const initial = (await t.get('/api/admin/catalog', headers)).body;
+    for (const buttonLabels of [undefined, { plan: ' ', payment: 'Pay' }, { plan: 'Book', payment: 'x'.repeat(41) }]) {
+        const rejected = await t.post('/api/admin/catalog', { ...initial, buttonLabels }, headers);
+        assert.equal(rejected.status, 400);
+    }
+    const buttonLabels = { plan: '  Choose this plan ', payment: 'Pay securely' };
+    const saved = await t.post('/api/admin/catalog', { ...initial, buttonLabels }, headers);
+    assert.equal(saved.status, 200);
+    assert.match(saved.body.history[0].summary, /Button labels updated/);
+    assert.deepEqual((await t.get('/api/catalog')).body.buttonLabels, { plan: 'Choose this plan', payment: 'Pay securely' });
+});
+
 test('catalog administration requires a verified admin token on reads and writes', async (ctx) => {
     const t = await setup();
     ctx.after(t.close);
@@ -107,7 +134,7 @@ test('admin can publish reordered plans with an audit trail and stale edits cann
     const initial = (await t.get('/api/admin/catalog', headers)).body;
     const plans = initial.plans.map((plan) => ({ ...plan, active: plan.id !== 'resume' }));
     plans.unshift({ ...plans[plans.length - 1], id: 'career-pack', name: 'Career Pack', price: 250.50 });
-    const edit = { revision: 0, plans, announcement: 'Bookings open for December.', checkoutEnabled: true };
+    const edit = { revision: 0, plans, announcement: 'Bookings open for December.', checkoutEnabled: true, buttonLabels: initial.buttonLabels };
     const saved = await t.post('/api/admin/catalog', edit, headers);
     assert.equal(saved.status, 200);
     assert.equal(saved.body.revision, 1);

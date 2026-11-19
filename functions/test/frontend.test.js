@@ -59,7 +59,7 @@ const booking = {
 
 function preparePurchase(context) {
     vm.runInContext('Catalog.ready = true; Catalog.checkoutEnabled = true;', context);
-    const stub = () => ({ textContent: '', hidden: true, setAttribute() {}, focus() {}, querySelectorAll: () => [] });
+    const stub = () => ({ textContent: '', hidden: true, setAttribute() {}, focus() {}, querySelector: () => null, querySelectorAll: () => [] });
     context.funnel.els = { planName: stub(), planPrice: stub(), modal: stub(), submit: stub(), form: stub() };
     context.funnel.prefillForm = () => {};
     context.funnel.setFormError = () => {};
@@ -129,6 +129,19 @@ test('public catalog replaces stale plans with escaped managed cards and announc
     assert.doesNotMatch(markup, /Diagnosis Session/);
     assert.equal(elements.get('catalogAnnouncement').textContent, catalog.announcement);
     assert.match(elements.get('catalogMessage').textContent, /paused/i);
+});
+
+test('managed plan cards use the escaped plan button label from the catalog', async () => {
+    const { context, elements } = browser(true);
+    const catalog = {
+        revision: 4, checkoutEnabled: true, announcement: '', buttonLabels: { plan: 'Choose <b>this</b> plan', payment: 'Pay securely' },
+        plans: [{ id: 'mock', name: 'Mock', price: 349, period: '/ session', description: 'Practice', features: ['Feedback'], badge: '' }],
+    };
+    context.fetch = async () => ({ ok: true, json: async () => catalog });
+    await vm.runInContext('loadCatalog()', context);
+    const markup = elements.get('plansGrid').innerHTML;
+    assert.match(markup, />Choose &lt;b&gt;this&lt;\/b&gt; plan<\/button>/);
+    assert.doesNotMatch(markup, /Book &amp; pay/);
 });
 
 test('managed plan badges occupy their own row before titles instead of covering them on mobile', () => {
@@ -262,7 +275,7 @@ test('the booking form discloses the selected price before continuing to payment
     assert.ok(pricePosition >= 0 && pricePosition < submitPosition, 'Show the plan price before the submit button');
     assert.match(form.slice(0, submitPosition), /plan price/i);
     const initialLabel = form.match(/<span class="lead-form__submit-label">([^<]+)<\/span>/)?.[1];
-    assert.match(initialLabel || '', /^pay with razorpay$/i);
+    assert.equal(initialLabel, 'Continue');
 
     const { context } = browser(true);
     const { PLANS: serverPlans } = require('../lib/config');
@@ -279,7 +292,20 @@ test('the booking form discloses the selected price before continuing to payment
     assert.equal(context.funnel.els.submit.disabled, true);
     context.funnel.setSubmitting(false);
     assert.equal(context.funnel.els.submit.disabled, false);
-    assert.match(label.textContent, /^pay with razorpay$/i);
+    assert.equal(label.textContent, 'Continue');
+});
+
+test('the booking form submit button uses the managed payment label after opening and saving', async () => {
+    const { context } = browser(true);
+    preparePurchase(context);
+    vm.runInContext("Catalog.buttonLabels = { plan: 'Book now', payment: 'Pay securely' };", context);
+    const label = { textContent: 'Continue' };
+    context.funnel.els.submit.querySelector = () => label;
+    context.funnel.open('mock', 'plans');
+    assert.equal(label.textContent, 'Pay securely');
+    context.funnel.setSubmitting(true);
+    context.funnel.setSubmitting(false);
+    assert.equal(label.textContent, 'Pay securely');
 });
 
 test('booking copy explains the paid service without judging visitors', () => {
